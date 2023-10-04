@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  poktroll:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-10-04T01:41:16.484806376Z"
+    description: A Helm chart for Kubernetes
+    digest: 1b552c52f95c69251cd7e14e3c75bea116858e521ca4a73e82cfcdc88508cf2e
+    name: poktroll
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/poktroll-0.0.1/poktroll-0.0.1.tgz
+    version: 0.0.1
+generated: "2023-10-04T01:41:16.484810576Z"
