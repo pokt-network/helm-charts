@@ -1,0 +1,25 @@
+replicaCount: 1 # This should never be more than 1 until Rollkit supports decentralized sequencers
+
+configsConfigMapName: pocketd-configs # TODO(@okdas): provision in the chart
+keysConfigMapName: pocketd-keys # TODO(@okdas): provision in the chart
+image:
+  repository: pocketd
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  rpcPort: 36657
+pvc:
+  accessModes: 
+    - ReadWriteOnce
+  requests:
+    storage: 1Gi
+dataAvailability:
+  provider: celestia
+  authToken:
+    secretName: celestia-secret
+    secretKey: auth_token
+podSecurityContext: {}
+  # allowPrivilegeEscalation: true
+  # capabilities:
+  #   add: ["SYS_PTRACE"]
