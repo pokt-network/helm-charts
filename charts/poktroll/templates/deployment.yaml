@@ -32,30 +32,42 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          command: ["/bin/sh"]
+          args: ["/scripts/pocket.sh"]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
+            - containerPort: 8545
+            - containerPort: 8546
+            - containerPort: 40005
           livenessProbe:
             httpGet:
               path: /
-              port: http
+              port: 8545
           readinessProbe:
             httpGet:
               path: /
-              port: http
+              port: 8545
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            - name: scripts-volume
+              mountPath: /scripts
+            - name: keys-volume
+              mountPath: /root/.pocket/keyring-test/
+          {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
       volumes:
+        - name: keys-volume
+          configMap:
+            name: {{ .Values.keysConfigMapName }}
+        - name: scripts-volume
+          configMap:
+            name: {{ include "poktroll.fullname" . }}-scripts
+      {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}

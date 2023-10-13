@@ -1,0 +1,13 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "poktroll.fullname" . }}
+spec:
+  selector:
+    app: {{ include "poktroll.fullname" . }}
+  ports:
+    - protocol: TCP
+      name: rpc
+      port: 36657
+      targetPort: 36657

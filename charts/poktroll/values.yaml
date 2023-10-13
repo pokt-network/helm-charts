@@ -4,6 +4,8 @@
 
 replicaCount: 1
 
+keysConfigMapName: pocketd-keys # TODO(@okdas): switch off test keyring
+
 image:
   repository: nginx
   pullPolicy: IfNotPresent

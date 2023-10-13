@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "poktroll.fullname" . }}
+spec:
+  serviceName: {{ include "poktroll.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "poktroll.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "poktroll.fullname" . }}
+    spec:
+      containers:
+        - name: pocketd-sequencer
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+{{ toYaml .Values.podSecurityContext | indent 12 }}
+          env:
+            - name: AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dataAvailability.authToken.secretName }}
+                  key: {{ .Values.dataAvailability.authToken.secretKey }}
+          ports:
+            - containerPort: {{ .Values.service.rpcPort }}
+              name: rpc
+            - containerPort: 40004 # TODO(@okdas): remove this - currently only needed for LocalNet dlv
+              name: debug
+          command: ["/bin/sh"]
+          args: ["/scripts/pocket.sh"]
+          volumeMounts:
+            - name: scripts-volume
+              mountPath: /scripts
+            - name: keys-volume
+              mountPath: /root/.pocket/keyring-test/
+            - name: configs-volume
+              mountPath: /root/.pocket/config-src/
+            - name: data-volume
+              mountPath: /root/.pocket/data/
+      volumes:
+        - name: scripts-volume
+          configMap:
+            name: {{ include "poktroll.fullname" . }}-scripts
+        - name: keys-volume
+          configMap:
+            name: {{ .Values.keysConfigMapName }}
+        - name: configs-volume
+          configMap:
+            name: {{ .Values.configsConfigMapName }}
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: {{ include "poktroll.fullname" . }}-data
