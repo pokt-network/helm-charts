@@ -26,6 +26,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.dataAvailability.authToken.secretName }}
                   key: {{ .Values.dataAvailability.authToken.secretKey }}
+            - name: CELESTIA_HOSTNAME
+              value: {{ .Values.dataAvailability.celestia.hostname }}
           ports:
             - containerPort: {{ .Values.service.rpcPort }}
               name: rpc

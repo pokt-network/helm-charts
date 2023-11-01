@@ -19,6 +19,8 @@ dataAvailability:
   authToken:
     secretName: celestia-secret
     secretKey: auth_token
+  celestia:
+    hostname: celestia-rollkit
 podSecurityContext: {}
   # allowPrivilegeEscalation: true
   # capabilities:
