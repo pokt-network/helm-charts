@@ -24,6 +24,16 @@ entries:
   poktroll-sequencer:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2023-11-01T23:30:40.595179256Z"
+    description: A Helm chart for Kubernetes
+    digest: 645f4b61769ee3392a58331a95aa0f8cc4b878145b43a9ffd8eb9a92e71974c4
+    name: poktroll-sequencer
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/poktroll-sequencer-0.0.2/poktroll-sequencer-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2023-10-13T01:08:13.649638858Z"
     description: A Helm chart for Kubernetes
     digest: 21ffca8d8803ec8e48ea4f922ec39581b7f16510fccfd6e1d29915415097ce61
@@ -32,4 +42,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/poktroll-sequencer-0.0.1/poktroll-sequencer-0.0.1.tgz
     version: 0.0.1
-generated: "2023-10-13T01:08:13.650069285Z"
+generated: "2023-11-01T23:30:40.595433154Z"
