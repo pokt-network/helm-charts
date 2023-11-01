@@ -26,7 +26,7 @@ data:
     # to allow users to interact with Celestia's nodes by querying
     # the node's state and broadcasting transactions on the Celestia
     # network. The default port is 26657.
-    curl http://celestia-rollkit:26657/block | jq -r '.result.block.header.height' > /root/.pocket/data/da-block-height
+    curl http://{{ .Values.dataAvailability.celestia.hostname }}:26657/block | jq -r '.result.block.header.height' > /root/.pocket/data/da-block-height
     DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
 
     echo -e "Your NAMESPACE_ID is $NAMESPACE_ID \n\n Your DA_BLOCK_HEIGHT is $DA_BLOCK_HEIGHT"
@@ -40,8 +40,8 @@ data:
 
     # start the node
     # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep pocketd) --listen :40004 --headless --api-version=2 --accept-multiclient` - run inside the container!
-    pocketd start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://celestia-rollkit:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
+    pocketd start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
 
     # OR debug the node (uncomment this line but comment previous line)
-    # dlv exec /usr/local/bin/pocketd --listen :40004 --headless --api-version=2 --accept-multiclient -- start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://celestia-rollkit:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
+    # dlv exec /usr/local/bin/pocketd --listen :40004 --headless --api-version=2 --accept-multiclient -- start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
 

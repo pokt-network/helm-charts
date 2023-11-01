@@ -1,10 +1,11 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: {{ include "poktroll.fullname" . }}
 spec:
-  serviceName: {{ include "poktroll.fullname" . }}
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: {{ include "poktroll.fullname" . }}
@@ -12,6 +13,7 @@ spec:
     metadata:
       labels:
         app: {{ include "poktroll.fullname" . }}
+        pokt.network/purpose: sequencer
     spec:
       containers:
         - name: pocketd-sequencer
@@ -25,6 +27,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.dataAvailability.authToken.secretName }}
                   key: {{ .Values.dataAvailability.authToken.secretKey }}
+            - name: CELESTIA_HOSTNAME
+              value: {{ .Values.dataAvailability.celestia.hostname }}
           ports:
             - containerPort: {{ .Values.service.rpcPort }}
               name: rpc

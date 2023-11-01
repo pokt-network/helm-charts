@@ -3,7 +3,7 @@ replicaCount: 1 # This should never be more than 1 until Rollkit supports decent
 configsConfigMapName: pocketd-configs # TODO(@okdas): provision in the chart
 keysConfigMapName: pocketd-keys # TODO(@okdas): provision in the chart
 image:
-  repository: pocketd
+  repository: ghcr.io/pokt-network/pocketd
   tag: latest
   pullPolicy: IfNotPresent
 service:
@@ -19,6 +19,8 @@ dataAvailability:
   authToken:
     secretName: celestia-secret
     secretKey: auth_token
+  celestia:
+    hostname: celestia-rollkit
 podSecurityContext: {}
   # allowPrivilegeEscalation: true
   # capabilities:
