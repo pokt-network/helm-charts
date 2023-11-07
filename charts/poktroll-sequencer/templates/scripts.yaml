@@ -15,7 +15,7 @@ data:
     STAKING_AMOUNT="1000000000upokt"
 
     # reset any existing genesis/chain data
-    pocketd tendermint unsafe-reset-all
+    poktrolld tendermint unsafe-reset-all
 
     # create a random Namespace ID for your rollup to post blocks to
     openssl rand -hex 10 > /root/.pocket/data/namespace-id
@@ -39,9 +39,9 @@ data:
     # sleep 9999
 
     # start the node
-    # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep pocketd) --listen :40004 --headless --api-version=2 --accept-multiclient` - run inside the container!
-    pocketd start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
+    # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep poktrolld) --listen :40004 --headless --api-version=2 --accept-multiclient` - run inside the container!
+    poktrolld start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
 
     # OR debug the node (uncomment this line but comment previous line)
-    # dlv exec /usr/local/bin/pocketd --listen :40004 --headless --api-version=2 --accept-multiclient -- start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
+    # dlv exec /usr/local/bin/poktrolld --listen :40004 --headless --api-version=2 --accept-multiclient -- start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
 

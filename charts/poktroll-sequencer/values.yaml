@@ -1,9 +1,9 @@
 replicaCount: 1 # This should never be more than 1 until Rollkit supports decentralized sequencers
 
-configsConfigMapName: pocketd-configs # TODO(@okdas): provision in the chart
-keysConfigMapName: pocketd-keys # TODO(@okdas): provision in the chart
+configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
+keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
 image:
-  repository: ghcr.io/pokt-network/pocketd
+  repository: ghcr.io/pokt-network/poktrolld
   tag: latest
   pullPolicy: IfNotPresent
 service:

@@ -16,7 +16,7 @@ spec:
         pokt.network/purpose: sequencer
     spec:
       containers:
-        - name: pocketd-sequencer
+        - name: poktrolld-sequencer
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
