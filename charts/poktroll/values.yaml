@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-keysConfigMapName: pocketd-keys # TODO(@okdas): switch off test keyring
+keysConfigMapName: poktrolld-keys # TODO(@okdas): switch off test keyring
 
 image:
   repository: nginx
