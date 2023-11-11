@@ -46,14 +46,15 @@ spec:
             # TODO(@okdas): parametrize
             - containerPort: 40006
             - containerPort: 42069
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 42069
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 42069
+          # TODO(@okdas): add healthchecks to appgateserver
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 42069
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 42069
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
