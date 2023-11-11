@@ -1,9 +1,11 @@
+{{ if .Values.appgateserver.enable }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "poktroll.fullname" . }}
+  name: {{ include "poktroll.fullname" . }}-appgateserver
   labels:
     {{- include "poktroll.labels" . | nindent 4 }}
+    pokt.network/purpose: appgateserver
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -11,6 +13,7 @@ spec:
   selector:
     matchLabels:
       {{- include "poktroll.selectorLabels" . | nindent 6 }}
+      pokt.network/purpose: appgateserver
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,6 +22,7 @@ spec:
       {{- end }}
       labels:
         {{- include "poktroll.labels" . | nindent 8 }}
+        pokt.network/purpose: appgateserver
 	{{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -39,17 +43,17 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8545
-            - containerPort: 8546
-            - containerPort: 40005
+            # TODO(@okdas): parametrize
+            - containerPort: 40006
+            - containerPort: 42069
           livenessProbe:
             httpGet:
               path: /
-              port: 8545
+              port: 42069
           readinessProbe:
             httpGet:
               path: /
-              port: 8545
+              port: 42069
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -57,6 +61,8 @@ spec:
               mountPath: /scripts
             - name: keys-volume
               mountPath: /root/.pocket/keyring-test/
+            - name: configs-volume
+              mountPath: /root/.pocket/config-src/
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -64,6 +70,9 @@ spec:
         - name: keys-volume
           configMap:
             name: {{ .Values.keysConfigMapName }}
+        - name: configs-volume
+          configMap:
+            name: {{ .Values.configsConfigMapName }}
         - name: scripts-volume
           configMap:
             name: {{ include "poktroll.fullname" . }}-scripts
@@ -82,3 +91,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{ end }}

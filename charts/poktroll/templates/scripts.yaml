@@ -16,7 +16,12 @@ data:
     # TODO(@okdas): switch off test keyring, use environment variables with secrets instead: https://docs.cosmos.network/main/user/run-node/keyring#setting-backend-using-the-env-variable
 
     # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep poktrolld) --listen :40005 --headless --api-version=2 --accept-multiclient` - run inside the container!
-    poktrolld relayer --node poktrolld:36657 --signing-key servicer1 --keyring-backend test
+    # TODO(@okdas): separate scripts for each actor
+    {{ if .Values.relayer.enable }}
+    poktrolld relayer --node=sequencer-poktroll-sequencer:36657 --signing-key=supplier1 --keyring-backend=test
+    {{ else if .Values.appgateserver.enable }}
+    poktrolld appgate-server --comet-websocket-url=ws://sequencer-poktroll-sequencer:36657/websocket --node=sequencer-poktroll-sequencer:36657 --signing-key app1 --keyring-backend test --self-signing
+    {{ end }}
 
     # OR debug the node (uncomment this line but comment previous line)
-    # dlv exec --listen :40005 /usr/local/bin/poktrolld relayer --pocket-node poktrolld:36657 --sequencer-node poktrolld:36657 --signing-key servicer1 --keyring-backend test
+    # dlv exec --listen :40005 /usr/local/bin/poktrolld ACTOR_TYPE --pocket-node sequencer-poktroll-sequencer:36657 --sequencer-node sequencer-poktroll-sequencer:36657 --signing-key supplier1 --keyring-backend test

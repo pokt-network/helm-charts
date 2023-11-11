@@ -4,7 +4,14 @@
 
 replicaCount: 1
 
-keysConfigMapName: poktrolld-keys # TODO(@okdas): switch off test keyring
+configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
+keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
+
+relayer:
+  enable: false
+
+appgateserver:
+  enable: false
 
 image:
   repository: nginx
