@@ -2,6 +2,7 @@ replicaCount: 1 # This should never be more than 1 until Rollkit supports decent
 
 configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
 keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
+
 image:
   repository: ghcr.io/pokt-network/poktrolld
   tag: latest
