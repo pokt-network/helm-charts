@@ -43,7 +43,7 @@ spec:
             - "--signing-key={{ .Values.signingKey }}"
             - "--keyring-backend={{ .Values.keyringBackend }}"
             - "--self-signing={{ if .Values.selfSigning }}true{{ else }}false{{ end }}"
-            - "--listening-endpoint=http://0.0.0.0:42069"
+            - "--listening-endpoint=http://0.0.0.0:{{ .Values.service.port }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
