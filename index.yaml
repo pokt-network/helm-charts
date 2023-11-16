@@ -1,5 +1,16 @@
 apiVersion: v1
 entries:
+  appgate-server:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-11-16T20:50:25.156954775Z"
+    description: A Helm chart for Kubernetes
+    digest: 221cfdc572f96eafc264d69f1c16971aba79c9942293de88971e840ad031ae6a
+    name: appgate-server
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/appgate-server-0.1.1/appgate-server-0.1.1.tgz
+    version: 0.1.1
   poktroll:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -83,4 +94,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2023-11-15T00:18:40.697465807Z"
+generated: "2023-11-16T20:50:25.156977327Z"
