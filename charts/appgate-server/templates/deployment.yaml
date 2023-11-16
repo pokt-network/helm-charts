@@ -38,11 +38,12 @@ spec:
           command: ["poktrolld"]
           args: 
             - "appgate-server"
-            - "--comet-websocket-url=ws://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}/websocket"
+            - "--query-node=tcp://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}"
             - "--node=tcp://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}"
             - "--signing-key={{ .Values.signingKey }}"
             - "--keyring-backend={{ .Values.keyringBackend }}"
             - "--self-signing={{ if .Values.selfSigning }}true{{ else }}false{{ end }}"
+            - "--listening-endpoint=http://0.0.0.0:42069"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
