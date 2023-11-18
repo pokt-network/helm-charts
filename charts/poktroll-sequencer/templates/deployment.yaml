@@ -34,6 +34,14 @@ spec:
               name: rpc
             - containerPort: 40004 # TODO(@okdas): remove this - currently only needed for LocalNet dlv
               name: debug
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.rpcPort }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.rpcPort }}
           command: ["/bin/sh"]
           args: ["/scripts/pocket.sh"]
           volumeMounts:
