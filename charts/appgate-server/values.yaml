@@ -17,7 +17,7 @@ pocket:
   node: poktroll-sequencer
   port: 36657
 
-signingKey: supplier1
+signingKey: app1
 keyringBackend: test
 
 imagePullSecrets: []
