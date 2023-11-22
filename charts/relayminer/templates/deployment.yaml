@@ -38,8 +38,8 @@ spec:
           command: ["poktrolld"]
           args: 
             - "relayminer"
-            - "--node=tcp://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}"
             - "--query-node=tcp://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}"
+            - "--network-node=tcp://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}"
             - "--signing-key={{ .Values.signingKey }}"
             - "--keyring-backend={{ .Values.keyringBackend }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}

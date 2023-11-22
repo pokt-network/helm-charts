@@ -13,6 +13,8 @@ image:
 configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
 keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
 
+selfSigning: true
+
 pocket:
   node: poktroll-sequencer
   port: 36657
