@@ -40,6 +40,7 @@ helm.sh/chart: {{ include "relayminer.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+pokt.network/purpose: relayminer
 {{- end }}
 
 {{/*

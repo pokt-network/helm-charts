@@ -40,6 +40,7 @@ helm.sh/chart: {{ include "appgate-server.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+pokt.network/purpose: appgate-server
 {{- end }}
 
 {{/*
