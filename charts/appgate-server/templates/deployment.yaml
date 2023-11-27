@@ -38,12 +38,8 @@ spec:
           command: ["poktrolld"]
           args: 
             - "appgate-server"
-            - "--query-node=tcp://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}"
-            - "--node=tcp://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}"
-            - "--signing-key={{ .Values.signingKey }}"
             - "--keyring-backend={{ .Values.keyringBackend }}"
-            - "--self-signing={{ if .Values.selfSigning }}true{{ else }}false{{ end }}"
-            - "--listening-endpoint=http://0.0.0.0:{{ .Values.service.port }}"
+            - "--config=/pocket/config/config.yaml"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -64,7 +60,9 @@ spec:
             - name: keys-volume
               mountPath: /root/.pocket/keyring-test/
             - name: configs-volume
-              mountPath: /root/.pocket/config-src/
+              mountPath: /root/.pocket/config/
+            - name: appgate-server-config
+              mountPath: /pocket/config/
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -75,6 +73,9 @@ spec:
         - name: configs-volume
           configMap:
             name: {{ .Values.configsConfigMapName }}
+        - name: appgate-server-config
+          configMap:
+            name: {{ include "appgate-server.fullname" . }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

@@ -38,10 +38,8 @@ spec:
           command: ["poktrolld"]
           args: 
             - "relayminer"
-            - "--query-node=tcp://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}"
-            - "--network-node=tcp://{{ .Values.pocket.node }}:{{ .Values.pocket.port }}"
-            - "--signing-key={{ .Values.signingKey }}"
             - "--keyring-backend={{ .Values.keyringBackend }}"
+            - "--config=/pocket/config/config.yaml"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -62,7 +60,9 @@ spec:
             - name: keys-volume
               mountPath: /root/.pocket/keyring-test/
             - name: configs-volume
-              mountPath: /root/.pocket/config-src/
+              mountPath: /root/.pocket/config/
+            - name: relayminer-config
+              mountPath: /pocket/config/
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -73,6 +73,9 @@ spec:
         - name: configs-volume
           configMap:
             name: {{ .Values.configsConfigMapName }}
+        - name: relayminer-config
+          configMap:
+            name: {{ include "relayminer.fullname" . }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
