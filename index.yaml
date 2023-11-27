@@ -126,6 +126,16 @@ entries:
   relayminer:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2023-11-27T03:24:20.058913571Z"
+    description: A Helm chart for Kubernetes
+    digest: 8df3f1bbdfb8fe623052888698673da4a191143707ebc881eb6f5f196b947cc4
+    name: relayminer
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.4/relayminer-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2023-11-22T22:06:07.750804466Z"
     description: A Helm chart for Kubernetes
     digest: b6c2ca0d5d0e7c85574c1f8efeab07f73d278e2b6df4e36cc1409739b764cb8e
@@ -154,4 +164,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2023-11-27T03:24:07.445774886Z"
+generated: "2023-11-27T03:24:20.058948176Z"
