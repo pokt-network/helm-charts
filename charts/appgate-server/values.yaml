@@ -13,13 +13,16 @@ image:
 configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
 keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
 
-selfSigning: true
+config:
+  # Whether the server should sign all incoming requests with its own ring (for applications)
+  self_signing: true
+  # The name of the key (in the keyring) that will be used to sign relays
+  signing_key: app1
+  # The host and port that the appgate server will listen on
+  listening_endpoint: http://0.0.0.0:42069
+  # tcp://<host>:<port> to a full pocket node for reading data and listening for on-chain events
+  query_node_url: tcp://poktroll-sequencer:36657
 
-pocket:
-  node: poktroll-sequencer
-  port: 36657
-
-signingKey: app1
 keyringBackend: test
 
 imagePullSecrets: []
