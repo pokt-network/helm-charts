@@ -6,20 +6,21 @@ data:
   pocket.sh: |-
     #!/bin/sh
 
-    echo "AUTH_TOKEN is: $AUTH_TOKEN"
-    VALIDATOR_NAME=sequencer1
-    CHAIN_ID=pocket
-    KEY_NAME=pocket-key
-    KEY_2_NAME=pocket-key-2
-    TOKEN_AMOUNT="10000000000000000000000000upokt"
-    STAKING_AMOUNT="1000000000upokt"
+    # echo "AUTH_TOKEN is: $AUTH_TOKEN"
+    # VALIDATOR_NAME=sequencer1
+    # CHAIN_ID=pocket
+    # KEY_NAME=pocket-key
+    # KEY_2_NAME=pocket-key-2
+    # TOKEN_AMOUNT="10000000000000000000000000upokt"
+    # STAKING_AMOUNT="1000000000upokt"
 
     # reset any existing genesis/chain data
-    poktrolld tendermint unsafe-reset-all
+    rm -rf /root/.pocket/data/
+    echo '{"height":"0","round":0,"step":0}' > /root/.pocket/data/priv_validator_state.json
 
     # create a random Namespace ID for your rollup to post blocks to
-    openssl rand -hex 10 > /root/.pocket/data/namespace-id
-    NAMESPACE_ID=$(cat /root/.pocket/data/namespace-id)
+    openssl rand -hex 8 > /root/.pocket/data/namespace-id
+    NAMESPACE=$(cat /root/.pocket/data/namespace-id)
 
     # query the DA Layer start height, in this case we are querying
     # our local devnet at port 26657, the RPC. The RPC endpoint is
@@ -29,7 +30,7 @@ data:
     curl http://{{ .Values.dataAvailability.celestia.hostname }}:26657/block | jq -r '.result.block.header.height' > /root/.pocket/data/da-block-height
     DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
 
-    echo -e "Your NAMESPACE_ID is $NAMESPACE_ID \n\n Your DA_BLOCK_HEIGHT is $DA_BLOCK_HEIGHT"
+    echo -e "Your NAMESPACE is $NAMESPACE \n\n Your DA_BLOCK_HEIGHT is $DA_BLOCK_HEIGHT"
 
     ls -la /root/.pocket/config-src/
     mkdir -p /root/.pocket/config/
@@ -40,8 +41,8 @@ data:
 
     # start the node
     # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep poktrolld) --listen :40004 --headless --api-version=2 --accept-multiclient` - run inside the container!
-    poktrolld start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
+    # poktrolld start --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656"
 
     # OR debug the node (uncomment this line but comment previous line)
-    # dlv exec /usr/local/bin/poktrolld --listen :40004 --headless --api-version=2 --accept-multiclient -- start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rpc.laddr tcp://0.0.0.0:36657 --p2p.laddr "0.0.0.0:36656"
+    dlv exec /usr/local/bin/poktrolld --listen :40004 --headless --api-version=2 --accept-multiclient -- start --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656"
 

@@ -19,6 +19,8 @@ spec:
         - name: poktrolld-sequencer
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           securityContext:
 {{ toYaml .Values.podSecurityContext | indent 12 }}
           env:
