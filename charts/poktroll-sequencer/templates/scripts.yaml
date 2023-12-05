@@ -6,14 +6,6 @@ data:
   pocket.sh: |-
     #!/bin/sh
 
-    # echo "AUTH_TOKEN is: $AUTH_TOKEN"
-    # VALIDATOR_NAME=sequencer1
-    # CHAIN_ID=pocket
-    # KEY_NAME=pocket-key
-    # KEY_2_NAME=pocket-key-2
-    # TOKEN_AMOUNT="10000000000000000000000000upokt"
-    # STAKING_AMOUNT="1000000000upokt"
-
     # reset any existing genesis/chain data
     rm -rf /root/.pocket/data/
     echo '{"height":"0","round":0,"step":0}' > /root/.pocket/data/priv_validator_state.json
@@ -30,6 +22,7 @@ data:
     curl http://{{ .Values.dataAvailability.celestia.hostname }}:26657/block | jq -r '.result.block.header.height' > /root/.pocket/data/da-block-height
     DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
 
+    echo "AUTH_TOKEN is: $AUTH_TOKEN"
     echo -e "Your NAMESPACE is $NAMESPACE \n\n Your DA_BLOCK_HEIGHT is $DA_BLOCK_HEIGHT"
 
     ls -la /root/.pocket/config-src/
