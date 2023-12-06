@@ -29,6 +29,9 @@ dataAvailability:
 prod:
   enabled: true
   namespace: ''
+storage:
+  className: ''
+  size: 1Gi
 scripts:
   enabled: true
 podSecurityContext: {}
