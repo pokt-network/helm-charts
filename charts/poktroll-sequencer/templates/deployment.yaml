@@ -45,7 +45,11 @@ spec:
               path: /
               port: {{ .Values.service.rpcPort }}
           command: ["/bin/sh"]
-          args: ["/scripts/pocket.sh"]
+{{ if .Values.prod.enabled }}
+          args: ["/scripts/prod.sh"]
+{{ else }}
+          args: ["/scripts/dev.sh"]
+{{ end }}
           volumeMounts:
             - name: scripts-volume
               mountPath: /scripts
