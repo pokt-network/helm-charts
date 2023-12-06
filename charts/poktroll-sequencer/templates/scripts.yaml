@@ -75,5 +75,5 @@ data:
 
     # start the node
     # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep poktrolld) --listen :40004 --headless --api-version=2 --accept-multiclient` - run inside the container!
-    poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%d" .Values.dataAvailability.timeout }},"fee":{{ printf "%d" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%d" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656"
+    poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%.0f" .Values.dataAvailability.timeout }},"fee":{{ printf "%.0f" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%.0f" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656"
 {{ end }}
