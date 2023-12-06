@@ -27,7 +27,7 @@ dataAvailability:
   fee: 600000
   gas_limit: 6000000
 prod:
-  enabled: true
+  enabled: false
   namespace: ''
 storage:
   className: ''
