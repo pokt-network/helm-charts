@@ -59,7 +59,7 @@ data:
     NAMESPACE=$(cat /root/.pocket/data/namespace-id)
 
     if [ ! -f /root/.pocket/data/da-block-height ]; then
-      curl {{ .Values.dataAvailability.celestia.consensus_rpc_url }}/block | jq -r '.result.block.header.height' > /root/.pocket/data/da-block-height
+      DA_BLOCK_HEIGHT=$(curl https://rpc-mocha.pops.one/block |jq -r '.result.block.header.height')
     fi
     DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
 
