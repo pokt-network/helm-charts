@@ -59,7 +59,7 @@ data:
     NAMESPACE=$(cat /root/.pocket/data/namespace-id)
 
     if [ ! -f /root/.pocket/data/da-block-height ]; then
-      DA_BLOCK_HEIGHT=$(curl -s https://rpc-mocha.pops.one/block |jq -r '.result.block.header.height')
+      curl -s https://rpc-mocha.pops.one/block |jq -r '.result.block.header.height' > /root/.pocket/data/da-block-height
     fi
     DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
 
