@@ -10,8 +10,9 @@ image:
 service:
   type: ClusterIP
   rpcPort: 36657
+  grpcPort: 36658
 pvc:
-  accessModes: 
+  accessModes:
     - ReadWriteOnce
   requests:
     storage: 1Gi
