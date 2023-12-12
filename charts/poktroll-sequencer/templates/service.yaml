@@ -11,3 +11,7 @@ spec:
       name: rpc
       port: 36657
       targetPort: 36657
+    - protocol: TCP
+      name: grpc
+      port: 36658
+      targetPort: 36658
