@@ -36,6 +36,8 @@ spec:
               name: rpc
             - containerPort: 40004 # TODO(@okdas): remove this - currently only needed for LocalNet dlv
               name: debug
+            - containerPort: {{ .Values.service.grpcPort }}
+              name: grpc
           livenessProbe:
             httpGet:
               path: /
