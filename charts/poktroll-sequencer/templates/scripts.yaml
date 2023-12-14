@@ -41,7 +41,7 @@ data:
 
     # start the node
     # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep poktrolld) --listen :40004 --headless --api-version=2 --accept-multiclient` - run inside the container!
-    poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656"
+    poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
 
     # OR debug the node (uncomment this line but comment previous line)
     # dlv exec /usr/local/bin/poktrolld --listen :40004 --headless --api-version=2 --accept-multiclient -- start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656"
@@ -62,6 +62,11 @@ data:
       curl -s https://rpc-mocha.pops.one/block |jq -r '.result.block.header.height' > /root/.pocket/data/da-block-height
     fi
     DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
+
+    poktrolld start --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
+
+    # OR debug the node (uncomment this line but comment previous line)
+    # dlv exec /usr/local/bin/poktrolld --listen :40004 --headless --api-version=2 --accept-multiclient -- start --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"http://{{ .Values.dataAvailability.celestia.hostname }}:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
 
     mkdir -p /root/.pocket/config/
     cp -r -L /root/.pocket/config-src/* /root/.pocket/config/
