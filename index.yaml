@@ -85,6 +85,16 @@ entries:
   poktroll-sequencer:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2023-12-19T00:07:38.234483256Z"
+    description: A Helm chart for Kubernetes
+    digest: 2472b58fc959080d9c69247d8bd94f5536c0a8a9e71a8094fdeaddb1123b2e17
+    name: poktroll-sequencer
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/poktroll-sequencer-0.0.7/poktroll-sequencer-0.0.7.tgz
+    version: 0.0.7
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2023-12-14T00:42:29.949370725Z"
     description: A Helm chart for Kubernetes
     digest: 0e1d1d8b897453eba9b644d33855c7245edf216f8a7d6a128f5a3add96fa73fb
@@ -184,4 +194,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2023-12-14T00:42:29.949417071Z"
+generated: "2023-12-19T00:07:38.490499936Z"
