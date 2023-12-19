@@ -11,11 +11,6 @@ service:
   type: ClusterIP
   rpcPort: 36657
   grpcPort: 36658
-pvc:
-  accessModes:
-    - ReadWriteOnce
-  requests:
-    storage: 1Gi
 dataAvailability:
   provider: celestia
   authToken:
@@ -30,9 +25,12 @@ dataAvailability:
 prod:
   enabled: false
   namespace: ''
-storage:
+persistence:
+  enabled: true
   className: ''
   size: 1Gi
+  cleanupBeforeEachStart: false
+  existingClaim: ''
 scripts:
   enabled: true
 podSecurityContext: {}
