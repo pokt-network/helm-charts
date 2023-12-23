@@ -15,10 +15,24 @@ spec:
         app: {{ include "poktroll.fullname" . }}
         pokt.network/purpose: sequencer
     spec:
+{{ if .Values.persistence.cleanupBeforeEachStart }}
+      initContainers:
+      # TODO(@okdas): move the ConfigMaps script logic onto the init container
+      - name: "prepare-node"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
+        command: ["/bin/sh"]
+        args: 
+         - -c
+         - rm -rf /root/.pocket/data/*
+        volumeMounts:
+          - name: data-volume
+            mountPath: /root/.pocket/data/
+{{ end }}
       containers:
         - name: poktrolld-sequencer
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           securityContext:
@@ -72,5 +86,9 @@ spec:
           configMap:
             name: {{ .Values.configsConfigMapName }}
         - name: data-volume
+        {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ include "poktroll.fullname" . }}-data
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktroll.fullname" .)) }}
+        {{- else }}
+          emptyDir: {}
+        {{- end -}}
