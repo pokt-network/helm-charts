@@ -58,6 +58,11 @@ service:
   type: ClusterIP
   port: 42069
 
+metrics:
+  serviceMonitor:
+    enabled: false
+  port: 9090
+
 ingress:
   enabled: false
   className: ""
