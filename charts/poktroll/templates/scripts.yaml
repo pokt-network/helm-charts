@@ -18,10 +18,10 @@ data:
     # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep poktrolld) --listen :40005 --headless --api-version=2 --accept-multiclient` - run inside the container!
     # TODO(@okdas): separate scripts for each actor
     {{ if .Values.relayer.enable }}
-    poktrolld relayminer --node=tcp://sequencer-poktroll-sequencer:36657 --signing-key=supplier1 --keyring-backend=test
+    poktrolld relayminer --keyring-backend=test --config /root/.pocket/config/relayminer_config.yaml
     {{ else if .Values.appgateserver.enable }}
-    poktrolld appgate-server --comet-websocket-url=ws://sequencer-poktroll-sequencer:36657/websocket --node=tcp://sequencer-poktroll-sequencer:36657 --signing-key app1 --keyring-backend test --self-signing
+    poktrolld appgate-server --keyring-backend test --config /root/.pocket/config/appgate_server_config.yaml
     {{ end }}
 
     # OR debug the node (uncomment this line but comment previous line)
-    # dlv exec --listen :40005 /usr/local/bin/poktrolld ACTOR_TYPE --pocket-node sequencer-poktroll-sequencer:36657 --sequencer-node sequencer-poktroll-sequencer:36657 --signing-key supplier1 --keyring-backend test
+    # dlv exec --listen :40005 /usr/local/bin/poktrolld ACTOR_TYPE --keyring-backend test --config /root/.pocket/config/ACTOR_TYPE_config.yaml
