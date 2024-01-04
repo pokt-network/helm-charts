@@ -45,7 +45,7 @@ data:
 
     # IMPORTANT: Any flags that need to be used to modify the sequencer's behaviour (e.g. block time) can be modified
     # on the following line. See the following link for the full parameter list: https://github.com/rollkit/rollkit/blob/main/config/config.go
-    
+
     # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep poktrolld) --listen :40004 --headless --api-version=2 --accept-multiclient` - run inside the container!
     poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%.0f" .Values.dataAvailability.timeout }},"fee":{{ printf "%.0f" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%.0f" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
 
