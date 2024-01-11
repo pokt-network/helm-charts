@@ -15,10 +15,10 @@ spec:
         app: {{ include "poktroll.fullname" . }}
         pokt.network/purpose: sequencer
     spec:
-{{ if .Values.persistence.cleanupBeforeEachStart }}
       initContainers:
       # TODO(@okdas): move the ConfigMaps script logic onto the init container
-      - name: "prepare-node"
+{{ if .Values.persistence.cleanupBeforeEachStart }}
+      - name: "cleanup-datadir"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
         command: ["/bin/sh"]
@@ -29,6 +29,26 @@ spec:
           - name: data-volume
             mountPath: /root/.pocket/data/
 {{ end }}
+      - name: "prepare-node"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
+        command: ["/bin/sh"]
+{{ if .Values.prod.enabled }}
+        args: ["/scripts/prod.sh"]
+{{ else }}
+        args: ["/scripts/dev.sh"]
+{{ end }}
+        volumeMounts:
+          - name: scripts-volume
+            mountPath: /scripts
+          - name: keys-source-volume
+            mountPath: /root/.pocket/keyring-test/
+          - name: configs-source-volume
+            mountPath: /root/.pocket/config-src/
+          - name: data-volume
+            mountPath: /root/.pocket/data/
+          - name: pocket-volume
+            mountPath: /root/.pocket/
       containers:
         - name: poktrolld-sequencer
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -43,8 +63,6 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.dataAvailability.authToken.secretName }}
                   key: {{ .Values.dataAvailability.authToken.secretKey }}
-            - name: CELESTIA_HOSTNAME
-              value: {{ .Values.dataAvailability.celestia.hostname }}
           ports:
             - containerPort: {{ .Values.service.rpcPort }}
               name: rpc
@@ -60,29 +78,31 @@ spec:
             httpGet:
               path: /
               port: {{ .Values.service.rpcPort }}
-          command: ["/bin/sh"]
-{{ if .Values.prod.enabled }}
-          args: ["/scripts/prod.sh"]
-{{ else }}
-          args: ["/scripts/dev.sh"]
-{{ end }}
+          command: ["/bin/sh", "-c"]
+          args: 
+            - |
+              NAMESPACE=$(cat /root/.pocket/data/namespace-id)
+              DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
+              exec poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%.0f" .Values.dataAvailability.timeout }},"fee":{{ printf "%.0f" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%.0f" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
           volumeMounts:
             - name: scripts-volume
               mountPath: /scripts
-            - name: keys-volume
+            - name: keys-source-volume
               mountPath: /root/.pocket/keyring-test/
-            - name: configs-volume
+            - name: configs-source-volume
               mountPath: /root/.pocket/config-src/
             - name: data-volume
               mountPath: /root/.pocket/data/
+            - name: pocket-volume
+              mountPath: /root/.pocket/
       volumes:
         - name: scripts-volume
           configMap:
             name: {{ include "poktroll.fullname" . }}-scripts
-        - name: keys-volume
+        - name: keys-source-volume
           configMap:
             name: {{ .Values.keysConfigMapName }}
-        - name: configs-volume
+        - name: configs-source-volume
           configMap:
             name: {{ .Values.configsConfigMapName }}
         - name: data-volume
@@ -91,4 +111,7 @@ spec:
             claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktroll.fullname" .)) }}
         {{- else }}
           emptyDir: {}
-        {{- end -}}
+        {{- end }}
+        - name: pocket-volume
+          emptyDir: {}
+
