@@ -7,6 +7,8 @@ data:
   dev.sh: |-
     #!/bin/sh
 
+    echo "Running dev.sh"
+
     # Validator state is required to run the node, if it doesn't exist
     if [ ! -f /root/.pocket/data/priv_validator_state.json ]; then
       echo '{"height":"0","round":0,"step":0}' > /root/.pocket/data/priv_validator_state.json
@@ -38,21 +40,10 @@ data:
     cat /root/.pocket/config/node_key.json
     echo "\n/root/.pocket/config/genesis.json | jq '.validators':"
     cat /root/.pocket/config/genesis.json | jq '.validators'
-
-    # sleep 9999
-
-    # start the node
-
-    # IMPORTANT: Any flags that need to be used to modify the sequencer's behaviour (e.g. block time) can be modified
-    # on the following line. See the following link for the full parameter list: https://github.com/rollkit/rollkit/blob/main/config/config.go
-
-    # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep poktrolld) --listen :40004 --headless --api-version=2 --accept-multiclient` - run inside the container!
-    poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%.0f" .Values.dataAvailability.timeout }},"fee":{{ printf "%.0f" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%.0f" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
-
-    # OR debug the node (uncomment this line but comment previous line)
-    # dlv exec /usr/local/bin/poktrolld --listen :40004 --headless --api-version=2 --accept-multiclient -- start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%.0f" .Values.dataAvailability.timeout }},"fee":{{ printf "%.0f" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%.0f" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656"
   prod.sh: |-
     #!/bin/sh
+
+    echo "Running prod.sh"
 
     # Make sure the data directory exists
     if [ ! -f /root/.pocket/data/priv_validator_state.json ]; then
@@ -77,8 +68,4 @@ data:
     cat /root/.pocket/config/node_key.json
     echo "\n/root/.pocket/config/genesis.json | jq '.validators':"
     cat /root/.pocket/config/genesis.json | jq '.validators'
-
-    # start the node
-    # You can attach to this process with delve (dlv) for debugging purpose with `dlv attach $(pgrep poktrolld) --listen :40004 --headless --api-version=2 --accept-multiclient` - run inside the container!
-    poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%.0f" .Values.dataAvailability.timeout }},"fee":{{ printf "%.0f" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%.0f" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
 {{ end }}
