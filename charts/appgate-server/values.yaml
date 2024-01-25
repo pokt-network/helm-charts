@@ -25,6 +25,10 @@ config:
   query_node_rpc_url: tcp://poktroll-sequencer:36657
   # Pocket node URL that exposes the Cosmos gRPC service, dedicated to querying purposes.
   query_node_grpc_url: tcp://poktroll-sequencer:36658
+  metrics:
+    enabled: true
+    # If changing port here, make sure to adjust `metrics.serviceMonitor.port`
+    addr: :9090
 
 keyringBackend: test
 
@@ -46,10 +50,12 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -69,7 +75,8 @@ metrics:
 ingress:
   enabled: false
   className: ""
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
@@ -82,7 +89,8 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
+resources:
+  {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
