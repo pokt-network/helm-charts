@@ -41,6 +41,31 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/appgate-server-0.1.1/appgate-server-0.1.1.tgz
     version: 0.1.1
+  celestia-node:
+  - apiVersion: v2
+    appVersion: v0.12.4
+    created: "2024-01-30T22:51:04.936861753Z"
+    description: A Helm chart for deploying celestia node on Kubernetes
+    digest: 3659db2fe4a05e9f35a03db0bae368b0037e6c1ea3ef1b437cf48cf18a61b682
+    icon: https://company-223625.frontify.com/d/JoSwaZS4Mjpj/guidelines#/basics/logos/purple-watermark
+    maintainers:
+    - email: devops@celestia.org
+      name: sysrex
+      url: celestia.org
+    - email: devops@celestia.org
+      name: Bidon15
+      url: celestia.org
+    - email: devops@celestia.org
+      name: jrmanes
+      url: celestia.org
+    - email: devops@celestia.org
+      name: smuu
+      url: celestia.org
+    name: celestia-node
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/celestia-node-0.12.0/celestia-node-0.12.0.tgz
+    version: 0.12.0
   poktroll:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -214,4 +239,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2024-01-04T18:43:02.850124155Z"
+generated: "2024-01-30T22:51:05.147992559Z"
