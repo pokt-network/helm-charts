@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "poktroll.fullname" . }}
+spec:
+  serviceName: "{{ include 'poktroll.fullname' . }}"
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "poktroll.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "poktroll.fullname" . }}
+    spec:
+      containers:
+        - name: poktrolld
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{ toYaml .Values.podSecurityContext | indent 12 }}
+          env:
+            - name: AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dataAvailability.authToken.secretName }}
+                  key: {{ .Values.dataAvailability.authToken.secretKey }}
+          ports:
+            - containerPort: {{ .Values.service.rpcPort }}
+              name: rpc
+            - containerPort: 40004
+              name: debug
+            - containerPort: {{ .Values.service.grpcPort }}
+              name: grpc
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.rpcPort }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.rpcPort }}
+          command: ["/bin/sh", "-c"]
+          args: 
+            - |
+              NAMESPACE=$(cat /root/.pocket/data/namespace-id)
+              DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
+              exec poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%.0f" .Values.dataAvailability.timeout }},"fee":{{ printf "%.0f" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%.0f" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
+          volumeMounts:
+            - name: scripts-volume
+              mountPath: /scripts
+            - name: keys-source-volume
+              mountPath: /root/.pocket/keyring-test/
+            - name: configs-source-volume
+              mountPath: /root/.pocket/config-src/
+            - name: data-volume
+              mountPath: /root/.pocket/data/
+            - name: pocket-volume
+              mountPath: /root/.pocket/
+      volumes:
+        - name: scripts-volume
+          configMap:
+            name: {{ include "poktroll.fullname" . }}-scripts
+        - name: keys-source-volume
+          configMap:
+            name: {{ .Values.keysConfigMapName }}
+        - name: configs-source-volume
+          configMap:
+            name: {{ .Values.configsConfigMapName }}
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktroll.fullname" .)) }}
+        - name: pocket-volume
+          emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: data-volume
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi # Adjust as needed
+      # Uncomment and set this if you have a specific storage class
+      # storageClassName: <storage-class-name>

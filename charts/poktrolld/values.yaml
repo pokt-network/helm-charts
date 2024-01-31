@@ -1,0 +1,13 @@
+celestia-node:
+  enabled: true
+
+image:
+  repository: ghcr.io/pokt-network/poktrolld
+  tag: latest
+  pullPolicy: IfNotPresent
+
+persistence:
+  enabled: true
+  className: ""
+  size: 1Gi
+  existingClaim: ""

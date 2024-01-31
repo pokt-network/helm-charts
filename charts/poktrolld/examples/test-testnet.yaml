@@ -1,0 +1,13 @@
+celestia-node:
+  celestiaNode:
+    celKey:
+      enabled: true
+      address:
+        secretName: "celestia-testnet-test"
+        fileName: "aed66f43d2373ee4eca81b16c2e39253d497ea78.address"
+      validatorInfo:
+        secretName: "celestia-testnet-test"
+        fileName: "testnet-test.info"
+    home:
+      volume:
+        storage: 65Gi

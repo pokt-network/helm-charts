@@ -6,7 +6,6 @@ metadata:
   labels:
     {{- toYaml $.Values.global.labels | trim | nindent 4 }}
   name: "{{ $.Values.celestiaNode.type }}-{{ .name }}"
-  namespace: {{ tpl $.Values.global.namespace $ }}
 spec:
   ports:
     - name: {{ .name }}
@@ -15,5 +14,6 @@ spec:
       targetPort: {{ .port }}
   selector:
     app: "celestia-{{ $.Values.celestiaNode.type }}"
-  type: LoadBalancer
+  # TODO(@okdas): parametrize this
+  # type: LoadBalancer
 {{ end }}

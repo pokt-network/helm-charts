@@ -3,8 +3,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: "{{ .Values.global.name }}-{{ .Values.global.chainId }}-{{ .Values.celestiaNode.type }}"
-  namespace: {{ tpl .Values.global.namespace . }}
+  name: "{{ .Values.global.name }}-{{ .Values.celestiaNode.type }}"
   labels:
     app: "celestia-{{ .Values.celestiaNode.type }}"
     {{- toYaml .Values.global.labels | trim | nindent 4 }}
@@ -52,12 +51,13 @@ spec:
             - ./bin/celestia
             - {{ .Values.celestiaNode.type }}
             - start
-            - --node.store
-            - {{ tpl .Values.celestiaNode.home.path . }}
-            - --core.ip
-            - {{ .Values.celestiaNode.coreIp }}
-            - --p2p.network
-            - {{ .Values.celestiaNode.network }}
+            - --node.store={{ tpl .Values.celestiaNode.home.path . }}
+            - --core.ip={{ .Values.celestiaNode.coreIp }}
+            - --p2p.network={{ .Values.celestiaNode.network }}
+            {{- if .Values.celestiaNode.celKey.enabled }}
+            - --keyring.backend=test
+            - --keyring.accname={{ .Values.celestiaNode.celKey.validatorInfo.fileName }}
+            {{- end }}
           imagePullPolicy: {{ .Values.celestiaNode.image.pullPolicy }}
           securityContext:
             runAsUser: 10001

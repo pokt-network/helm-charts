@@ -1,32 +1,12 @@
-# Celestia-Node Helm Chart
+# Poktrolld / Pocket on Rollkit
 
-This is a fork of official [Celestia's Helm Chart](https://github.com/celestiaorg/celestia-helm-charts/tree/main/charts/node), since the original source repo has been archived.
+<!-- Note on each Poktrolld sequencer / full node needing to have it's own celestia node (light is fine) -->
 
-This helm chart is being utilized as a dependency for Pocket Network `poktrolld` Helm Chart to run a light node. Other versions (such as brigde or full) are not guaranteed to run. PRs are welcome!
+## (Optional) import a key with an address
 
-### Binary disclaimer
-For celestia node version lower than `v0.8.0` the binary is located at root folder (not in a binary folder) so you will have to call all the path to use it: `./celestia`.  
-For `v0.8.0` version and higher the binary is in `/bin/celestia`, so `celestia` is enough to call it.
+This is only needed for those running a sequencer. Full node operators can skip this step.
 
-As the default values of this chart if for Mocha testnet (waiting for Blockspacerace to become the new official testnet) `./celestia` is the default value used in the chart.
-
-If running a Celestia node in a higher version, override default value like below:
-
-```yaml
-celestiaNode:
-  binary: /bin/celestia
-```
-
-### Run different type of node
-There are 3 different types of Celestia Node: bridge, light and full nodes. 
-You can deploy anyone of them setting the variable below:
-
-```yaml
-celestiaNode:
-  type: <bridge|light|full>
-```
-
-### Import Celkey
+In order to post blocks on Celestia network, an address with TIA tokens is required. To import a private key for that address, you need to perform the following steps:
 
 1. [Set up](https://docs.celestia.org/developers/celestia-node-key#using-the-cel-key-utility) and use `cel-key` utility to [create a new address](https://docs.celestia.org/developers/celestia-node-key#steps-for-generating-node-keys) or [import an existing one](https://docs.celestia.org/developers/celestia-node-key#steps-for-importing-node-keys). As a result, you should get new files created on your file system:
    ```bash

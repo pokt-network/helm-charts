@@ -2,7 +2,6 @@
 global:
   ## Celestia node chain-id
   ##
-  chainId: mocha-4
   name: celestia
 
   ## Deploy pods on a specific node-pool if enabled
@@ -12,8 +11,6 @@ global:
     ## If enabled, provide kv pair for node-pool affinity
     # key: "env"
     # value: "prod"
-
-  namespace: "{{ .Values.global.name }}-{{ .Values.global.chainId }}"
 
   ## Common labels for chart resources
   ##
@@ -41,7 +38,7 @@ celestiaNode:
 
   ## Node network (caution could be different from chain-id)
   ##
-  network: mocha-4
+  network: mocha
 
   ## celestia node docker image
   ##
@@ -64,15 +61,15 @@ celestiaNode:
   home:
     ## Path to node store
     ##
-    path: "/home/celestia/.celestia-bridge-mocha-4"
+    path: "/home/celestia/.celestia-bridge-mocha"
 
     ## Node store Persistent Volume configuration
     ##
     volume:
-      name: "{{ .Values.global.name }}-{{ .Values.global.chainId }}-{{ .Values.celestiaNode.type }}-pvc-01"
+      name: "{{ .Values.global.name }}-{{ .Values.celestiaNode.type }}-pvc-01"
       accessMode: ReadWriteOnce
       # storageClass: standard
-      storage: 100Gi
+      storage: 60Gi
 
   ## Configuration file for Celestia Node
   ##
@@ -82,10 +79,7 @@ celestiaNode:
 
   ## IP address used to communicate with the celestia-app node
   ## Please provide your own IP address that is a consensus full node / validator
-  coreIp: 192.168.175.146
-
-  libp2pkey:
-    filename: OAZHALLLMV4Q
+  coreIp: rpc-mocha.pops.one
 
   ## Celestia Node cel-key
   ##
