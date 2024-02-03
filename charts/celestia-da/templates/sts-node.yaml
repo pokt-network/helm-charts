@@ -27,19 +27,16 @@ spec:
         fsGroup: 10001
         fsGroupChangePolicy: "OnRootMismatch"
       initContainers:
-        - name: celestia-node-init
+        - name: celestia-da-init
           image: "{{ .Values.celestiaNode.image.registry }}/{{ tpl .Values.celestiaNode.image.repository . }}/{{ tpl .Values.celestiaNode.image.name . }}:{{ .Values.celestiaNode.image.tag }}"
           command:
-            - ./bin/celestia
+            - /bin/celestia-da
             - {{ .Values.celestiaNode.type }}
             - init
             - --node.store
             - {{ tpl .Values.celestiaNode.home.path . }}
           imagePullPolicy: IfNotPresent
           volumeMounts:
-            # Init script
-            - name: {{ .Values.nodeInitContainer.configmapName }}-{{ .Values.celestiaNode.type }}
-              mountPath: /scripts
             # Celestia Node node home directory
             - name: {{ tpl .Values.celestiaNode.home.volume.name . }}
               mountPath: {{ tpl .Values.celestiaNode.home.path . }}
@@ -48,12 +45,14 @@ spec:
         - name: "{{ .Values.global.name }}-{{ .Values.celestiaNode.type }}"
           image: "{{ .Values.celestiaNode.image.registry }}/{{ tpl .Values.celestiaNode.image.repository . }}/{{ tpl .Values.celestiaNode.image.name . }}:{{ .Values.celestiaNode.image.tag }}"
           command:
-            - ./bin/celestia
+            - /bin/celestia-da
             - {{ .Values.celestiaNode.type }}
             - start
             - --node.store={{ tpl .Values.celestiaNode.home.path . }}
             - --core.ip={{ .Values.celestiaNode.coreIp }}
             - --p2p.network={{ .Values.celestiaNode.network }}
+            - --da.grpc.namespace={{ .Values.dataAvailability.namespace }}
+            - --da.grpc.listen={{ .Values.dataAvailability.grpc_listen }}
             {{- if .Values.celestiaNode.celKey.enabled }}
             - --keyring.backend=test
             - --keyring.accname={{ .Values.celestiaNode.celKey.validatorInfo.fileName }}
@@ -91,11 +90,6 @@ spec:
               subPath: {{ .Values.celestiaNode.celKey.validatorInfo.fileName }}
             {{- end }}
       volumes:
-        # ------------ INIT  SCRIPT -------------
-        - name: {{ .Values.nodeInitContainer.configmapName }}-{{ .Values.celestiaNode.type }}
-          configMap:
-            defaultMode: 0744
-            name: {{ .Values.nodeInitContainer.configmapName }}-{{ .Values.celestiaNode.type }}
         # ------------ CELESTIA NODE ------------
         # Home directory volume
         - name: {{ tpl .Values.celestiaNode.home.volume.name . }}

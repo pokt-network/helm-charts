@@ -1,24 +1,14 @@
-# Celestia-Node Helm Chart
+# Celestia-DA Helm Chart
 
 This is a fork of official [Celestia's Helm Chart](https://github.com/celestiaorg/celestia-helm-charts/tree/main/charts/node), since the original source repo has been archived.
 
+This Helm chart also utilizes [celestia-da](https://github.com/rollkit/celestia-da), which is a wrapper on top of [celestia-node](https://github.com/celestiaorg/celestia-node). This is necessary to run Rollkit rollups, such as [poktroll](https://github.com/pokt-network/poktroll).
+
 This helm chart is being utilized as a dependency for Pocket Network `poktrolld` Helm Chart to run a light node. Other versions (such as brigde or full) are not guaranteed to run. PRs are welcome!
 
-### Binary disclaimer
-For celestia node version lower than `v0.8.0` the binary is located at root folder (not in a binary folder) so you will have to call all the path to use it: `./celestia`.  
-For `v0.8.0` version and higher the binary is in `/bin/celestia`, so `celestia` is enough to call it.
-
-As the default values of this chart if for Mocha testnet (waiting for Blockspacerace to become the new official testnet) `./celestia` is the default value used in the chart.
-
-If running a Celestia node in a higher version, override default value like below:
-
-```yaml
-celestiaNode:
-  binary: /bin/celestia
-```
-
 ### Run different type of node
-There are 3 different types of Celestia Node: bridge, light and full nodes. 
+
+There are 3 different types of Celestia Node: bridge, light and full nodes. The chart has only been thoroughly tested with a `light` node, since this is what Rollkit Rollups require.
 You can deploy anyone of them setting the variable below:
 
 ```yaml

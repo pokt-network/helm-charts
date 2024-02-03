@@ -1,86 +1,95 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "poktroll.fullname" . }}
+  name: {{ include "poktrolld.fullname" . | quote }}
 spec:
-  serviceName: "{{ include 'poktroll.fullname' . }}"
+  serviceName: {{ include "poktrolld.fullname" . | quote }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "poktroll.fullname" . }}
+      app: {{ include "poktrolld.fullname" . | quote }}
   template:
     metadata:
       labels:
-        app: {{ include "poktroll.fullname" . }}
+        app: {{ include "poktrolld.fullname" . | quote }}
     spec:
-      containers:
-        - name: poktrolld
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          securityContext:
-            {{ toYaml .Values.podSecurityContext | indent 12 }}
-          env:
-            - name: AUTH_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.dataAvailability.authToken.secretName }}
-                  key: {{ .Values.dataAvailability.authToken.secretKey }}
-          ports:
-            - containerPort: {{ .Values.service.rpcPort }}
-              name: rpc
-            - containerPort: 40004
-              name: debug
-            - containerPort: {{ .Values.service.grpcPort }}
-              name: grpc
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.service.rpcPort }}
-          readinessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.service.rpcPort }}
-          command: ["/bin/sh", "-c"]
-          args: 
-            - |
-              NAMESPACE=$(cat /root/.pocket/data/namespace-id)
-              DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
-              exec poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%.0f" .Values.dataAvailability.timeout }},"fee":{{ printf "%.0f" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%.0f" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
-          volumeMounts:
-            - name: scripts-volume
-              mountPath: /scripts
-            - name: keys-source-volume
-              mountPath: /root/.pocket/keyring-test/
-            - name: configs-source-volume
-              mountPath: /root/.pocket/config-src/
-            - name: data-volume
-              mountPath: /root/.pocket/data/
-            - name: pocket-volume
-              mountPath: /root/.pocket/
-      volumes:
-        - name: scripts-volume
-          configMap:
-            name: {{ include "poktroll.fullname" . }}-scripts
-        - name: keys-source-volume
-          configMap:
-            name: {{ .Values.keysConfigMapName }}
-        - name: configs-source-volume
-          configMap:
-            name: {{ .Values.configsConfigMapName }}
-        - name: data-volume
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktroll.fullname" .)) }}
+      initContainers:
+      # Initializes `priv_validator_state` if it doesn't exist.
+      - name: init-priv-validator-state
+        image: busybox
+        command: ['sh', '-c', 'if [ ! -f /root/.pocket/data/priv_validator_state.json ]; then echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > /root/.pocket/data/priv_validator_state.json; fi']
+        volumeMounts:
         - name: pocket-volume
-          emptyDir: {}
-  volumeClaimTemplates:
-  - metadata:
-      name: data-volume
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 10Gi # Adjust as needed
-      # Uncomment and set this if you have a specific storage class
-      # storageClassName: <storage-class-name>
+          mountPath: /root/.pocket/data
+          subPath: data
+      containers:
+      - name: poktrolld
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        securityContext:
+{{ toYaml .Values.containerSecurityContext | indent 12 }}
+        ports:
+        - containerPort: {{ .Values.service.ports.rpc }}
+          name: rpc
+        - containerPort: {{ .Values.service.ports.grpc }}
+          name: grpc
+        - containerPort: {{ .Values.service.ports.p2p }}
+          name: p2p
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.ports.rpc }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.ports.rpc }}
+        command: ['poktrolld']
+        args:
+        - start
+        - --home=/root/.pocket/
+        - --rollkit.aggregator={{ .Values.rollkit.aggregator }}
+        - --rollkit.block_time={{ .Values.rollkit.block_time }}
+        - --rollkit.da_address={{ include "poktrolld.daAddress" . }}
+        - --rollkit.da_block_time={{ .Values.rollkit.da_block_time }}
+        - --rollkit.da_gas_price={{ .Values.rollkit.da_gas_price }}
+        - --rollkit.da_start_height={{ .Values.rollkit.da_start_height }}
+        - --rollkit.lazy_aggregator={{ .Values.rollkit.lazy_aggregator }}
+        - --rollkit.light={{ .Values.rollkit.light }}
+        - --rollkit.trusted_hash={{ .Values.rollkit.trusted_hash }}
+        - --rpc.laddr=tcp://0.0.0.0:{{ .Values.service.ports.rpc }}
+        - --p2p.laddr=0.0.0.0:{{ .Values.service.ports.p2p }}
+        - --grpc.address=0.0.0.0:{{ .Values.service.ports.grpc }}
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: /root/.pocket/
+        - name: node-keys
+          mountPath: "/root/.pocket/config/node_key.json"
+          subPath: "node_key.json"
+        - name: node-keys
+          mountPath: "/root/.pocket/config/priv_validator_key.json"
+          subPath: "priv_validator_key.json"
+{{- $files := .Files.Glob "files/config/*" }}
+{{- range $path, $_ := $files }}
+{{- $name := base $path }}
+        - name: config-volume
+          mountPath: "/root/.pocket/config/{{ $name }}"
+          subPath: "{{ $name }}"
+{{- end }}
+      volumes:
+      - name: pocket-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktrolld.fullname" .) | quote) }}
+      - name: config-volume
+        configMap:
+          name: {{ include "poktrolld.fullname" . }}-configs
+          items:
+{{- range $path, $_ := $files }}
+{{- $name := base $path }}
+          - key: "{{ $name }}"
+            path: "{{ $name }}"
+{{- end }}
+      - name: node-keys
+        secret:
+          secretName: {{ .Values.nodeKeysSecretName }}

@@ -1,4 +1,4 @@
-celestia-node:
+celestia-da:
   celestiaNode:
     celKey:
       enabled: true
@@ -11,3 +11,25 @@ celestia-node:
     home:
       volume:
         storage: 65Gi
+        storageClass: local-path
+
+  dataAvailability:
+    namespace: 34c412725a6dd2f7
+
+nodeKeysSecretName: testnet-test-validator-keys
+
+image:
+  repository: okdas/gm-poktrolld
+  tag: latest
+  pullPolicy: IfNotPresent
+
+rollkit:
+  aggregator: true
+  block_time: 30s
+  # da_address: ":26650"
+  da_block_time: 15s
+  # da_gas_price: -1
+  # da_start_height: 1 # Assuming a default or starting value
+  # lazy_aggregator: false
+  # light: false
+  # trusted_hash: "" # Assuming an empty string as default, replace with actual hash if needed

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- toYaml $.Values.global.labels | nindent 4 }}
+  name: {{ include "celestia.fullname" . | quote }}
+spec:
+  selector:
+    app: "celestia-{{ .Values.celestiaNode.type }}"
+  ports:
+    {{- range .Values.celestiaNode.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      protocol: TCP
+      targetPort: {{ .port }}
+    {{- end }}

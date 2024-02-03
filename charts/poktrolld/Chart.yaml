@@ -24,8 +24,8 @@ version: 0.0.1
 appVersion: "1.16.0"
 
 dependencies:
-  - name: celestia-node
+  - name: celestia-da
     version: "0.12.0"
     # TODO(@okdas)
     # repository: Use pokt-network chart after it has been released.
-    repository: "file://../celestia-node"
+    repository: "file://../celestia-da"

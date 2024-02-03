@@ -20,11 +20,9 @@ global:
     app.kubernetes.io/component: "celestia"
     app.kubernetes.io/managed-by: "helm"
 
-## Init container script for Celestia Node
-##
-nodeInitContainer:
-  configmapName: init-celestia
-  scriptName: init-celestia-node.sh
+dataAvailability:
+  namespace: ""
+  grpc_listen: 0.0.0.0:26650
 
 ## Celestia Node configuration
 ##
@@ -44,9 +42,9 @@ celestiaNode:
   ##
   image:
     registry: ghcr.io
-    repository: celestiaorg
-    name: celestia-node
-    tag: v0.12.4
+    repository: rollkit
+    name: celestia-da
+    tag: v0.12.9
     pullPolicy: IfNotPresent
 
   ## Celestia Node ports - will open them in the Statefulset and create dedicated ClusterIp service for each ones
@@ -55,6 +53,9 @@ celestiaNode:
     rpc:
       port: 26658
       name: rpc
+    grpc:
+      port: 26650
+      name: grpc
 
   ## Celestia Node home directory
   ##
@@ -116,3 +117,6 @@ monitoring:
     app.kubernetes.io/name: prometheus
     app.kubernetes.io/part-of: kube-prometheus
     app: "celestia"
+
+nameOverride: ""
+fullnameOverride: ""

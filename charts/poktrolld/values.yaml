@@ -11,3 +11,26 @@ persistence:
   className: ""
   size: 1Gi
   existingClaim: ""
+
+rollkit:
+  aggregator: true
+  block_time: 1s
+
+  # By default pointed to the svc created by the `celestia-da` chart.
+  da_address: ""
+  da_block_time: 15s
+  da_gas_price: -1
+  da_start_height: 1 # Assuming a default or starting value
+  lazy_aggregator: false
+  light: false
+  trusted_hash: "" # Assuming an empty string as default, replace with actual hash if needed
+
+service:
+  type: ClusterIP
+  ports:
+    rpc: 36657
+    grpc: 36658
+    p2p: 26656
+
+# Name of the secret that contains `node_key.json` and `priv_validator_key.json`.
+nodeKeysSecretName: ""

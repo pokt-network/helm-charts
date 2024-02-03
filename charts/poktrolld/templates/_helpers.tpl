@@ -62,3 +62,15 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+Use dependency `celestia-da` chart as a DA for rollkit unless specified something different.
+*/}}
+{{- define "poktrolld.daAddress" -}}
+{{- if .Values.rollkit.da_address }}
+{{- .Values.rollkit.da_address }}
+{{- else }}
+{{- printf "%s-%s:26650" (include "poktrolld.fullname" .) "celestia-da" }}
+{{- end }}
+{{- end }}

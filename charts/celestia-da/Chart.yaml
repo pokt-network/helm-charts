@@ -1,5 +1,5 @@
 apiVersion: v2
-name: celestia-node
+name: celestia-da
 description: A Helm chart for deploying celestia node on Kubernetes
 icon: https://company-223625.frontify.com/d/JoSwaZS4Mjpj/guidelines#/basics/logos/purple-watermark
 
