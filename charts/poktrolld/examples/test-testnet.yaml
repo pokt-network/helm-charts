@@ -14,22 +14,24 @@ celestia-da:
         storageClass: local-path
 
   dataAvailability:
-    namespace: 34c412725a6dd2f7
+    namespace: 34c412725a6dd2f8
 
 nodeKeysSecretName: testnet-test-validator-keys
 
+replicaCount: 1
+
 image:
-  repository: okdas/gm-poktrolld
+  repository: okdas/poktrolld-new-sdk
   tag: latest
   pullPolicy: IfNotPresent
 
 rollkit:
   aggregator: true
-  block_time: 30s
+  block_time: 60s
   # da_address: ":26650"
   da_block_time: 15s
   # da_gas_price: -1
-  # da_start_height: 1 # Assuming a default or starting value
+  da_start_height: 1107639 # Latest block on when the rollup starts
   # lazy_aggregator: false
   # light: false
   # trusted_hash: "" # Assuming an empty string as default, replace with actual hash if needed
