@@ -1,5 +1,6 @@
 celestia-da:
   celestiaNode:
+    #  Check `celestia-da` helm chart readme on how to use cel-key to generate these files and a secret out of mnemonic.
     celKey:
       enabled: true
       address:
@@ -10,19 +11,24 @@ celestia-da:
         fileName: "testnet-test.info"
     home:
       volume:
-        storage: 65Gi
-        storageClass: local-path
+        storage: 100Gi
+        storageClass: premium-rwo
 
   dataAvailability:
-    namespace: 34c412725a6dd2f8
+    namespace: 34c412725a669420
 
+# Can be created with `kubectl create secret generic testnet-test-validator-keys --from-file=config/node_key.json --from-file=config/priv_validator_key.json --namespace=testnet`
 nodeKeysSecretName: testnet-test-validator-keys
+
+# Can be created with `kubectl create cm testnet-test-genesis --from-file=config/genesis.json --namespace=testnet`
+genesis:
+  configMapName: testnet-test-genesis
 
 replicaCount: 1
 
 image:
   repository: okdas/poktrolld-new-sdk
-  tag: latest
+  tag: v0.50.1-fix-sequencer-check-4
   pullPolicy: IfNotPresent
 
 rollkit:
@@ -31,7 +37,7 @@ rollkit:
   # da_address: ":26650"
   da_block_time: 15s
   # da_gas_price: -1
-  da_start_height: 1107639 # Latest block on when the rollup starts
+  da_start_height: 1129201 # Latest block on when the rollup starts.
   # lazy_aggregator: false
   # light: false
   # trusted_hash: "" # Assuming an empty string as default, replace with actual hash if needed

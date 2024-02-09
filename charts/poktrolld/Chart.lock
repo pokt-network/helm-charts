@@ -3,4 +3,4 @@ dependencies:
   repository: file://../celestia-da
   version: 0.12.0
 digest: sha256:5c64cd6a5fa280f23cdece039295f99b2e9da90b230315cabeb74fa94df2f462
-generated: "2024-02-05T18:03:36.426808-08:00"
+generated: "2024-02-06T17:43:58.36275-08:00"

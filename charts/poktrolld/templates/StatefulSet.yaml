@@ -54,6 +54,7 @@ spec:
         - --rollkit.da_address={{ include "poktrolld.daAddress" . }}
         - --rollkit.da_block_time={{ .Values.rollkit.da_block_time }}
         - --rollkit.da_start_height={{ int (.Values.rollkit.da_start_height) }}
+        - --rollkit.da_gas_price={{ int (.Values.rollkit.da_gas_price) }}
         - --rollkit.lazy_aggregator={{ .Values.rollkit.lazy_aggregator }}
         - --rollkit.light={{ .Values.rollkit.light }}
         - --rollkit.trusted_hash={{ .Values.rollkit.trusted_hash }}
@@ -69,6 +70,9 @@ spec:
         - name: node-keys
           mountPath: "/root/.pocket/config/priv_validator_key.json"
           subPath: "priv_validator_key.json"
+        - name: genesis-volume
+          mountPath: "/root/.pocket/config/genesis.json"
+          subPath: "{{ $name }}"
 {{- $files := .Files.Glob "files/config/*" }}
 {{- range $path, $_ := $files }}
 {{- $name := base $path }}

@@ -34,3 +34,8 @@ service:
 
 # Name of the secret that contains `node_key.json` and `priv_validator_key.json`.
 nodeKeysSecretName: ""
+
+genesis:
+  # Name of the Config Map that containts the genesis.json of the network
+  configMapName: ""
+  configMapKey: genesis.json
