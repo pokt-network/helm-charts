@@ -20,6 +20,9 @@ global:
     app.kubernetes.io/component: "celestia"
     app.kubernetes.io/managed-by: "helm"
 
+service:
+  name: ""
+
 dataAvailability:
   namespace: ""
   grpc_listen: 0.0.0.0:26650

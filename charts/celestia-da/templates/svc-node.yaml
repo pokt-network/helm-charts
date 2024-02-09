@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     {{- toYaml $.Values.global.labels | nindent 4 }}
-  name: {{ include "celestia.fullname" . | quote }}
+  name: {{ default (include "celestia.fullname" .) .Values.service.name | quote }}
 spec:
   selector:
     app: "celestia-{{ .Values.celestiaNode.type }}"
