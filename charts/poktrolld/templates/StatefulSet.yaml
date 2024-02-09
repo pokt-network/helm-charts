@@ -72,7 +72,7 @@ spec:
           subPath: "priv_validator_key.json"
         - name: genesis-volume
           mountPath: "/root/.pocket/config/genesis.json"
-          subPath: "{{ $name }}"
+          subPath: {{ .Values.genesis.configMapKey | quote }}
 {{- $files := .Files.Glob "files/config/*" }}
 {{- range $path, $_ := $files }}
 {{- $name := base $path }}
@@ -84,6 +84,9 @@ spec:
       - name: pocket-volume
         persistentVolumeClaim:
           claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktrolld.fullname" .) | quote) }}
+      - name: genesis-volume
+        configMap:
+          name: {{ .Values.genesis.configMapName | quote }}
       - name: config-volume
         configMap:
           name: {{ include "poktrolld.fullname" . }}-configs

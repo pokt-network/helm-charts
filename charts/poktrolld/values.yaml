@@ -35,6 +35,7 @@ service:
 # Name of the secret that contains `node_key.json` and `priv_validator_key.json`.
 nodeKeysSecretName: ""
 
+# TODO: Add pre-generated config maps when we have a stable public network.
 genesis:
   # Name of the Config Map that containts the genesis.json of the network
   configMapName: ""
