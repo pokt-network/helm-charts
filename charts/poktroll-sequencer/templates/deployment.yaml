@@ -57,12 +57,6 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           securityContext:
 {{ toYaml .Values.podSecurityContext | indent 12 }}
-          # env:
-          #   - name: AUTH_TOKEN
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: {{ .Values.dataAvailability.authToken.secretName }}
-          #         key: {{ .Values.dataAvailability.authToken.secretKey }}
           ports:
             - containerPort: {{ .Values.service.rpcPort }}
               name: rpc
