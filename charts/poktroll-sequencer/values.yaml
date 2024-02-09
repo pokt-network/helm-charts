@@ -18,26 +18,28 @@ dataAvailability:
     secretKey: auth_token
   celestia:
     consensus_rpc_url: http://celestia-rollkit:26657
-    da_rpc_url: http://celestia-rollkit:26658
+    da_rpc_url: celestia-rollkit:26650
   timeout: 60000000000
   fee: 600000
   gas_limit: 6000000
 prod:
   enabled: false
-  namespace: ''
+  namespace: ""
 persistence:
   enabled: true
-  className: ''
+  className: ""
   size: 1Gi
   cleanupBeforeEachStart: false
-  existingClaim: ''
+  existingClaim: ""
 scripts:
   enabled: true
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # allowPrivilegeEscalation: true
   # capabilities:
   #   add: ["SYS_PTRACE"]
-resources: {}
+resources:
+  {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
