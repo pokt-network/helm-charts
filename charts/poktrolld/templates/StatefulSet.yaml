@@ -7,11 +7,11 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "poktrolld.fullname" . | quote }}
+      {{- include "poktrolld.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ include "poktrolld.fullname" . | quote }}
+        {{- include "poktrolld.selectorLabels" . | nindent 6 }}
     spec:
       initContainers:
       # Initializes `priv_validator_state` if it doesn't exist.

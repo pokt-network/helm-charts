@@ -35,6 +35,14 @@ service:
     rpc: 36657
     grpc: 36658
 
+ingress:
+  enabled: false
+  hosts:
+    []
+    # - name: rpc-endpoint.example.com
+  tls:
+    secretName: ""
+
 # Name of the secret that contains `node_key.json` and `priv_validator_key.json`.
 nodeKeysSecretName: ""
 
