@@ -25,12 +25,15 @@ rollkit:
   light: false
   trusted_hash: "" # Assuming an empty string as default, replace with actual hash if needed
 
+serviceP2P:
+  type: ClusterIP
+  port: 26656
+
 service:
   type: ClusterIP
   ports:
     rpc: 36657
     grpc: 36658
-    p2p: 26656
 
 # Name of the secret that contains `node_key.json` and `priv_validator_key.json`.
 nodeKeysSecretName: ""

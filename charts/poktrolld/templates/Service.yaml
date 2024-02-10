@@ -1,0 +1,20 @@
+# The service for P2P port is separated as users don't usually want to expose other ports.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "poktrolld.fullname" . }}
+  labels:
+    {{- include "appgate-server.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.ports.grpc }}
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+    - port: {{ .Values.service.ports.rpc }}
+      targetPort: rpc
+      protocol: TCP
+      name: rpc
+  selector:
+    {{- include "appgate-server.selectorLabels" . | nindent 4 }}
