@@ -17,6 +17,7 @@ config:
     externalAddress: ""
     seedMode: false
     seeds: ""
+    persistentPeers: ""
     unconditionalPeerIds: ""
 
 rollkit:
