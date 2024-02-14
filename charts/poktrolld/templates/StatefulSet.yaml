@@ -61,6 +61,9 @@ spec:
         - --rpc.laddr=tcp://0.0.0.0:{{ .Values.service.ports.rpc }}
         - --p2p.laddr=0.0.0.0:{{ .Values.serviceP2P.port }}
         - --grpc.address=0.0.0.0:{{ .Values.service.ports.grpc }}
+        {{- if .Values.config.p2p.externalAddress }}
+        - --p2p.external-address={{ .Values.config.p2p.externalAddress }}
+        {{- end }}
         volumeMounts:
         - name: pocket-volume
           mountPath: /root/.pocket/

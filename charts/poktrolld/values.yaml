@@ -12,6 +12,10 @@ persistence:
   size: 1Gi
   existingClaim: ""
 
+config:
+  p2p:
+    externalAddress: ""
+
 rollkit:
   aggregator: true
   block_time: 1s
