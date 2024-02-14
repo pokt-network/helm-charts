@@ -15,6 +15,9 @@ persistence:
 config:
   p2p:
     externalAddress: ""
+    seedMode: false
+    seeds: ""
+    unconditionalPeerIds: ""
 
 rollkit:
   aggregator: true

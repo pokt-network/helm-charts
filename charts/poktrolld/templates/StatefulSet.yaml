@@ -61,6 +61,9 @@ spec:
         - --rpc.laddr=tcp://0.0.0.0:{{ .Values.service.ports.rpc }}
         - --p2p.laddr=0.0.0.0:{{ .Values.serviceP2P.port }}
         - --grpc.address=0.0.0.0:{{ .Values.service.ports.grpc }}
+        - --p2p.unconditional_peer_ids={{ .Values.config.p2p.unconditionalPeerIds }}
+        - --p2p.seeds={{ .Values.config.p2p.seeds }}
+        - --p2p.seed_mode={{ .Values.config.p2p.seed_mode }}
         {{- if .Values.config.p2p.externalAddress }}
         - --p2p.external-address={{ .Values.config.p2p.externalAddress }}
         {{- end }}
