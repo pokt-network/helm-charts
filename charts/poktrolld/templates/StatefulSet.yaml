@@ -63,7 +63,7 @@ spec:
         - --grpc.address=0.0.0.0:{{ .Values.service.ports.grpc }}
         - --p2p.unconditional_peer_ids={{ .Values.config.p2p.unconditionalPeerIds }}
         - --p2p.seeds={{ .Values.config.p2p.seeds }}
-        - --p2p.seed_mode={{ .Values.config.p2p.seed_mode }}
+        - --p2p.seed_mode={{ .Values.config.p2p.seedMode }}
         {{- if .Values.config.p2p.externalAddress }}
         - --p2p.external-address={{ .Values.config.p2p.externalAddress }}
         {{- end }}
