@@ -28,6 +28,7 @@ rollkit:
   da_address: ""
   da_block_time: 15s
   da_gas_price: -1
+  da_gas_multiplier: -1
   da_start_height: 1 # Assuming a default or starting value
   lazy_aggregator: false
   light: false
