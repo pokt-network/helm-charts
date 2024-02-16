@@ -1,5 +1,5 @@
 celestia-da:
-  enabled: true
+  enabled: false
 
 image:
   repository: ghcr.io/pokt-network/poktrolld
