@@ -26,6 +26,7 @@ rollkit:
 
   # By default pointed to the svc created by the `celestia-da` chart.
   da_address: ""
+  da_namespace: ""
   da_block_time: 15s
   da_gas_price: -1
   da_gas_multiplier: -1

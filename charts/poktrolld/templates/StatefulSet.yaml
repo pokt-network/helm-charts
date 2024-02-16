@@ -53,6 +53,7 @@ spec:
         - --rollkit.block_time={{ .Values.rollkit.block_time }}
         - --rollkit.da_address={{ include "poktrolld.daAddress" . }}
         - --rollkit.da_block_time={{ .Values.rollkit.da_block_time }}
+        - --rollkit.da_namespace={{ .Values.rollkit.da_namespace }}
         - --rollkit.da_start_height={{ int (.Values.rollkit.da_start_height) }}
         - --rollkit.da_gas_price={{ float64 (.Values.rollkit.da_gas_price) }}
         - --rollkit.da_gas_multiplier={{ float64 (.Values.rollkit.da_gas_multiplier) }}
