@@ -37,7 +37,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           command: ["poktrolld"]
           # command: ["dlv"]
-          # args:
+          args:
           #   - "exec"
           #   - "--listen=:40005"
           #   - "--headless=true"
