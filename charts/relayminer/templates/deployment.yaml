@@ -47,7 +47,7 @@ spec:
           #   - "--"
             - "relayminer"
             - "--keyring-backend={{ .Values.keyringBackend }}"
-            - "--config=/pocket/config/config.yaml"
+            - "--config=/root/.pocket/config/config.yaml"
             - "--home=/root/.pocket/"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -73,20 +73,20 @@ spec:
           volumeMounts:
             - name: keys-volume
               mountPath: /root/.pocket/keyring-test/
-            - name: configs-volume
-              mountPath: /root/.pocket/config/
+            # - name: configs-volume
+            #   mountPath: /root/.pocket/config/
             - name: relayminer-config
-              mountPath: /pocket/config/
+              mountPath: "/root/.pocket/config/config.yaml"
+              subPath: "config.yaml"
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
         - name: keys-volume
-          configMap:
-            name: {{ .Values.keysConfigMapName }}
-        - name: configs-volume
-          configMap:
-            name: {{ .Values.configsConfigMapName }}
+          secretName: {{ .Values.keysSecretName }}
+        # - name: configs-volume
+        #   configMap:
+        #     name: {{ .Values.configsConfigMapName }}
         - name: relayminer-config
           configMap:
             name: {{ include "relayminer.fullname" . }}
