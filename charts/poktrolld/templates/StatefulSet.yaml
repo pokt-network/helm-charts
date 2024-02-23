@@ -93,8 +93,12 @@ spec:
 {{- end }}
       volumes:
       - name: pocket-volume
+        {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
           claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktrolld.fullname" .) | quote) }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
       - name: genesis-volume
         configMap:
           name: {{ .Values.genesis.configMapName | quote }}
