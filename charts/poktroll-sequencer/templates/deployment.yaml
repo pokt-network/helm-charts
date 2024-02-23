@@ -75,7 +75,7 @@ spec:
           command: ["/bin/sh", "-c"]
           args: 
             - |
-              exec poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_address="{{ .Values.dataAvailability.celestia.da_rpc_url }}" --rollkit.da_start_height=1 --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
+              exec poktrolld start --home=/root/.pocket/ --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
 #              dlv exec --listen=:40004 --headless=true --api-version=2 --accept-multiclient $(which poktrolld) -- start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_address="{{ .Values.dataAvailability.celestia.da_rpc_url }}" --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
           volumeMounts:
             - name: scripts-volume
