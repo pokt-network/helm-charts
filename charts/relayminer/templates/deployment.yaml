@@ -35,20 +35,22 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          command: ["poktrolld"]
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "while true; do sleep 30; done;" ]
+          # command: ["poktrolld"]
           # command: ["dlv"]
-          args:
-          #   - "exec"
-          #   - "--listen=:40005"
-          #   - "--headless=true"
-          #   - "--api-version=2"
-          #   - "--accept-multiclient"
-          #   - "/usr/local/bin/poktrolld"
-          #   - "--"
-            - "relayminer"
-            - "--keyring-backend={{ .Values.keyringBackend }}"
-            - "--config=/root/.pocket/config/config.yaml"
-            - "--home=/root/.pocket/"
+          # args:
+          # #   - "exec"
+          # #   - "--listen=:40005"
+          # #   - "--headless=true"
+          # #   - "--api-version=2"
+          # #   - "--accept-multiclient"
+          # #   - "/usr/local/bin/poktrolld"
+          # #   - "--"
+          #   - "relayminer"
+          #   - "--keyring-backend={{ .Values.keyringBackend }}"
+          #   - "--config=/root/.pocket/config/config.yaml"
+          #   - "--home=/root/.pocket/"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
