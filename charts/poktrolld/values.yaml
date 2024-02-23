@@ -13,6 +13,8 @@ persistence:
   className: ""
   size: 1Gi
   existingClaim: ""
+  useCustomName: false # Enable custom naming
+  customName: "" # The custom name to be used if useCustomName is true
 
 config:
   p2p:
