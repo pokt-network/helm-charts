@@ -49,7 +49,7 @@ Selector labels
 app.kubernetes.io/name: {{ include "poktrolld.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 # TODO(@okdas): parametrize
-pokt.network/purpose: fullnode
+pokt.network/purpose: {{ .Values.purpose }}
 {{- end }}
 
 {{/*
