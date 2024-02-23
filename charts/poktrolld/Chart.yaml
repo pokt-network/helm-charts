@@ -1,7 +1,6 @@
 apiVersion: v2
-name: celestia-node
-description: A Helm chart for deploying celestia node on Kubernetes
-icon: https://company-223625.frontify.com/d/JoSwaZS4Mjpj/guidelines#/basics/logos/purple-watermark
+name: poktrolld
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -16,24 +15,18 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: "0.12.0"
+version: 0.0.1
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "v0.12.4"
+appVersion: "1.16.0"
 
-maintainers:
-  - name: sysrex
-    email: devops@celestia.org
-    url: celestia.org
-  - name: Bidon15
-    email: devops@celestia.org
-    url: celestia.org
-  - name: jrmanes
-    email: devops@celestia.org
-    url: celestia.org
-  - name: smuu
-    email: devops@celestia.org
-    url: celestia.org
+dependencies:
+  - name: celestia-da
+    version: "0.12.0"
+    condition: celestia-da.enabled
+    # TODO(@okdas)
+    # repository: Use pokt-network chart after it has been released.
+    repository: "file://../celestia-da"

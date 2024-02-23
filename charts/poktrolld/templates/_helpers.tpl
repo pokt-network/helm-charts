@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "poktroll.name" -}}
+{{- define "poktrolld.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "poktroll.fullname" -}}
+{{- define "poktrolld.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "poktroll.chart" -}}
+{{- define "poktrolld.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "poktroll.labels" -}}
-helm.sh/chart: {{ include "poktroll.chart" . }}
-{{ include "poktroll.selectorLabels" . }}
+{{- define "poktrolld.labels" -}}
+helm.sh/chart: {{ include "poktrolld.chart" . }}
+{{ include "poktrolld.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,18 +45,32 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "poktroll.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "poktroll.name" . }}
+{{- define "poktrolld.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "poktrolld.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+# TODO(@okdas): parametrize
+pokt.network/purpose: {{ .Values.purpose }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "poktroll.serviceAccountName" -}}
+{{- define "poktrolld.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "poktroll.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "poktrolld.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+
+{{/*
+Use dependency `celestia-da` chart as a DA for rollkit unless specified something different.
+*/}}
+{{- define "poktrolld.daAddress" -}}
+{{- if .Values.rollkit.da_address }}
+{{- .Values.rollkit.da_address }}
+{{- else }}
+{{- printf "%s-%s:26650" (include "poktrolld.fullname" .) "celestia-da" }}
 {{- end }}
 {{- end }}

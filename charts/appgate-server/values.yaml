@@ -12,6 +12,7 @@ image:
 
 configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
 keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
+keysSecretName: ""
 
 config:
   # Whether the server should sign all incoming requests with its own ring (for applications)

@@ -2,7 +2,6 @@
 global:
   ## Celestia node chain-id
   ##
-  chainId: mocha-4
   name: celestia
 
   ## Deploy pods on a specific node-pool if enabled
@@ -13,8 +12,6 @@ global:
     # key: "env"
     # value: "prod"
 
-  namespace: "{{ .Values.global.name }}-{{ .Values.global.chainId }}"
-
   ## Common labels for chart resources
   ##
   labels:
@@ -23,11 +20,12 @@ global:
     app.kubernetes.io/component: "celestia"
     app.kubernetes.io/managed-by: "helm"
 
-## Init container script for Celestia Node
-##
-nodeInitContainer:
-  configmapName: init-celestia
-  scriptName: init-celestia-node.sh
+service:
+  name: ""
+
+dataAvailability:
+  namespace: ""
+  grpc_listen: 0.0.0.0:26650
 
 ## Celestia Node configuration
 ##
@@ -41,15 +39,15 @@ celestiaNode:
 
   ## Node network (caution could be different from chain-id)
   ##
-  network: mocha-4
+  network: mocha
 
   ## celestia node docker image
   ##
   image:
     registry: ghcr.io
-    repository: celestiaorg
-    name: celestia-node
-    tag: v0.12.4
+    repository: rollkit
+    name: celestia-da
+    tag: v0.12.9
     pullPolicy: IfNotPresent
 
   ## Celestia Node ports - will open them in the Statefulset and create dedicated ClusterIp service for each ones
@@ -58,21 +56,24 @@ celestiaNode:
     rpc:
       port: 26658
       name: rpc
+    grpc:
+      port: 26650
+      name: grpc
 
   ## Celestia Node home directory
   ##
   home:
     ## Path to node store
     ##
-    path: "/home/celestia/.celestia-bridge-mocha-4"
+    path: "/home/celestia/.celestia-bridge-mocha"
 
     ## Node store Persistent Volume configuration
     ##
     volume:
-      name: "{{ .Values.global.name }}-{{ .Values.global.chainId }}-{{ .Values.celestiaNode.type }}-pvc-01"
+      name: "{{ .Values.global.name }}-{{ .Values.celestiaNode.type }}-pvc-01"
       accessMode: ReadWriteOnce
       # storageClass: standard
-      storage: 100Gi
+      storage: 60Gi
 
   ## Configuration file for Celestia Node
   ##
@@ -82,10 +83,7 @@ celestiaNode:
 
   ## IP address used to communicate with the celestia-app node
   ## Please provide your own IP address that is a consensus full node / validator
-  coreIp: 192.168.175.146
-
-  libp2pkey:
-    filename: OAZHALLLMV4Q
+  coreIp: rpc-mocha.pops.one
 
   ## Celestia Node cel-key
   ##
@@ -122,3 +120,6 @@ monitoring:
     app.kubernetes.io/name: prometheus
     app.kubernetes.io/part-of: kube-prometheus
     app: "celestia"
+
+nameOverride: ""
+fullnameOverride: ""
