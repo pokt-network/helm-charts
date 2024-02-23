@@ -95,7 +95,7 @@ spec:
       - name: pocket-volume
         {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: {{- if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim | quote }}{{- else if .Values.persistence.useCustomName }}{{ .Values.persistence.customName | quote }}{{- else }}{{ printf "%s-data" (include "poktrolld.fullname" .) | quote }}{{- end }}
+          claimName: {{- with .Values.persistence.existingClaim | default (ternary .Values.persistence.customName (printf "%s-data" (include "poktrolld.fullname" .)) .Values.persistence.useCustomName) | quote }}{{ . }}{{- end }}
         {{- else }}
           emptyDir: {}
         {{- end }}
