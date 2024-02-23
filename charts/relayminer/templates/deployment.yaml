@@ -74,7 +74,8 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: keys-volume
-              mountPath: /root/.pocket/keyring-test/
+              mountPath: /root/.pocket/keyring-test/{{ .Values.config.signing_key_name }}.info
+              subPath: {{ .Values.config.signing_key_name }}.info
             # - name: configs-volume
             #   mountPath: /root/.pocket/config/
             - name: relayminer-config
