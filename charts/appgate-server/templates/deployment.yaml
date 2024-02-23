@@ -84,7 +84,8 @@ spec:
           {{- end }}
       volumes:
         - name: keys-volume
-          secretName: {{ .Values.keysSecretName }}
+          secret:
+            secretName: {{ .Values.keysSecretName }}
         # - name: configs-volume
         #   configMap:
         #     name: {{ .Values.configsConfigMapName }}
