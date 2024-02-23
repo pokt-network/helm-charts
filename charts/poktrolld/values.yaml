@@ -1,5 +1,5 @@
 celestia-da:
-  enabled: true
+  enabled: false
 
 image:
   repository: ghcr.io/pokt-network/poktrolld
@@ -21,6 +21,8 @@ config:
     unconditionalPeerIds: ""
 
 rollkit:
+  enabled: false
+
   aggregator: true
   block_time: 1s
 

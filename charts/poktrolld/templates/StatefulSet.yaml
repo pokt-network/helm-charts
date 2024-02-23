@@ -49,6 +49,7 @@ spec:
         args:
         - start
         - --home=/root/.pocket/
+        {{- if .Values.rollkit.enabled }}
         - --rollkit.aggregator={{ .Values.rollkit.aggregator }}
         - --rollkit.block_time={{ .Values.rollkit.block_time }}
         - --rollkit.da_address={{ include "poktrolld.daAddress" . }}
@@ -60,6 +61,7 @@ spec:
         - --rollkit.lazy_aggregator={{ .Values.rollkit.lazy_aggregator }}
         - --rollkit.light={{ .Values.rollkit.light }}
         - --rollkit.trusted_hash={{ .Values.rollkit.trusted_hash }}
+        {{- end }}
         - --rpc.laddr=tcp://0.0.0.0:{{ .Values.service.ports.rpc }}
         - --p2p.laddr=0.0.0.0:{{ .Values.serviceP2P.port }}
         - --grpc.address=0.0.0.0:{{ .Values.service.ports.grpc }}
