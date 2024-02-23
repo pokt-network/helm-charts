@@ -57,12 +57,6 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           securityContext:
 {{ toYaml .Values.podSecurityContext | indent 12 }}
-          env:
-            - name: AUTH_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.dataAvailability.authToken.secretName }}
-                  key: {{ .Values.dataAvailability.authToken.secretKey }}
           ports:
             - containerPort: {{ .Values.service.rpcPort }}
               name: rpc
@@ -81,9 +75,8 @@ spec:
           command: ["/bin/sh", "-c"]
           args: 
             - |
-              NAMESPACE=$(cat /root/.pocket/data/namespace-id)
-              DA_BLOCK_HEIGHT=$(cat /root/.pocket/data/da-block-height)
-              exec poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_layer=celestia --rollkit.da_config='{"base_url":"{{ .Values.dataAvailability.celestia.da_rpc_url }}","timeout":{{ printf "%.0f" .Values.dataAvailability.timeout }},"fee":{{ printf "%.0f" .Values.dataAvailability.fee }},"gas_limit":{{ printf "%.0f" .Values.dataAvailability.gas_limit }},"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id=$NAMESPACE --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
+              exec poktrolld start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_address="{{ .Values.dataAvailability.celestia.da_rpc_url }}" --rollkit.da_start_height=1 --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
+#              dlv exec --listen=:40004 --headless=true --api-version=2 --accept-multiclient $(which poktrolld) -- start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_address="{{ .Values.dataAvailability.celestia.da_rpc_url }}" --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
           volumeMounts:
             - name: scripts-volume
               mountPath: /scripts

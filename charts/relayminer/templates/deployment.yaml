@@ -36,10 +36,19 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           command: ["poktrolld"]
-          args: 
+          # command: ["dlv"]
+          args:
+          #   - "exec"
+          #   - "--listen=:40005"
+          #   - "--headless=true"
+          #   - "--api-version=2"
+          #   - "--accept-multiclient"
+          #   - "/usr/local/bin/poktrolld"
+          #   - "--"
             - "relayminer"
             - "--keyring-backend={{ .Values.keyringBackend }}"
             - "--config=/pocket/config/config.yaml"
+            - "--home=/root/.pocket/"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -48,6 +57,8 @@ spec:
             - name: metrics
               containerPort: {{ .Values.metrics.port }}
               protocol: TCP
+            - containerPort: 40005 # TODO(@okdas): remove this - currently only needed for LocalNet dlv
+              name: debug
           # TODO(@okdas): enable health checks
           # livenessProbe:
           #   httpGet:
