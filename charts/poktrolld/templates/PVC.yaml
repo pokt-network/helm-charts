@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{- if .Values.persistence.useCustomName }}{{ .Values.persistence.customName }}{{- else }}{{ include "poktrolld.fullname" . }}-data{{- end }}
+  name: {{ default (printf "%s-data" (include "poktrolld.fullname" .)) (ternary .Values.persistence.customName nil .Values.persistence.useCustomName) | quote }}
 spec:
   accessModes:
     - ReadWriteOnce
