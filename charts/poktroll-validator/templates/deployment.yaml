@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app: {{ include "poktroll.fullname" . }}
-        pokt.network/purpose: sequencer
+        pokt.network/purpose: validator
     spec:
       initContainers:
       # TODO(@okdas): move the ConfigMaps script logic onto the init container
@@ -22,7 +22,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
         command: ["/bin/sh"]
-        args: 
+        args:
          - -c
          - rm -rf /root/.pocket/data/*
         volumeMounts:
@@ -50,7 +50,7 @@ spec:
           - name: pocket-volume
             mountPath: /root/.pocket/
       containers:
-        - name: poktrolld-sequencer
+        - name: poktrolld-validator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
           resources:
@@ -73,10 +73,9 @@ spec:
               path: /
               port: {{ .Values.service.rpcPort }}
           command: ["/bin/sh", "-c"]
-          args: 
+          args:
             - |
               exec poktrolld start --home=/root/.pocket/ --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
-#              dlv exec --listen=:40004 --headless=true --api-version=2 --accept-multiclient $(which poktrolld) -- start --home=/root/.pocket/ --rollkit.aggregator=true --rollkit.da_address="{{ .Values.dataAvailability.celestia.da_rpc_url }}" --rollkit.da_start_height=$DA_BLOCK_HEIGHT --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
           volumeMounts:
             - name: scripts-volume
               mountPath: /scripts
