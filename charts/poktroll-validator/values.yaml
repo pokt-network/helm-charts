@@ -1,4 +1,4 @@
-replicaCount: 1 # This should never be more than 1 until Rollkit supports decentralized sequencers
+replicaCount: 1 # This number should probably always be 1, since validators can't share keys.
 
 configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
 keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
@@ -11,14 +11,6 @@ service:
   type: ClusterIP
   rpcPort: 36657
   grpcPort: 36658
-dataAvailability:
-  provider: celestia
-  authToken:
-    secretName: celestia-secret
-    secretKey: auth_token
-  celestia:
-    consensus_rpc_url: http://celestia-rollkit:26657
-    da_rpc_url: celestia-rollkit:26650
   timeout: 60000000000
   fee: 600000
   gas_limit: 6000000
