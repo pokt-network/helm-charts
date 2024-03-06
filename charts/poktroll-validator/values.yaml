@@ -1,4 +1,4 @@
-replicaCount: 1 # The number of validator nodes to run
+replicaCount: 1 # This number should probably always be 1, since validators can't share keys.
 
 configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
 keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
