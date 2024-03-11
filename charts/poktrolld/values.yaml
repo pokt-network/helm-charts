@@ -3,7 +3,6 @@ celestia-da:
 
 purpose: full-node
 
-
 image:
   repository: ghcr.io/pokt-network/poktrolld
   tag: latest
@@ -83,3 +82,8 @@ genesis:
   # Name of the Config Map that containts the genesis.json of the network
   configMapName: ""
   configMapKey: genesis.json
+
+# Allows to provide custom `app.toml`, `client.toml` and `config.toml`. Default files are supplied in `files/config` directory.
+customConfigsConfigMap:
+  enabled: false
+  name: ""

@@ -1,3 +1,4 @@
+{{- if not .Values.customConfigsConfigMap.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,3 +10,4 @@ data:
   {{ $name }}: |
     {{- $files.Get $path | nindent 4 }}
   {{- end }}
+{{- end }}

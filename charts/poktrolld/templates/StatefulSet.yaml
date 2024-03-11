@@ -93,7 +93,11 @@ spec:
           name: {{ .Values.genesis.configMapName | quote }}
       - name: config-volume
         configMap:
+{{- if not .Values.customConfigsConfigMap.enabled }}
           name: {{ include "poktrolld.fullname" . }}-configs
+{{- else }}
+          name: {{ .Values.customConfigsConfigMap.name | quote }}
+{{- end }}
           items:
 {{- range $path, $_ := $files }}
 {{- $name := base $path }}
