@@ -35,6 +35,8 @@ spec:
           name: rpc
         - containerPort: {{ .Values.service.ports.grpc }}
           name: grpc
+        - containerPort: {{ .Values.service.ports.api }}
+          name: api
         - containerPort: {{ .Values.serviceP2P.port }}
           name: p2p
         livenessProbe:

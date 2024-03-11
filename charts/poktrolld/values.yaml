@@ -50,17 +50,29 @@ service:
   ports:
     rpc: 36657
     grpc: 36658
+    api: 1317
 
 ingress:
-  enabled: false
-  annotations:
-    {}
-    # kubernetes.io/ingress.class: nginx
-  hosts:
-    []
-    # - name: rpc-endpoint.example.com
-  tls:
-    secretName: ""
+  rpc:
+    enabled: false
+    annotations:
+      {}
+      # kubernetes.io/ingress.class: nginx
+    hosts:
+      []
+      # - name: rpc-endpoint.example.com
+    tls:
+      secretName: ""
+  api:
+    enabled: false
+    annotations:
+      {}
+      # kubernetes.io/ingress.class: nginx
+    hosts:
+      []
+      # - name: rpc-endpoint.example.com
+    tls:
+      secretName: ""
 
 # Name of the secret that contains `node_key.json` and `priv_validator_key.json`.
 nodeKeysSecretName: ""

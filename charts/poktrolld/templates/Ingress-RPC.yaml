@@ -1,17 +1,17 @@
-{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.rpc.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "poktrolld.fullname" . }}
+  name: {{ include "poktrolld.fullname" . }}-rpc
   annotations:
-    {{- with .Values.ingress.annotations }}
+    {{- with .Values.ingress.rpc.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
   labels:
     {{- include "poktrolld.labels" . | nindent 4 }}
 spec:
   rules:
-  {{- range .Values.ingress.hosts }}
+  {{- range .Values.ingress.rpc.hosts }}
   - host: {{ .name }}
     http:
       paths:
@@ -25,8 +25,8 @@ spec:
   {{- end }}
   tls:
   - hosts:
-    {{- range .Values.ingress.hosts }}
+    {{- range .Values.ingress.rpc.hosts }}
     - {{ .name }}
     {{- end }}
-    secretName: {{ .Values.ingress.tls.secretName }}
+    secretName: {{ .Values.ingress.rpc.tls.secretName }}
 {{- end }}
