@@ -35,6 +35,8 @@ spec:
           name: rpc
         - containerPort: {{ .Values.service.ports.grpc }}
           name: grpc
+        - containerPort: {{ .Values.service.ports.api }}
+          name: api
         - containerPort: {{ .Values.serviceP2P.port }}
           name: p2p
         livenessProbe:
@@ -49,15 +51,6 @@ spec:
         args:
         - start
         - --home=/root/.pocket/
-        # - --rollkit.aggregator={{ .Values.rollkit.aggregator }}
-        # - --rollkit.block_time={{ .Values.rollkit.block_time }}
-        # - --rollkit.da_address={{ include "poktrolld.daAddress" . }}
-        # - --rollkit.da_block_time={{ .Values.rollkit.da_block_time }}
-        # - --rollkit.da_start_height={{ int (.Values.rollkit.da_start_height) }}
-        # - --rollkit.da_gas_price={{ int (.Values.rollkit.da_gas_price) }}
-        # - --rollkit.lazy_aggregator={{ .Values.rollkit.lazy_aggregator }}
-        # - --rollkit.light={{ .Values.rollkit.light }}
-        # - --rollkit.trusted_hash={{ .Values.rollkit.trusted_hash }}
         - --rpc.laddr=tcp://0.0.0.0:{{ .Values.service.ports.rpc }}
         - --p2p.laddr=0.0.0.0:{{ .Values.serviceP2P.port }}
         - --grpc.address=0.0.0.0:{{ .Values.service.ports.grpc }}
@@ -89,8 +82,12 @@ spec:
 {{- end }}
       volumes:
       - name: pocket-volume
+        {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktrolld.fullname" .) | quote) }}
+          claimName: {{ with .Values.persistence.existingClaim | default (ternary .Values.persistence.customName (printf "%s-data" (include "poktrolld.fullname" .)) .Values.persistence.useCustomName) }}{{ . | quote }}{{ end }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
       - name: genesis-volume
         configMap:
           name: {{ .Values.genesis.configMapName | quote }}

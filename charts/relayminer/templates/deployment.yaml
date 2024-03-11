@@ -36,10 +36,19 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           command: ["poktrolld"]
-          args: 
+          # command: ["dlv"]
+          args:
+          #   - "exec"
+          #   - "--listen=:40005"
+          #   - "--headless=true"
+          #   - "--api-version=2"
+          #   - "--accept-multiclient"
+          #   - "/usr/local/bin/poktrolld"
+          #   - "--"
             - "relayminer"
             - "--keyring-backend={{ .Values.keyringBackend }}"
-            - "--config=/pocket/config/config.yaml"
+            - "--config=/root/.pocket/config/config.yaml"
+            - "--home=/root/.pocket/"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -48,6 +57,8 @@ spec:
             - name: metrics
               containerPort: {{ .Values.metrics.port }}
               protocol: TCP
+            - containerPort: 40005 # TODO(@okdas): remove this - currently only needed for LocalNet dlv
+              name: debug
           # TODO(@okdas): enable health checks
           # livenessProbe:
           #   httpGet:
@@ -61,21 +72,23 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: keys-volume
-              mountPath: /root/.pocket/keyring-test/
-            - name: configs-volume
-              mountPath: /root/.pocket/config/
+              mountPath: /root/.pocket/keyring-test/{{ .Values.config.signing_key_name }}.info
+              subPath: {{ .Values.config.signing_key_name }}.info
+            # - name: configs-volume
+            #   mountPath: /root/.pocket/config/
             - name: relayminer-config
-              mountPath: /pocket/config/
+              mountPath: "/root/.pocket/config/config.yaml"
+              subPath: "config.yaml"
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
         - name: keys-volume
-          configMap:
-            name: {{ .Values.keysConfigMapName }}
-        - name: configs-volume
-          configMap:
-            name: {{ .Values.configsConfigMapName }}
+          secret:
+            secretName: {{ .Values.keysSecretName }}
+        # - name: configs-volume
+        #   configMap:
+        #     name: {{ .Values.configsConfigMapName }}
         - name: relayminer-config
           configMap:
             name: {{ include "relayminer.fullname" . }}
