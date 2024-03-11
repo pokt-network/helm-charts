@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "poktrolld.fullname" . }}-rpc
+  name: {{ include "poktrolld.fullname" . }}-grpc
   annotations:
     {{- with .Values.ingress.grpc.annotations }}
     {{- toYaml . | nindent 4 }}
