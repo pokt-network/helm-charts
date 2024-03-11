@@ -3,6 +3,7 @@ celestia-da:
 
 purpose: full-node
 
+
 image:
   repository: ghcr.io/pokt-network/poktrolld
   tag: latest
