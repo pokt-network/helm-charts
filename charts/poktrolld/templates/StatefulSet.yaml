@@ -51,6 +51,7 @@ spec:
         args:
         - start
         - --home=/root/.pocket/
+        - --api.address=tcp://0.0.0.0:{{ .Values.service.ports.api }}
         - --rpc.laddr=tcp://0.0.0.0:{{ .Values.service.ports.rpc }}
         - --p2p.laddr=0.0.0.0:{{ .Values.serviceP2P.port }}
         - --grpc.address=0.0.0.0:{{ .Values.service.ports.grpc }}

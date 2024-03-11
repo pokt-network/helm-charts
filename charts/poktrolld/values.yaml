@@ -63,6 +63,16 @@ ingress:
       # - name: rpc-endpoint.example.com
     tls:
       secretName: ""
+  grpc:
+    enabled: false
+    annotations:
+      {}
+      # kubernetes.io/ingress.class: nginx
+    hosts:
+      []
+      # - name: grpc-endpoint.example.com
+    tls:
+      secretName: ""
   api:
     enabled: false
     annotations:
@@ -70,7 +80,7 @@ ingress:
       # kubernetes.io/ingress.class: nginx
     hosts:
       []
-      # - name: rpc-endpoint.example.com
+      # - name: api-endpoint.example.com
     tls:
       secretName: ""
 
