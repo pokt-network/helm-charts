@@ -5,6 +5,10 @@ metadata:
   name: {{ include "poktrolld.fullname" . }}-p2p
   labels:
     {{- include "poktrolld.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.serviceP2P.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ .Values.serviceP2P.type }}
   ports:

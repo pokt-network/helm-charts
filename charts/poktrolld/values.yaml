@@ -44,6 +44,7 @@ rollkit:
 serviceP2P:
   type: ClusterIP
   port: 26656
+  annotations: {}
 
 service:
   type: ClusterIP
