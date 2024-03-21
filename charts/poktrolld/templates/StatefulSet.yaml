@@ -37,6 +37,8 @@ spec:
           name: grpc
         - containerPort: {{ .Values.service.ports.api }}
           name: api
+        - containerPort: {{ .Values.service.ports.cometBFTMetrics }}
+          name: cometBFTMetrics
         - containerPort: {{ .Values.serviceP2P.port }}
           name: p2p
         livenessProbe:

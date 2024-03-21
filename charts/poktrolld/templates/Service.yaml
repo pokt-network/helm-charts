@@ -20,5 +20,9 @@ spec:
       targetPort: api
       protocol: TCP
       name: api
+    - port: {{ .Values.service.ports.cometBFTMetrics }}
+      targetPort: cometBFTMetrics
+      protocol: TCP
+      name: cometBFTMetrics
   selector:
     {{- include "poktrolld.selectorLabels" . | nindent 4 }}

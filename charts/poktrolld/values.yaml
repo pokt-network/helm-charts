@@ -54,6 +54,10 @@ service:
     rpc: 36657
     grpc: 36658
     api: 1317
+    cometBFTMetrics: 26660
+
+serviceMonitor:
+  enabled: false
 
 ingress:
   rpc:
