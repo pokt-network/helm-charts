@@ -38,7 +38,7 @@ spec:
         - containerPort: {{ .Values.service.ports.api }}
           name: api
         - containerPort: {{ .Values.service.ports.cometBFTMetrics }}
-          name: cometBFTMetrics
+          name: cometbft-metrics
         - containerPort: {{ .Values.serviceP2P.port }}
           name: p2p
         livenessProbe:

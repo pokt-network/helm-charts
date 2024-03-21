@@ -14,7 +14,7 @@ spec:
     - port: api
       interval: 30s
       path: /metrics?format=prometheus
-    - port: cometBFTMetrics
+    - port: cometbft-metrics
       interval: 30s
       path: /metrics
 {{ end }}
