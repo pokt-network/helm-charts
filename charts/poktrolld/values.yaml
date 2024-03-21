@@ -45,6 +45,8 @@ serviceP2P:
   type: ClusterIP
   port: 26656
   annotations: {}
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
 
 service:
   type: ClusterIP

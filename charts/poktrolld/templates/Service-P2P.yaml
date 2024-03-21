@@ -11,6 +11,8 @@ metadata:
     {{- end }}
 spec:
   type: {{ .Values.serviceP2P.type }}
+  externalTrafficPolicy: {{ .Values.serviceP2P.externalTrafficPolicy }}
+  internalTrafficPolicy: {{ .Values.serviceP2P.internalTrafficPolicy }}
   ports:
     - port: {{ .Values.serviceP2P.port }}
       targetPort: p2p
