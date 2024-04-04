@@ -1,0 +1,28 @@
+# The service for P2P port is separated as users don't usually want to expose other ports.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "poktrolld.fullname" . }}
+  labels:
+    {{- include "poktrolld.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.ports.grpc }}
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+    - port: {{ .Values.service.ports.rpc }}
+      targetPort: rpc
+      protocol: TCP
+      name: rpc
+    - port: {{ .Values.service.ports.api }}
+      targetPort: api
+      protocol: TCP
+      name: api
+    - port: {{ .Values.service.ports.cometBFTMetrics }}
+      targetPort: comet-metrics
+      protocol: TCP
+      name: comet-metrics
+  selector:
+    {{- include "poktrolld.selectorLabels" . | nindent 4 }}

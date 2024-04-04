@@ -1,0 +1,20 @@
+
+{{ if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "poktrolld.fullname" . }}
+  labels:
+    {{- include "poktrolld.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "poktrolld.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: api
+      interval: 30s
+      path: /metrics?format=prometheus
+    - port: comet-metrics
+      interval: 30s
+      path: /metrics
+{{ end }}

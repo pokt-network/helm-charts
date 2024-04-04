@@ -1,0 +1,13 @@
+{{- if not .Values.customConfigsConfigMap.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "poktrolld.fullname" . }}-configs
+data:
+  {{- $files := .Files.Glob "files/config/*" }}
+  {{- range $path, $_ := $files }}
+  {{- $name := base $path }}
+  {{ $name }}: |
+    {{- $files.Get $path | nindent 4 }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,22 @@
+# The service for P2P port is separated as users don't usually want to expose other ports.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "poktrolld.fullname" . }}-p2p
+  labels:
+    {{- include "poktrolld.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.serviceP2P.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.serviceP2P.type }}
+  externalTrafficPolicy: {{ .Values.serviceP2P.externalTrafficPolicy }}
+  internalTrafficPolicy: {{ .Values.serviceP2P.internalTrafficPolicy }}
+  ports:
+    - port: {{ .Values.serviceP2P.port }}
+      targetPort: p2p
+      protocol: TCP
+      name: p2p
+  selector:
+    {{- include "poktrolld.selectorLabels" . | nindent 4 }}

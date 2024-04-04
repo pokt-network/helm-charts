@@ -11,7 +11,7 @@ image:
   tag: "latest"
 
 configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
-keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
+keysSecretName: ""
 
 config:
   signing_key_name: supplier1

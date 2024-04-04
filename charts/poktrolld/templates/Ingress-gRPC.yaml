@@ -1,0 +1,32 @@
+{{- if .Values.ingress.grpc.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "poktrolld.fullname" . }}-grpc
+  annotations:
+    {{- with .Values.ingress.grpc.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  labels:
+    {{- include "poktrolld.labels" . | nindent 4 }}
+spec:
+  rules:
+  {{- range .Values.ingress.grpc.hosts }}
+  - host: {{ .name }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ include "poktrolld.fullname" $ }}
+            port:
+              number: {{ $.Values.service.ports.grpc }}
+        path: /
+        pathType: Prefix
+  {{- end }}
+  tls:
+  - hosts:
+    {{- range .Values.ingress.grpc.hosts }}
+    - {{ .name }}
+    {{- end }}
+    secretName: {{ .Values.ingress.grpc.tls.secretName }}
+{{- end }}

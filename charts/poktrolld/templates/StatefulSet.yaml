@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "poktrolld.fullname" . | quote }}
+spec:
+  serviceName: {{ include "poktrolld.fullname" . | quote }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "poktrolld.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "poktrolld.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+      # Initializes `priv_validator_state` if it doesn't exist.
+      - name: init-priv-validator-state
+        image: busybox
+        command: ['sh', '-c', 'if [ ! -f /root/.poktroll/data/priv_validator_state.json ]; then echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > /root/.poktroll/data/priv_validator_state.json; fi']
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: /root/.poktroll/data
+          subPath: data
+      containers:
+      - name: poktrolld
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        securityContext:
+{{ toYaml .Values.containerSecurityContext | indent 12 }}
+        ports:
+        - containerPort: {{ .Values.service.ports.rpc }}
+          name: rpc
+        - containerPort: {{ .Values.service.ports.grpc }}
+          name: grpc
+        - containerPort: {{ .Values.service.ports.api }}
+          name: api
+        - containerPort: {{ .Values.service.ports.cometBFTMetrics }}
+          name: comet-metrics
+        - containerPort: {{ .Values.serviceP2P.port }}
+          name: p2p
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.ports.rpc }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.ports.rpc }}
+        args:
+        - start
+        - --api.address=tcp://0.0.0.0:{{ .Values.service.ports.api }}
+        - --rpc.laddr=tcp://0.0.0.0:{{ .Values.service.ports.rpc }}
+        - --p2p.laddr=0.0.0.0:{{ .Values.serviceP2P.port }}
+        - --grpc.address=0.0.0.0:{{ .Values.service.ports.grpc }}
+        - --p2p.unconditional_peer_ids={{ .Values.config.p2p.unconditionalPeerIds }}
+        - --p2p.seeds={{ .Values.config.p2p.seeds }}
+        - --p2p.seed_mode={{ .Values.config.p2p.seedMode }}
+        - --p2p.persistent_peers={{ .Values.config.p2p.persistentPeers }}
+        {{- if .Values.config.p2p.externalAddress }}
+        - --p2p.external-address={{ .Values.config.p2p.externalAddress }}
+        {{- end }}
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: /root/.poktroll/
+        - name: node-keys
+          mountPath: "/root/.poktroll/config/node_key.json"
+          subPath: "node_key.json"
+        - name: node-keys
+          mountPath: "/root/.poktroll/config/priv_validator_key.json"
+          subPath: "priv_validator_key.json"
+        - name: genesis-volume
+          mountPath: "/root/.poktroll/config/genesis.json"
+          subPath: {{ .Values.genesis.configMapKey | quote }}
+{{- $files := .Files.Glob "files/config/*" }}
+{{- range $path, $_ := $files }}
+{{- $name := base $path }}
+        - name: config-volume
+          mountPath: "/root/.poktroll/config/{{ $name }}"
+          subPath: "{{ $name }}"
+{{- end }}
+      volumes:
+      - name: pocket-volume
+        {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ with .Values.persistence.existingClaim | default (ternary .Values.persistence.customName (printf "%s-data" (include "poktrolld.fullname" .)) .Values.persistence.useCustomName) }}{{ . | quote }}{{ end }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      - name: genesis-volume
+        configMap:
+          name: {{ .Values.genesis.configMapName | quote }}
+      - name: config-volume
+        configMap:
+{{- if not .Values.customConfigsConfigMap.enabled }}
+          name: {{ include "poktrolld.fullname" . }}-configs
+{{- else }}
+          name: {{ .Values.customConfigsConfigMap.name | quote }}
+{{- end }}
+          items:
+{{- range $path, $_ := $files }}
+{{- $name := base $path }}
+          - key: "{{ $name }}"
+            path: "{{ $name }}"
+{{- end }}
+      - name: node-keys
+        secret:
+          secretName: {{ .Values.nodeKeysSecretName }}
