@@ -35,7 +35,6 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          command: ["poktrolld"]
           # command: ["dlv"]
           args:
           #   - "exec"
@@ -47,8 +46,7 @@ spec:
           #   - "--"
             - "relayminer"
             - "--keyring-backend={{ .Values.keyringBackend }}"
-            - "--config=/root/.pocket/config/config.yaml"
-            - "--home=/root/.pocket/"
+            - "--config=/root/.poktroll/config/config.yaml"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -72,12 +70,12 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: keys-volume
-              mountPath: /root/.pocket/keyring-test/{{ .Values.config.signing_key_name }}.info
+              mountPath: /root/.poktroll/keyring-test/{{ .Values.config.signing_key_name }}.info
               subPath: {{ .Values.config.signing_key_name }}.info
             # - name: configs-volume
-            #   mountPath: /root/.pocket/config/
+            #   mountPath: /root/.poktroll/config/
             - name: relayminer-config
-              mountPath: "/root/.pocket/config/config.yaml"
+              mountPath: "/root/.poktroll/config/config.yaml"
               subPath: "config.yaml"
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}

@@ -24,10 +24,10 @@ spec:
         command: ["/bin/sh"]
         args:
          - -c
-         - rm -rf /root/.pocket/data/*
+         - rm -rf /root/.poktroll/data/*
         volumeMounts:
           - name: data-volume
-            mountPath: /root/.pocket/data/
+            mountPath: /root/.poktroll/data/
 {{ end }}
       - name: "prepare-node"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -42,13 +42,13 @@ spec:
           - name: scripts-volume
             mountPath: /scripts
           - name: keys-source-volume
-            mountPath: /root/.pocket/keyring-test/
+            mountPath: /root/.poktroll/keyring-test/
           - name: configs-source-volume
-            mountPath: /root/.pocket/config-src/
+            mountPath: /root/.poktroll/config-src/
           - name: data-volume
-            mountPath: /root/.pocket/data/
+            mountPath: /root/.poktroll/data/
           - name: pocket-volume
-            mountPath: /root/.pocket/
+            mountPath: /root/.poktroll/
       containers:
         - name: poktrolld-validator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -72,21 +72,22 @@ spec:
             httpGet:
               path: /
               port: {{ .Values.service.rpcPort }}
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              exec poktrolld start --home=/root/.pocket/ --rpc.laddr=tcp://0.0.0.0:36657 --p2p.laddr="0.0.0.0:36656" --grpc.address=0.0.0.0:36658
+          args: 
+            - start
+            - --rpc.laddr=tcp://0.0.0.0:36657
+            - --p2p.laddr=0.0.0.0:36656
+            - --grpc.address=0.0.0.0:36658
           volumeMounts:
             - name: scripts-volume
               mountPath: /scripts
             - name: keys-source-volume
-              mountPath: /root/.pocket/keyring-test/
+              mountPath: /root/.poktroll/keyring-test/
             - name: configs-source-volume
-              mountPath: /root/.pocket/config-src/
+              mountPath: /root/.poktroll/config-src/
             - name: data-volume
-              mountPath: /root/.pocket/data/
+              mountPath: /root/.poktroll/data/
             - name: pocket-volume
-              mountPath: /root/.pocket/
+              mountPath: /root/.poktroll/
       volumes:
         - name: scripts-volume
           configMap:

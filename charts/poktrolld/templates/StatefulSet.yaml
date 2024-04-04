@@ -17,10 +17,10 @@ spec:
       # Initializes `priv_validator_state` if it doesn't exist.
       - name: init-priv-validator-state
         image: busybox
-        command: ['sh', '-c', 'if [ ! -f /root/.pocket/data/priv_validator_state.json ]; then echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > /root/.pocket/data/priv_validator_state.json; fi']
+        command: ['sh', '-c', 'if [ ! -f /root/.poktroll/data/priv_validator_state.json ]; then echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > /root/.poktroll/data/priv_validator_state.json; fi']
         volumeMounts:
         - name: pocket-volume
-          mountPath: /root/.pocket/data
+          mountPath: /root/.poktroll/data
           subPath: data
       containers:
       - name: poktrolld
@@ -49,10 +49,8 @@ spec:
           httpGet:
             path: /
             port: {{ .Values.service.ports.rpc }}
-        command: ['poktrolld']
         args:
         - start
-        - --home=/root/.pocket/
         - --api.address=tcp://0.0.0.0:{{ .Values.service.ports.api }}
         - --rpc.laddr=tcp://0.0.0.0:{{ .Values.service.ports.rpc }}
         - --p2p.laddr=0.0.0.0:{{ .Values.serviceP2P.port }}
@@ -66,21 +64,21 @@ spec:
         {{- end }}
         volumeMounts:
         - name: pocket-volume
-          mountPath: /root/.pocket/
+          mountPath: /root/.poktroll/
         - name: node-keys
-          mountPath: "/root/.pocket/config/node_key.json"
+          mountPath: "/root/.poktroll/config/node_key.json"
           subPath: "node_key.json"
         - name: node-keys
-          mountPath: "/root/.pocket/config/priv_validator_key.json"
+          mountPath: "/root/.poktroll/config/priv_validator_key.json"
           subPath: "priv_validator_key.json"
         - name: genesis-volume
-          mountPath: "/root/.pocket/config/genesis.json"
+          mountPath: "/root/.poktroll/config/genesis.json"
           subPath: {{ .Values.genesis.configMapKey | quote }}
 {{- $files := .Files.Glob "files/config/*" }}
 {{- range $path, $_ := $files }}
 {{- $name := base $path }}
         - name: config-volume
-          mountPath: "/root/.pocket/config/{{ $name }}"
+          mountPath: "/root/.poktroll/config/{{ $name }}"
           subPath: "{{ $name }}"
 {{- end }}
       volumes:
