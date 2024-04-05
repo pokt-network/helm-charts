@@ -51,6 +51,31 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/appgate-server-0.1.1/appgate-server-0.1.1.tgz
     version: 0.1.1
+  celestia-da:
+  - apiVersion: v2
+    appVersion: v0.12.4
+    created: "2024-04-05T21:48:08.389162276Z"
+    description: A Helm chart for deploying celestia node on Kubernetes
+    digest: ec06734fc033c541fd07ac8fb6554662ea846c1c92e4557deadbb99797941716
+    icon: https://company-223625.frontify.com/d/JoSwaZS4Mjpj/guidelines#/basics/logos/purple-watermark
+    maintainers:
+    - email: devops@celestia.org
+      name: sysrex
+      url: celestia.org
+    - email: devops@celestia.org
+      name: Bidon15
+      url: celestia.org
+    - email: devops@celestia.org
+      name: jrmanes
+      url: celestia.org
+    - email: devops@celestia.org
+      name: smuu
+      url: celestia.org
+    name: celestia-da
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/celestia-da-0.12.0/celestia-da-0.12.0.tgz
+    version: 0.12.0
   celestia-node:
   - apiVersion: v2
     appVersion: v0.12.4
@@ -209,7 +234,28 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/poktroll-validator-0.1.0/poktroll-validator-0.1.0.tgz
     version: 0.1.0
+  poktrolld:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-04-05T21:48:08.592652791Z"
+    description: A Helm chart for Kubernetes
+    digest: b99995413264800c128bb59bdd062bda0e2fa8188d1e5f10ac80c27be712f7c0
+    name: poktrolld
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/poktrolld-0.0.1/poktrolld-0.0.1.tgz
+    version: 0.0.1
   relayminer:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-04-05T21:48:08.686961759Z"
+    description: A Helm chart for Kubernetes
+    digest: dc3fbdc991047ff595e5b30be90f2b841016e184b52d737a709dd42e9bbb0aa0
+    name: relayminer
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.8/relayminer-0.1.8.tgz
+    version: 0.1.8
   - apiVersion: v2
     appVersion: 1.16.0
     created: "2024-02-23T21:35:02.826835138Z"
@@ -280,4 +326,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2024-03-06T00:32:54.807043543Z"
+generated: "2024-04-05T21:48:08.687044953Z"
