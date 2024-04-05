@@ -226,6 +226,16 @@ entries:
   poktroll-validator:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2024-04-05T21:48:40.558208895Z"
+    description: A Helm chart for Kubernetes
+    digest: d6309f1aa5868e971d5b132d77454f22dbc1a51a94649937a68773ee1c0ebfbc
+    name: poktroll-validator
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/poktroll-validator-0.1.1/poktroll-validator-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2024-03-06T00:32:54.690145248Z"
     description: A Helm chart for Kubernetes
     digest: ed6ec26b431619301ca3e3dd23c8515dc9bd722acd4424caa29566e4976a8b7d
@@ -336,4 +346,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2024-04-05T21:48:20.86726509Z"
+generated: "2024-04-05T21:48:40.558265531Z"
