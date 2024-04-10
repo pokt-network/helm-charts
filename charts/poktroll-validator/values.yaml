@@ -3,6 +3,9 @@ replicaCount: 1 # This number should probably always be 1, since validators can'
 configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
 keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
 
+serviceMonitor:
+  enabled: false
+
 image:
   repository: ghcr.io/pokt-network/poktrolld
   tag: latest

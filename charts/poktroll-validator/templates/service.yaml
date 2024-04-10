@@ -3,6 +3,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "poktroll.fullname" . }}
+  labels:
+    app: {{ include "poktroll.fullname" . }}
 spec:
   selector:
     app: {{ include "poktroll.fullname" . }}
@@ -15,3 +17,7 @@ spec:
       name: grpc
       port: 36658
       targetPort: 36658
+    - port: 1317
+      targetPort: api
+      protocol: TCP
+      name: api

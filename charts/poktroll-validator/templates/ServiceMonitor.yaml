@@ -2,13 +2,13 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "poktrolld.fullname" . }}
+  name: {{ include "poktroll.fullname" . }}
   labels:
-    {{- include "poktrolld.labels" . | nindent 4 }}
+      app: {{ include "poktroll.fullname" . }}
 spec:
   selector:
     matchLabels:
-      {{- include "poktrolld.selectorLabels" . | nindent 6 }}
+      app: {{ include "poktroll.fullname" . }}
   endpoints:
     - port: api
       interval: 30s
