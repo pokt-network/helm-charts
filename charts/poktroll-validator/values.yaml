@@ -6,6 +6,10 @@ keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
 serviceMonitor:
   enabled: false
 
+logs:
+  level: info
+  format: plain
+
 image:
   repository: ghcr.io/pokt-network/poktrolld
   tag: latest
