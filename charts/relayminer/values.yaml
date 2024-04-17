@@ -38,6 +38,11 @@ config:
     # If changing port here, make sure to adjust `metrics.serviceMonitor.port`
     addr: :9090
 
+development:
+  delve:
+    enabled: false
+    laddr: :40004
+
 keyringBackend: test
 
 imagePullSecrets: []
