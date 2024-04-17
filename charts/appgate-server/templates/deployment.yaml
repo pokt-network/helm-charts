@@ -35,16 +35,28 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          # command: ["poktrolld"]
-          # command: ["dlv"]
-          args: 
-            #- "exec"
-            #- "--listen=:40006"
-            #- "--headless=true"
-            #- "--api-version=2"
-            #- "--accept-multiclient"
-            #- "/usr/local/bin/poktrolld"
-            #- "--"
+{{ if .Values.development.delve.enabled }}
+          command: [ "/go/bin/dlv" ]
+          args:
+            - exec
+            - --listen={{ .Values.development.delve.laddr }}
+            - --headless=true
+            - --api-version=2
+            - --accept-multiclient
+            - /usr/local/bin/poktrolld
+            - --
+{{ else }}
+          # TODO(@okdas): enable health checks
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          args:
+{{ end }}
             - "appgate-server"
             - "--keyring-backend={{ .Values.keyringBackend }}"
             - "--config=/root/.poktroll/config/config.yaml"
@@ -56,17 +68,6 @@ spec:
             - name: metrics
               containerPort: {{ .Values.metrics.port }}
               protocol: TCP
-            - containerPort: 40006 # TODO(@okdas): remove this - currently only needed for LocalNet dlv
-              name: debug
-          # TODO(@okdas): enable health checks
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

@@ -66,6 +66,17 @@ spec:
               name: debug
             - containerPort: {{ .Values.service.grpcPort }}
               name: grpc
+{{ if .Values.development.delve.enabled }}
+          command: [ "/go/bin/dlv" ]
+          args:
+            - exec
+            - --listen={{ .Values.development.delve.laddr }}
+            - --headless=true
+            - --api-version=2
+            - --accept-multiclient
+            - /usr/local/bin/poktrolld
+            - --
+{{ else }}
           livenessProbe:
             httpGet:
               path: /
@@ -74,7 +85,8 @@ spec:
             httpGet:
               path: /
               port: {{ .Values.service.rpcPort }}
-          args: 
+          args:
+{{ end }}
             - start
             - --rpc.laddr=tcp://0.0.0.0:36657
             - --p2p.laddr=0.0.0.0:36656
