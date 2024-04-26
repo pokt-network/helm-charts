@@ -29,6 +29,9 @@ config:
     enabled: true
     # If changing port here, make sure to adjust `metrics.serviceMonitor.port`
     addr: :9090
+  pprof:
+    enabled: false
+    addr: localhost:6060
 
 development:
   delve:
