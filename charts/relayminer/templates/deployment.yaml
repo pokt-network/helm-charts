@@ -60,6 +60,7 @@ spec:
             - "relayminer"
             - "--keyring-backend={{ .Values.keyringBackend }}"
             - "--config={{ .Values.homeDirectory }}/config/config.yaml"
+            - --grpc-insecure=false
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
