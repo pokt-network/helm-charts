@@ -35,7 +35,7 @@ config:
     # If changing port here, make sure to adjust `metrics.serviceMonitor.port`
     addr: :9090
   pprof:
-    enabled: false
+    enabled: true
     addr: localhost:6060
 
 development:
