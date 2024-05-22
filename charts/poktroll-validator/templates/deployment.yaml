@@ -88,9 +88,9 @@ spec:
           args:
 {{ end }}
             - start
-            - --rpc.laddr=tcp://0.0.0.0:36657
-            - --p2p.laddr=0.0.0.0:36656
-            - --grpc.address=0.0.0.0:36658
+            # - --rpc.laddr=tcp://0.0.0.0:36657 # 26657 is the default
+            # - --p2p.laddr=0.0.0.0:36656 # 26656 is the default
+            # - --grpc.address=0.0.0.0:9090
             - --log_no_color
             - --log_level={{ .Values.logs.level }}
             - --log_format={{ .Values.logs.format }}
