@@ -12,6 +12,9 @@ image:
 
 keysSecretName: ""
 
+# --grpc-insecure
+grpcInsecure: false
+
 config:
   signing_key_name: supplier1
   smt_store_path: smt_stores
