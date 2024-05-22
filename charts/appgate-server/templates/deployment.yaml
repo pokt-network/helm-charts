@@ -60,6 +60,7 @@ spec:
             - "appgate-server"
             - "--keyring-backend={{ .Values.keyringBackend }}"
             - "--config=/root/.poktroll/config/config.yaml"
+            - "--grpc-insecure={{ .Values.grpcInsecure }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
