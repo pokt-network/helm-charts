@@ -317,6 +317,16 @@ entries:
   poktrolld:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2024-06-21T16:42:14.96344962Z"
+    description: A Helm chart for Kubernetes
+    digest: dbbdbe8c76eff404d729a7511f8300632818607ea604e21fd2677a29453bf27a
+    name: poktrolld
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/poktrolld-0.0.3/poktrolld-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2024-04-05T21:48:20.86720064Z"
     description: A Helm chart for Kubernetes
     digest: 7f1b9a22b3c6806a68963bbddcdb296943c942c8da95d873206e0c2d1385631b
@@ -436,4 +446,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2024-06-21T16:42:09.36148765Z"
+generated: "2024-06-21T16:42:14.963523728Z"
