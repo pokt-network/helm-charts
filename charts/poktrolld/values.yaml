@@ -51,8 +51,8 @@ serviceP2P:
 service:
   type: ClusterIP
   ports:
-    rpc: 36657
-    grpc: 36658
+    rpc: 26657
+    grpc: 9090
     api: 1317
     cometBFTMetrics: 26660
 

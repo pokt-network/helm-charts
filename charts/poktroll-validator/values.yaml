@@ -21,8 +21,8 @@ image:
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
-  rpcPort: 36657
-  grpcPort: 36658
+  rpcPort: 26657
+  grpcPort: 9090
   timeout: 60000000000
   fee: 600000
   gas_limit: 6000000
