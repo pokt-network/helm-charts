@@ -4,6 +4,11 @@
 
 replicaCount: 1
 
+# TODO: remove the key from the config and make it easily modifiable.
+# Until the key is removed, this should be a secret instead. But going with an externally provisioned CM right now,
+# for easier change in the future.
+configMapName: "path-config-map-name"
+
 image:
   repository: ghcr.io/buildwithgrove/path
   pullPolicy: IfNotPresent
