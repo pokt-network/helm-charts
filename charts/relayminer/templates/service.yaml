@@ -15,5 +15,9 @@ spec:
       targetPort: {{ .Values.metrics.port }}
       protocol: TCP
       name: metrics
+    - port: {{ .Values.ping.port }}
+      targetPort: {{ .Values.ping.port }}
+      protocol: TCP
+      name: status
   selector:
     {{- include "relayminer.selectorLabels" . | nindent 4 }}
