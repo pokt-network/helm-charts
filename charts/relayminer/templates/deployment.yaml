@@ -60,6 +60,7 @@ spec:
             - "relayminer"
             - "--keyring-backend={{ .Values.keyringBackend }}"
             - "--config=/root/.poktroll/config/config.yaml"
+            - "--log_level={{ .Values.logs.level }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
