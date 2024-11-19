@@ -1,5 +1,8 @@
 purpose: full-node
 
+# Should be /home/pocket/.poktroll
+homeDirectory: /root/.poktroll
+
 image:
   repository: ghcr.io/pokt-network/poktrolld
   tag: latest
