@@ -1,6 +1,3 @@
-celestia-da:
-  enabled: false
-
 purpose: full-node
 
 image:
@@ -24,23 +21,6 @@ config:
     persistentPeers: ""
     unconditionalPeerIds: ""
 
-rollkit:
-  enabled: false
-
-  aggregator: true
-  block_time: 1s
-
-  # By default pointed to the svc created by the `celestia-da` chart.
-  da_address: ""
-  da_namespace: ""
-  da_block_time: 15s
-  da_gas_price: -1
-  da_gas_multiplier: -1
-  da_start_height: 1 # Assuming a default or starting value
-  lazy_aggregator: false
-  light: false
-  trusted_hash: "" # Assuming an empty string as default, replace with actual hash if needed
-
 serviceP2P:
   type: ClusterIP
   port: 26656
@@ -51,8 +31,8 @@ serviceP2P:
 service:
   type: ClusterIP
   ports:
-    rpc: 36657
-    grpc: 36658
+    rpc: 26657
+    grpc: 9090
     api: 1317
     cometBFTMetrics: 26660
 

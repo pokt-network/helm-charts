@@ -59,3 +59,10 @@ query-gas-limit = "0"
   prometheus-retention-time = "600"
   service-name = ""
   statsd-addr = ""
+
+[poktroll]
+
+  [poktroll.telemetry]
+    cardinality-level = "high"
+
+

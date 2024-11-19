@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+logs:
+  level: info
+
 image:
   repository: ghcr.io/pokt-network/poktrolld
   pullPolicy: IfNotPresent
@@ -16,12 +19,13 @@ keysSecretName: ""
 grpcInsecure: false
 
 config:
-  signing_key_name: supplier1
+  signing_key_name: supplier1 # Keeping it here for now for backwards-compatibility
+  default_signing_key_names: [supplier1]
   smt_store_path: smt_stores
   pocket_node:
-    query_node_rpc_url: tcp://poktroll-validator:36657
-    query_node_grpc_url: tcp://poktroll-validator:36658
-    tx_node_rpc_url: tcp://poktroll-validator:36657
+    query_node_rpc_url: tcp://poktroll-validator:26657
+    query_node_grpc_url: tcp://poktroll-validator:9090
+    tx_node_rpc_url: tcp://poktroll-validator:26657
   suppliers:
     - service_id: anvil
       type: http

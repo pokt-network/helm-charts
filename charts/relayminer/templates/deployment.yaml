@@ -61,6 +61,7 @@ spec:
             - "--keyring-backend={{ .Values.keyringBackend }}"
             - "--config={{ .Values.homeDirectory }}/config/config.yaml"
             - "--grpc-insecure={{ .Values.grpcInsecure }}"
+            - "--log_level={{ .Values.logs.level }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
