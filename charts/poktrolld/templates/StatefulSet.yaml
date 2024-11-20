@@ -22,6 +22,14 @@ spec:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}/data
           subPath: data
+      {{- if .Values.chownDataDirTo }}
+      - name: init-permissions
+        image: busybox
+        command: ["sh", "-c", "chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }}"]
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
       containers:
       - name: poktrolld
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
