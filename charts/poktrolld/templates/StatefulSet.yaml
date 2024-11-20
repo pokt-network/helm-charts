@@ -80,6 +80,9 @@ spec:
         - name: config-volume
           mountPath: "{{ .Values.homeDirectory }}/config/config.toml"
           subPath: "config.toml"
+        - name: config-volume
+          mountPath: "{{ .Values.homeDirectory }}/config/client.toml"
+          subPath: "client.toml"
       volumes:
       - name: pocket-volume
         {{- if .Values.persistence.enabled }}
@@ -101,6 +104,8 @@ spec:
           items:
           - key: app.toml
             path: app.toml
+          - key: client.toml
+            path: client.toml
           - key: config.toml
             path: config.toml
       - name: node-keys
