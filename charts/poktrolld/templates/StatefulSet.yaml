@@ -25,7 +25,12 @@ spec:
       {{- if .Values.chownDataDirTo }}
       - name: init-permissions
         image: busybox
-        command: ["sh", "-c", "chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }}"]
+        command:
+          - sh
+          - -c
+          - |
+            mkdir -p {{ .Values.homeDirectory }}/config && \
+            chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }}
         volumeMounts:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}
