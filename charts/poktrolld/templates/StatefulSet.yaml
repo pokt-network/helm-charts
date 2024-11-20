@@ -74,13 +74,12 @@ spec:
         - name: genesis-volume
           mountPath: "{{ .Values.homeDirectory }}/config/genesis.json"
           subPath: {{ .Values.genesis.configMapKey | quote }}
-{{- $files := .Files.Glob "files/config/*" }}
-{{- range $path, $_ := $files }}
-{{- $name := base $path }}
         - name: config-volume
-          mountPath: "{{ .Values.homeDirectory }}/config/{{ $name }}"
-          subPath: "{{ $name }}"
-{{- end }}
+          mountPath: "{{ .Values.homeDirectory }}/config/app.toml"
+          subPath: "app.toml"
+        - name: config-volume
+          mountPath: "{{ .Values.homeDirectory }}/config/config.toml"
+          subPath: "config.toml"
       volumes:
       - name: pocket-volume
         {{- if .Values.persistence.enabled }}
@@ -100,11 +99,10 @@ spec:
           name: {{ .Values.customConfigsConfigMap.name | quote }}
 {{- end }}
           items:
-{{- range $path, $_ := $files }}
-{{- $name := base $path }}
-          - key: "{{ $name }}"
-            path: "{{ $name }}"
-{{- end }}
+          - key: app.toml
+            path: app.toml
+          - key: config.toml
+            path: config.toml
       - name: node-keys
         secret:
           secretName: {{ .Values.nodeKeysSecretName }}
