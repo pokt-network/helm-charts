@@ -74,12 +74,14 @@ spec:
         - name: genesis-volume
           mountPath: "{{ .Values.homeDirectory }}/config/genesis.json"
           subPath: {{ .Values.genesis.configMapKey | quote }}
+{{- if not .Values.customConfigsConfigMap.enabled }}
 {{- $files := .Files.Glob "files/config/*" }}
 {{- range $path, $_ := $files }}
 {{- $name := base $path }}
         - name: config-volume
           mountPath: "{{ .Values.homeDirectory }}/config/{{ $name }}"
           subPath: "{{ $name }}"
+{{- end }}
 {{- end }}
       volumes:
       - name: pocket-volume
