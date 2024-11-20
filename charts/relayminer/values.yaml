@@ -13,8 +13,10 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
 keysSecretName: ""
+
+# --grpc-insecure
+grpcInsecure: false
 
 config:
   signing_key_name: supplier1 # Keeping it here for now for backwards-compatibility
@@ -37,7 +39,7 @@ config:
     # If changing port here, make sure to adjust `metrics.serviceMonitor.port`
     addr: :9090
   pprof:
-    enabled: false
+    enabled: true
     addr: localhost:6060
 
 development:
@@ -78,6 +80,8 @@ securityContext: {}
 # readOnlyRootFilesystem: true
 # runAsNonRoot: true
 # runAsUser: 1000
+
+homeDirectory: /root/.poktroll
 
 service:
   type: ClusterIP
