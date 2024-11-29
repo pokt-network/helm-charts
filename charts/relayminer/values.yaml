@@ -36,6 +36,9 @@ config:
     enabled: true
     # If changing port here, make sure to adjust `metrics.serviceMonitor.port`
     addr: :9090
+  ping:
+    enabled: true
+    addr: :8081
   pprof:
     enabled: false
     addr: localhost:6060
@@ -64,6 +67,9 @@ metrics:
   serviceMonitor:
     enabled: false
   port: 9090
+
+ping:
+  port: 8081
 
 podAnnotations: {}
 podLabels: {}
