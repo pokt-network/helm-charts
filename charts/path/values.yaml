@@ -1,4 +1,4 @@
-# Default values for appgate-server.
+# Default values for PATH.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -8,33 +8,30 @@ logs:
   level: info
 
 image:
-  repository: ghcr.io/pokt-network/poktrolld
+  repository: ghcr.io/buildwithgrove/path
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "main"
 
-configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
+configsConfigMapName: path-config # TODO(@okdas): provision in the chart
 keysSecretName: ""
 
 config:
-  # Whether the server should sign all incoming requests with its own ring (for applications)
-  self_signing: true
-  # The name of the key (in the keyring) that will be used to sign relays
-  signing_key: app1
-  # The host and port that the appgate server will listen on
-  listening_endpoint: http://0.0.0.0:42069
-  # Pocket node URL that exposes CometBFT JSON-RPC API.
-  # This can be used by the Cosmos client SDK, event subscriptions, etc...
-  query_node_rpc_url: tcp://poktroll-validator:26657
-  # Pocket node URL that exposes the Cosmos gRPC service, dedicated to querying purposes.
-  query_node_grpc_url: tcp://poktroll-validator:9090
-  metrics:
-    enabled: true
-    # If changing port here, make sure to adjust `metrics.serviceMonitor.port`
-    addr: :9090
-  pprof:
-    enabled: false
-    addr: localhost:6060
+  shannon_config:
+    full_node_config:
+      rpc_url: tcp://validator-poktroll-validator:26657
+      grpc_config:
+        host_port: validator-poktroll-validator:9090
+        insecure: true
+      lazy_mode: true
+    gateway_config:
+      gateway_mode: delegated
+      gateway_address: pokt15vzxjqklzjtlz7lahe8z2dfe9nm5vxwwmscne4
+      gateway_private_key_hex: cf09805c952fa999e9a63a9f434147b0a5abfd10f268879694c6b5a70e1ae177
+
+  services:
+    anvil:
+      alias: anvil
 
 development:
   delve:
@@ -56,6 +53,11 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+metrics:
+  serviceMonitor:
+    enabled: false
+  port: 9090
+
 podAnnotations: {}
 podLabels: {}
 
@@ -72,12 +74,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 42069
-
-metrics:
-  serviceMonitor:
-    enabled: false
-  port: 9090
+  port: 3000
 
 ingress:
   enabled: false

@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "appgate-server.fullname" . }}
+  name: {{ include "path.fullname" . }}
   labels:
-    {{- include "appgate-server.labels" . | nindent 4 }}
+    {{- include "path.labels" . | nindent 4 }}
 data:
   config.yaml: |
     {{ toYaml .Values.config | nindent 4 }}

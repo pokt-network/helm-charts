@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "appgate-server.fullname" . }}
+  name: {{ include "path.fullname" . }}
   labels:
-    {{- include "appgate-server.labels" . | nindent 4 }}
+    {{- include "path.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "appgate-server.selectorLabels" . | nindent 6 }}
+      {{- include "path.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "appgate-server.labels" . | nindent 8 }}
+        {{- include "path.labels" . | nindent 8 }}
 	{{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "appgate-server.serviceAccountName" . }}
+      serviceAccountName: {{ include "path.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -35,32 +35,6 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-{{ if .Values.development.delve.enabled }}
-          command: [ "/go/bin/dlv" ]
-          args:
-            - exec
-            - --listen={{ .Values.development.delve.laddr }}
-            - --headless=true
-            - --api-version=2
-            - --accept-multiclient
-            - /usr/local/bin/poktrolld
-            - --
-{{ else }}
-          # TODO(@okdas): enable health checks
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          args:
-{{ end }}
-            - "appgate-server"
-            - "--keyring-backend={{ .Values.keyringBackend }}"
-            - "--config=/root/.poktroll/config/config.yaml"
-            - "--log_level={{ .Values.logs.level }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -69,25 +43,23 @@ spec:
             - name: metrics
               containerPort: {{ .Values.metrics.port }}
               protocol: TCP
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: keys-volume
-              mountPath: /root/.poktroll/keyring-test/{{ .Values.config.signing_key }}.info
-              subPath: {{ .Values.config.signing_key }}.info
-            - name: appgate-server-config
-              mountPath: "/root/.poktroll/config/config.yaml"
-              subPath: "config.yaml"
-          {{- with .Values.volumeMounts }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            - name: path-config
+              mountPath: "/app/.config.yaml"
+              subPath: ".config.yaml"
       volumes:
         - name: keys-volume
           secret:
             secretName: {{ .Values.keysSecretName }}
-        - name: appgate-server-config
+        # - name: configs-volume
+        #   configMap:
+        #     name: {{ .Values.configsConfigMapName }}
+        - name: path-config
           configMap:
-            name: {{ include "appgate-server.fullname" . }}
+            name: {{ include "path.fullname" . }}
+            items:
+              - key: config.yaml
+                path: .config.yaml
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
