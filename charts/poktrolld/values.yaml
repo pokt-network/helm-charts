@@ -20,6 +20,7 @@ config:
     seeds: ""
     persistentPeers: ""
     unconditionalPeerIds: ""
+    unsafeSkipUpgrades: [] # Array of block heights to skip upgrades
 
 serviceP2P:
   type: ClusterIP
