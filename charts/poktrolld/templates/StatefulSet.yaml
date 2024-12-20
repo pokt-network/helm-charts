@@ -72,6 +72,8 @@ spec:
         - --p2p.seeds={{ .Values.config.p2p.seeds }}
         - --p2p.seed_mode={{ .Values.config.p2p.seedMode }}
         - --p2p.persistent_peers={{ .Values.config.p2p.persistentPeers }}
+        - --log_level={{ .Values.logs.level }}
+        - --log_format={{ .Values.logs.format }}
         {{- if .Values.config.p2p.externalAddress }}
         - --p2p.external-address={{ .Values.config.p2p.externalAddress }}
         {{- end }}

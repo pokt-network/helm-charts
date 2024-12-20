@@ -9,6 +9,10 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
+logs:
+  level: info
+  format: plain
+
 persistence:
   enabled: true
   className: ""
