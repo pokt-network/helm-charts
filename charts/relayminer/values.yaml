@@ -18,6 +18,8 @@ keysSecretName: ""
 # --grpc-insecure
 grpcInsecure: false
 
+chainId: "poktroll"
+
 config:
   signing_key_name: supplier1 # Keeping it here for now for backwards-compatibility
   default_signing_key_names: [supplier1]
