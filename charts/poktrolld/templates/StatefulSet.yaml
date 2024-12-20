@@ -75,6 +75,9 @@ spec:
         {{- if .Values.config.p2p.externalAddress }}
         - --p2p.external-address={{ .Values.config.p2p.externalAddress }}
         {{- end }}
+        {{- if .Values.config.unsafeSkipUpgrades }}
+        - --unsafe-skip-upgrades={{ join "," .Values.config.unsafeSkipUpgrades }}
+        {{- end }}
         volumeMounts:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}/
