@@ -81,6 +81,9 @@ spec:
             - name: relayminer-config
               mountPath: "{{ .Values.homeDirectory }}/config/config.yaml"
               subPath: "config.yaml"
+            - name: relayminer-client
+              mountPath: "{{ .Values.homeDirectory }}/config/client.toml"
+              subPath: "client.toml"
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
