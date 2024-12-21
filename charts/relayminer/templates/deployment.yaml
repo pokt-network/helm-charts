@@ -62,6 +62,7 @@ spec:
             - "--config={{ .Values.homeDirectory }}/config/config.yaml"
             - "--grpc-insecure={{ .Values.grpcInsecure }}"
             - "--log_level={{ .Values.logs.level }}"
+            - "--chain-id={{ .Values.chainId }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
