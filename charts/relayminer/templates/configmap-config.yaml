@@ -7,3 +7,9 @@ metadata:
 data:
   config.yaml: |
     {{ toYaml .Values.config | nindent 4 }}
+  client.toml: |
+    broadcast-mode = "sync"
+    chain-id = "{{ .Values.chainId }}"
+    keyring-backend = "test"
+    node = "{{ .Values.config.pocket_node.tx_node_rpc_url }}"
+    output = "text"
