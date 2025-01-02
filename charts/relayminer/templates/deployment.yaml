@@ -63,6 +63,8 @@ spec:
             - "--grpc-insecure={{ .Values.grpcInsecure }}"
             - "--log_level={{ .Values.logs.level }}"
             - "--chain-id={{ .Values.chainId }}"
+            - "--gas-adjustment={{ .Values.gasAdjustment }}"
+            - "--gas-prices={{ .Values.gasPrices }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
