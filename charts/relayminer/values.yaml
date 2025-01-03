@@ -21,7 +21,7 @@ grpcInsecure: false
 chainId: "poktroll"
 
 gasAdjustment: 1.5
-gasPrices: 0.0001upokt
+gasPrices: 1upokt
 
 config:
   signing_key_name: supplier1 # Keeping it here for now for backwards-compatibility
