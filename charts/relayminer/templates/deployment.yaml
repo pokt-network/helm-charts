@@ -65,6 +65,7 @@ spec:
             - "--chain-id={{ .Values.chainId }}"
             - "--gas-adjustment={{ .Values.gasAdjustment }}"
             - "--gas-prices={{ .Values.gasPrices }}"
+            - "--gas=auto"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
