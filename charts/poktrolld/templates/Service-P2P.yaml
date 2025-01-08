@@ -11,7 +11,9 @@ metadata:
     {{- end }}
 spec:
   type: {{ .Values.serviceP2P.type }}
+  {{- if or (eq .Values.serviceP2P.type "LoadBalancer") (eq .Values.serviceP2P.type "NodePort") }}
   externalTrafficPolicy: {{ .Values.serviceP2P.externalTrafficPolicy }}
+  {{- end }}
   internalTrafficPolicy: {{ .Values.serviceP2P.internalTrafficPolicy }}
   ports:
     - port: {{ .Values.serviceP2P.port }}
