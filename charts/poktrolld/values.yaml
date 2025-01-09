@@ -47,6 +47,7 @@ service:
 
 serviceMonitor:
   enabled: false
+  interval: 30s
 
 ingress:
   rpc:
