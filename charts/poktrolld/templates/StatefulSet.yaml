@@ -54,14 +54,14 @@ spec:
           name: comet-metrics
         - containerPort: {{ .Values.serviceP2P.port }}
           name: p2p
-        livenessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.ports.rpc }}
-        readinessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.ports.rpc }}
+        # livenessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: {{ .Values.service.ports.rpc }}
+        # readinessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: {{ .Values.service.ports.rpc }}
         args:
         - start
         - --api.address=tcp://0.0.0.0:{{ .Values.service.ports.api }}
