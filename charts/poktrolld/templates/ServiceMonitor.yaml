@@ -11,7 +11,7 @@ spec:
       {{- include "poktrolld.selectorLabels" . | nindent 6 }}
   endpoints:
     - port: api
-      interval: 30s
+      interval: {{ .Values.serviceMonitor.interval }}
       path: /metrics
       params:
         format: [prometheus]

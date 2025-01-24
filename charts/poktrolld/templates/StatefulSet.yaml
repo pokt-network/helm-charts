@@ -17,11 +17,24 @@ spec:
       # Initializes `priv_validator_state` if it doesn't exist.
       - name: init-priv-validator-state
         image: busybox
-        command: ['sh', '-c', 'if [ ! -f /root/.poktroll/data/priv_validator_state.json ]; then echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > /root/.poktroll/data/priv_validator_state.json; fi']
+        command: ['sh', '-c', 'if [ ! -f {{ .Values.homeDirectory }}/data/priv_validator_state.json ]; then echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > {{ .Values.homeDirectory }}/data/priv_validator_state.json; fi']
         volumeMounts:
         - name: pocket-volume
-          mountPath: /root/.poktroll/data
+          mountPath: {{ .Values.homeDirectory }}/data
           subPath: data
+      {{- if .Values.chownDataDirTo }}
+      - name: init-permissions
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            mkdir -p {{ .Values.homeDirectory }}/config && \
+            chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }}
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
       containers:
       - name: poktrolld
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -41,14 +54,14 @@ spec:
           name: comet-metrics
         - containerPort: {{ .Values.serviceP2P.port }}
           name: p2p
-        livenessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.ports.rpc }}
-        readinessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.ports.rpc }}
+        # livenessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: {{ .Values.service.ports.rpc }}
+        # readinessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: {{ .Values.service.ports.rpc }}
         args:
         - start
         - --api.address=tcp://0.0.0.0:{{ .Values.service.ports.api }}
@@ -59,6 +72,8 @@ spec:
         - --p2p.seeds={{ .Values.config.p2p.seeds }}
         - --p2p.seed_mode={{ .Values.config.p2p.seedMode }}
         - --p2p.persistent_peers={{ .Values.config.p2p.persistentPeers }}
+        - --log_level={{ .Values.logs.level }}
+        - --log_format={{ .Values.logs.format }}
         {{- if .Values.config.p2p.externalAddress }}
         - --p2p.external-address={{ .Values.config.p2p.externalAddress }}
         {{- end }}
@@ -67,23 +82,25 @@ spec:
         {{- end }}
         volumeMounts:
         - name: pocket-volume
-          mountPath: /root/.poktroll/
+          mountPath: {{ .Values.homeDirectory }}/
         - name: node-keys
-          mountPath: "/root/.poktroll/config/node_key.json"
+          mountPath: "{{ .Values.homeDirectory }}/config/node_key.json"
           subPath: "node_key.json"
         - name: node-keys
-          mountPath: "/root/.poktroll/config/priv_validator_key.json"
+          mountPath: "{{ .Values.homeDirectory }}/config/priv_validator_key.json"
           subPath: "priv_validator_key.json"
         - name: genesis-volume
-          mountPath: "/root/.poktroll/config/genesis.json"
+          mountPath: "{{ .Values.homeDirectory }}/config/genesis.json"
           subPath: {{ .Values.genesis.configMapKey | quote }}
-{{- $files := .Files.Glob "files/config/*" }}
-{{- range $path, $_ := $files }}
-{{- $name := base $path }}
         - name: config-volume
-          mountPath: "/root/.poktroll/config/{{ $name }}"
-          subPath: "{{ $name }}"
-{{- end }}
+          mountPath: "{{ .Values.homeDirectory }}/config/app.toml"
+          subPath: "app.toml"
+        - name: config-volume
+          mountPath: "{{ .Values.homeDirectory }}/config/config.toml"
+          subPath: "config.toml"
+        - name: config-volume
+          mountPath: "{{ .Values.homeDirectory }}/config/client.toml"
+          subPath: "client.toml"
       volumes:
       - name: pocket-volume
         {{- if .Values.persistence.enabled }}
@@ -103,11 +120,12 @@ spec:
           name: {{ .Values.customConfigsConfigMap.name | quote }}
 {{- end }}
           items:
-{{- range $path, $_ := $files }}
-{{- $name := base $path }}
-          - key: "{{ $name }}"
-            path: "{{ $name }}"
-{{- end }}
+          - key: app.toml
+            path: app.toml
+          - key: client.toml
+            path: client.toml
+          - key: config.toml
+            path: config.toml
       - name: node-keys
         secret:
           secretName: {{ .Values.nodeKeysSecretName }}

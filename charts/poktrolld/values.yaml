@@ -1,9 +1,17 @@
 purpose: full-node
 
+# Should be /home/pocket/.poktroll after we fully adopt production images
+homeDirectory: /root/.poktroll
+chownDataDirTo: "" # forces `chown` of the data directory to the following UID/GUID
+
 image:
   repository: ghcr.io/pokt-network/poktrolld
   tag: latest
   pullPolicy: IfNotPresent
+
+logs:
+  level: info
+  format: plain
 
 persistence:
   enabled: true
@@ -39,6 +47,7 @@ service:
 
 serviceMonitor:
   enabled: false
+  interval: 30s
 
 ingress:
   rpc:

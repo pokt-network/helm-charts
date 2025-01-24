@@ -59,8 +59,12 @@ spec:
 {{ end }}
             - "relayminer"
             - "--keyring-backend={{ .Values.keyringBackend }}"
-            - "--config=/root/.poktroll/config/config.yaml"
+            - "--config={{ .Values.homeDirectory }}/config/config.yaml"
+            - "--grpc-insecure={{ .Values.grpcInsecure }}"
             - "--log_level={{ .Values.logs.level }}"
+            - "--chain-id={{ .Values.chainId }}"
+            - "--gas-adjustment={{ .Values.gasAdjustment }}"
+            - "--gas-prices={{ .Values.gasPrices }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -73,13 +77,16 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: keys-volume
-              mountPath: /root/.poktroll/keyring-test/{{ .Values.config.signing_key_name }}.info
+              mountPath: {{ .Values.homeDirectory }}/keyring-test/{{ .Values.config.signing_key_name }}.info
               subPath: {{ .Values.config.signing_key_name }}.info
             # - name: configs-volume
-            #   mountPath: /root/.poktroll/config/
+            #   mountPath: {{ .Values.homeDirectory }}/config/
             - name: relayminer-config
-              mountPath: "/root/.poktroll/config/config.yaml"
+              mountPath: "{{ .Values.homeDirectory }}/config/config.yaml"
               subPath: "config.yaml"
+            - name: relayminer-config
+              mountPath: "{{ .Values.homeDirectory }}/config/client.toml"
+              subPath: "client.toml"
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -87,9 +94,6 @@ spec:
         - name: keys-volume
           secret:
             secretName: {{ .Values.keysSecretName }}
-        # - name: configs-volume
-        #   configMap:
-        #     name: {{ .Values.configsConfigMapName }}
         - name: relayminer-config
           configMap:
             name: {{ include "relayminer.fullname" . }}
