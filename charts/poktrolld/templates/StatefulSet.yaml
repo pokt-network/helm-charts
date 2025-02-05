@@ -22,6 +22,19 @@ spec:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}/data
           subPath: data
+      {{- if .Values.cosmovisor.enabled }}
+      - name: init-cosmovisor
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            mkdir -p {{ .Values.homeDirectory }}/cosmovisor/genesis/bin && \
+            mkdir -p {{ .Values.homeDirectory }}/cosmovisor/upgrades
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
       {{- if .Values.chownDataDirTo }}
       - name: init-permissions
         image: busybox
