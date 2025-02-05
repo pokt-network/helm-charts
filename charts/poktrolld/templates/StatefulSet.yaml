@@ -40,7 +40,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
         {{- if .Values.cosmovisor.enabled }}
-        command: ["/usr/local/bin/cosmovisor"]
+        command: ["/bin/cosmovisor"]
         env:
         - name: DAEMON_NAME
           value: "poktrolld"
