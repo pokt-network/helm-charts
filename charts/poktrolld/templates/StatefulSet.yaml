@@ -22,6 +22,31 @@ spec:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}/data
           subPath: data
+      {{- if .Values.cosmovisor.enabled }}
+      - name: init-cosmovisor
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+        - name: DAEMON_NAME
+          value: "poktrolld"
+        - name: DAEMON_HOME
+          value: {{ .Values.homeDirectory | quote }}
+        - name: DAEMON_RESTART_AFTER_UPGRADE
+          value: {{ .Values.cosmovisor.restartAfterUpgrade | quote }}
+        - name: DAEMON_ALLOW_DOWNLOAD_BINARIES
+          value: {{ .Values.cosmovisor.allowDownloadBinaries | quote }}
+        - name: UNSAFE_SKIP_BACKUP
+          value: {{ .Values.cosmovisor.unsafeSkipBackup | quote }}
+        command:
+          - sh
+          - -c
+          - |
+            if [ ! -f {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/poktrolld ]; then
+              cosmovisor init /bin/poktrolld
+            fi
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
       {{- if .Values.chownDataDirTo }}
       - name: init-permissions
         image: busybox
@@ -39,6 +64,20 @@ spec:
       - name: poktrolld
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
+        {{- if .Values.cosmovisor.enabled }}
+        command: ["/bin/cosmovisor"]
+        env:
+        - name: DAEMON_NAME
+          value: "poktrolld"
+        - name: DAEMON_HOME
+          value: {{ .Values.homeDirectory | quote }}
+        - name: DAEMON_RESTART_AFTER_UPGRADE
+          value: {{ .Values.cosmovisor.restartAfterUpgrade | quote }}
+        - name: DAEMON_ALLOW_DOWNLOAD_BINARIES
+          value: {{ .Values.cosmovisor.allowDownloadBinaries | quote }}
+        - name: UNSAFE_SKIP_BACKUP
+          value: {{ .Values.cosmovisor.unsafeSkipBackup | quote }}
+        {{- end }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         securityContext:
@@ -63,6 +102,9 @@ spec:
         #     path: /
         #     port: {{ .Values.service.ports.rpc }}
         args:
+        {{- if .Values.cosmovisor.enabled }}
+        - run
+        {{- end }}
         - start
         - --api.address=tcp://0.0.0.0:{{ .Values.service.ports.api }}
         - --rpc.laddr=tcp://0.0.0.0:{{ .Values.service.ports.rpc }}
