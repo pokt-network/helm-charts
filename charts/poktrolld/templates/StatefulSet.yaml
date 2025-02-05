@@ -24,13 +24,14 @@ spec:
           subPath: data
       {{- if .Values.cosmovisor.enabled }}
       - name: init-cosmovisor
-        image: busybox
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         command:
           - sh
           - -c
           - |
-            mkdir -p {{ .Values.homeDirectory }}/cosmovisor/genesis/bin && \
-            mkdir -p {{ .Values.homeDirectory }}/cosmovisor/upgrades
+            if [ ! -f {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/poktrolld ]; then
+              cosmovisor init /bin/poktrolld
+            fi
         volumeMounts:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}
