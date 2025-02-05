@@ -25,6 +25,17 @@ spec:
       {{- if .Values.cosmovisor.enabled }}
       - name: init-cosmovisor
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+        - name: DAEMON_NAME
+          value: "poktrolld"
+        - name: DAEMON_HOME
+          value: {{ .Values.homeDirectory | quote }}
+        - name: DAEMON_RESTART_AFTER_UPGRADE
+          value: {{ .Values.cosmovisor.restartAfterUpgrade | quote }}
+        - name: DAEMON_ALLOW_DOWNLOAD_BINARIES
+          value: {{ .Values.cosmovisor.allowDownloadBinaries | quote }}
+        - name: UNSAFE_SKIP_BACKUP
+          value: {{ .Values.cosmovisor.unsafeSkipBackup | quote }}
         command:
           - sh
           - -c
