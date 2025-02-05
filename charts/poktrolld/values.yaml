@@ -94,3 +94,9 @@ genesis:
 customConfigsConfigMap:
   enabled: false
   name: ""
+
+cosmovisor:
+  enabled: false
+  restartAfterUpgrade: true
+  allowDownloadBinaries: true
+  unsafeSkipBackup: false
