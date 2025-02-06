@@ -19,10 +19,29 @@ spec:
       {{- end }}
       labels:
         {{- include "relayminer.labels" . | nindent 8 }}
-	{{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
+        {{- with .Values.podLabels }}
+          {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      {{- /* Only add an extra init container if chownDataDirTo is provided */ -}}
+      {{- if .Values.chownDataDirTo }}
+      initContainers:
+        - name: init-permissions
+          image: busybox
+          securityContext:
+            runAsUser: 0  # Run as root to create directories
+            runAsGroup: 0
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p {{ .Values.homeDirectory }}/config && \
+              chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }} && \
+              chmod -R 755 {{ .Values.homeDirectory }}
+          volumeMounts:
+            - name: poktroll-home
+              mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -87,6 +106,8 @@ spec:
             - name: relayminer-config
               mountPath: "{{ .Values.homeDirectory }}/config/client.toml"
               subPath: "client.toml"
+            - name: poktroll-home
+              mountPath: {{ .Values.homeDirectory }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -97,6 +118,8 @@ spec:
         - name: relayminer-config
           configMap:
             name: {{ include "relayminer.fullname" . }}
+        - name: poktroll-home
+          emptyDir: {}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

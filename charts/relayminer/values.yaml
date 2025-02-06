@@ -4,6 +4,8 @@
 
 replicaCount: 1
 
+chownDataDirTo: "" # forces `chown` of the data directory to the following UID/GUID
+
 logs:
   level: info
 
