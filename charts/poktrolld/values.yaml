@@ -9,6 +9,23 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
+resources:
+  {}
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # limits:
+  #   cpu: 2000m
+  #   memory: 2048Mi
+
+containerSecurityContext:
+  {}
+  # readOnlyRootFilesystem: true
+  # allowPrivilegeEscalation: false
+  # capabilities:
+  #   drop:
+  #     - ALL
+
 logs:
   level: info
   format: plain
@@ -22,13 +39,13 @@ persistence:
   customName: "" # The custom name to be used if useCustomName is true
 
 config:
+  unsafeSkipUpgrades: [] # Array of block heights to skip upgrades
   p2p:
     externalAddress: ""
     seedMode: false
     seeds: ""
     persistentPeers: ""
     unconditionalPeerIds: ""
-    unsafeSkipUpgrades: [] # Array of block heights to skip upgrades
 
 serviceP2P:
   type: ClusterIP
@@ -94,6 +111,11 @@ genesis:
 customConfigsConfigMap:
   enabled: false
   name: ""
+
+# Custom labels to add to pods
+podLabels:
+  {}
+  # example-label: example-value
 
 cosmovisor:
   enabled: false
