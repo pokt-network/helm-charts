@@ -22,9 +22,29 @@ spec:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}/data
           subPath: data
+      {{- if .Values.chownDataDirTo }}
+      - name: init-permissions
+        image: busybox
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        command:
+          - sh
+          - -c
+          - |
+            mkdir -p {{ .Values.homeDirectory }}/config && \
+            chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }} && \
+            chmod -R 755 {{ .Values.homeDirectory }}
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
       {{- if .Values.cosmovisor.enabled }}
       - name: init-cosmovisor
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        securityContext:
+          runAsUser: {{ .Values.chownDataDirTo | default 0 }}
+          runAsGroup: {{ .Values.chownDataDirTo | default 0 }}
         env:
         - name: DAEMON_NAME
           value: "poktrolld"
@@ -43,19 +63,6 @@ spec:
             if [ ! -f {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/poktrolld ]; then
               cosmovisor init /bin/poktrolld
             fi
-        volumeMounts:
-        - name: pocket-volume
-          mountPath: {{ .Values.homeDirectory }}
-      {{- end }}
-      {{- if .Values.chownDataDirTo }}
-      - name: init-permissions
-        image: busybox
-        command:
-          - sh
-          - -c
-          - |
-            mkdir -p {{ .Values.homeDirectory }}/config && \
-            chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }}
         volumeMounts:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}
@@ -147,7 +154,13 @@ spec:
       - name: pocket-volume
         {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: {{ with .Values.persistence.existingClaim | default (ternary .Values.persistence.customName (printf "%s-data" (include "poktrolld.fullname" .)) .Values.persistence.useCustomName) }}{{ . | quote }}{{ end }}
+          claimName: {{ if .Values.persistence.existingClaim }}
+            {{- .Values.persistence.existingClaim | quote }}
+          {{- else if .Values.persistence.useCustomName }}
+            {{- .Values.persistence.customName | quote }}
+          {{- else }}
+            {{- printf "%s-data" (include "poktrolld.fullname" .) | quote }}
+          {{- end }}
         {{- else }}
           emptyDir: {}
         {{- end }}
