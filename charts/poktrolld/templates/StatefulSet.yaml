@@ -4,7 +4,7 @@ metadata:
   name: {{ include "poktrolld.fullname" . | quote }}
 spec:
   serviceName: {{ include "poktrolld.fullname" . | quote }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1 # With how the helm chart is built, this should always be 1.
   selector:
     matchLabels:
       {{- include "poktrolld.selectorLabels" . | nindent 6 }}
@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         {{- include "poktrolld.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       initContainers:
       # Initializes `priv_validator_state` if it doesn't exist.
@@ -70,7 +73,7 @@ spec:
       containers:
       - name: poktrolld
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         {{- if .Values.cosmovisor.enabled }}
         command: ["/bin/cosmovisor"]
         env:
