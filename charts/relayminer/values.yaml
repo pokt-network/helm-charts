@@ -41,6 +41,13 @@ config:
         publicly_exposed_endpoints:
           - relayminers
       listen_url: http://0.0.0.0:8545
+    - service_id: anvilws
+      type: http
+      service_config:
+        backend_url: ws://anvil:8547/
+        publicly_exposed_endpoints:
+          - relayminers
+      listen_url: ws://0.0.0.0:8545
   metrics:
     enabled: true
     # If changing port here, make sure to adjust `metrics.serviceMonitor.port`
