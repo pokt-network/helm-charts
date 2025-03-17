@@ -1,0 +1,44 @@
+purpose: full-node
+
+# Basic node configuration
+homeDirectory: /root/.poktroll
+
+# REQUIRED: Specify which network to use
+config:
+  network: "testnet-beta" # Options: testnet-alpha, testnet-beta, mainnet
+  p2p:
+    seeds: "8d0c261f28d1a350921ac90336e5d838e67eb524@p2p-seed-1.testnet-beta.poktroll.com:26656,a1d109c1b114fec26f9561977ee370decdba26b2@p2p-seed-2.testnet-beta.poktroll.com:26656"
+  # Optional: add any additional command-line arguments
+  additionalArgs:
+    - --minimum-gas-prices=0upokt
+
+# Node keys secret (required, must be created separately)
+nodeKeysSecretName: poktrolld-node-keys
+
+# Enable snapshot for faster node bootstrapping (recommended for new nodes)
+snapshot:
+  enabled: true
+  # No need to specify network here, it uses config.network
+
+# Enable cosmovisor for automatic upgrades
+cosmovisor:
+  enabled: true
+  restartAfterUpgrade: true
+  allowDownloadBinaries: true
+  unsafeSkipBackup: true
+
+# Enable persistence for node data
+persistence:
+  enabled: true
+  size: 100Gi # Ensure sufficient space for blockchain data
+
+# These are the default values for the ports
+service:
+  ports:
+    rpc: 26657
+    grpc: 9090
+    api: 1317
+    cometBFTMetrics: 26660
+
+serviceP2P:
+  port: 26656

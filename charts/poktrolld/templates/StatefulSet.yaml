@@ -42,6 +42,196 @@ spec:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}
       {{- end }}
+      {{- if .Values.snapshot.enabled }}
+      # Init container for snapshot download and extraction
+      - name: init-snapshot
+        image: debian:stable-slim
+        command:
+          - sh
+          - -c
+          - |
+            set -e
+            apt-get update
+            apt-get install -y curl aria2 zstd jq tar
+            
+            # Use the snapshot baseUrl to determine latest snapshot height and version
+            NETWORK="{{ .Values.config.network }}"
+            BASE_URL="{{ .Values.snapshot.baseUrl }}"
+            SNAPSHOT_DIR="{{ .Values.homeDirectory }}/snapshot"
+            
+            # Create directories
+            mkdir -p $SNAPSHOT_DIR
+            mkdir -p {{ .Values.homeDirectory }}/data
+            
+            # Check if data directory is empty before doing snapshot sync
+            if [ "$(ls -A {{ .Values.homeDirectory }}/data)" ]; then
+              echo "Data directory not empty, skipping snapshot download"
+              exit 0
+            fi
+            
+            # Get snapshot information
+            echo "Fetching latest snapshot information for $NETWORK"
+            {{- if .Values.snapshot.latestHeight }}
+            LATEST_HEIGHT="{{ .Values.snapshot.latestHeight }}"
+            {{- else }}
+            LATEST_HEIGHT=$(curl -s "$BASE_URL/$NETWORK-latest-archival.txt")
+            {{- end }}
+            
+            if [ -z "$LATEST_HEIGHT" ]; then
+              echo "Failed to get latest snapshot height. Exiting."
+              exit 1
+            fi
+            echo "Latest snapshot height: $LATEST_HEIGHT"
+            
+            {{- if .Values.snapshot.version }}
+            SNAPSHOT_VERSION="{{ .Values.snapshot.version }}"
+            {{- else }}
+            SNAPSHOT_VERSION=$(curl -s "$BASE_URL/$NETWORK-$LATEST_HEIGHT-version.txt")
+            {{- end }}
+            
+            if [ -z "$SNAPSHOT_VERSION" ]; then
+              echo "Failed to get snapshot version. Exiting."
+              exit 1
+            fi
+            echo "Snapshot version: $SNAPSHOT_VERSION"
+            
+            # Determine URL for torrent download
+            {{- if .Values.snapshot.url }}
+            SNAPSHOT_URL="{{ .Values.snapshot.url }}"
+            {{- else }}
+            SNAPSHOT_URL="$BASE_URL/$NETWORK-latest-archival.torrent"
+            {{- end }}
+            
+            echo "Downloading snapshot from: $SNAPSHOT_URL"
+            cd $SNAPSHOT_DIR
+            
+            # Download using torrent
+            aria2c --seed-time=0 --file-allocation=none --continue=true \
+                  --max-connection-per-server=4 --max-concurrent-downloads=16 --split=16 \
+                  --bt-enable-lpd=true --bt-max-peers=100 --bt-prioritize-piece=head,tail \
+                  --bt-seed-unverified \
+                  "$SNAPSHOT_URL"
+            
+            # Find the downloaded file
+            SNAPSHOT_FILE=$(find . -type f -name "*.tar.*" | head -n 1)
+            
+            if [ -z "$SNAPSHOT_FILE" ]; then
+              echo "No snapshot file found after download. Exiting."
+              exit 1
+            fi
+            
+            echo "Extracting snapshot file: $SNAPSHOT_FILE"
+            # Extract based on file type
+            if [[ "$SNAPSHOT_FILE" == *.tar.zst ]]; then
+              zstd -d "$SNAPSHOT_FILE" --stdout | tar -xf - -C {{ .Values.homeDirectory }}/data
+            elif [[ "$SNAPSHOT_FILE" == *.tar.gz ]]; then
+              tar -zxf "$SNAPSHOT_FILE" -C {{ .Values.homeDirectory }}/data
+            else
+              echo "Unknown snapshot format: $SNAPSHOT_FILE"
+              exit 1
+            fi
+            
+            echo "Snapshot extracted successfully"
+            # Cleanup
+            cd {{ .Values.homeDirectory }}
+            rm -rf $SNAPSHOT_DIR
+        securityContext:
+          runAsUser: 0  # Run as root to install packages
+          runAsGroup: 0
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
+      {{- if .Values.genesisRepo.downloadConfigs }}
+      # Init container to download configurations from genesis repo
+      - name: init-genesis-configs
+        image: debian:stable-slim
+        command:
+          - sh
+          - -c
+          - |
+            set -e
+            apt-get update
+            apt-get install -y curl jq
+            
+            # Setup variables
+            CONFIG_DIR="{{ .Values.homeDirectory }}/config"
+            NETWORK="{{ .Values.config.network }}"
+            BRANCH="{{ .Values.genesisRepo.branch }}"
+            BASE_URL="{{ .Values.genesisRepo.baseUrl }}/${BRANCH}/shannon/${NETWORK}"
+            
+            # Create config directory
+            mkdir -p $CONFIG_DIR
+            
+            # Verify network is set
+            if [ -z "$NETWORK" ]; then
+              echo "Error: config.network is not set. Please specify a network (testnet-alpha, testnet-beta, mainnet)"
+              exit 1
+            fi
+            
+            # Download genesis.json
+            echo "Downloading genesis.json from $BASE_URL/genesis.json"
+            curl -s -o $CONFIG_DIR/genesis.json "$BASE_URL/genesis.json"
+            if [ ! -f $CONFIG_DIR/genesis.json ]; then
+              echo "Failed to download genesis.json"
+              exit 1
+            fi
+            
+            # Download app.toml
+            echo "Downloading app.toml from $BASE_URL/app.toml"
+            curl -s -o $CONFIG_DIR/app.toml "$BASE_URL/app.toml"
+            if [ ! -f $CONFIG_DIR/app.toml ]; then
+              echo "Failed to download app.toml"
+              exit 1
+            fi
+            
+            # Download client.toml
+            echo "Downloading client.toml from $BASE_URL/client.toml"
+            curl -s -o $CONFIG_DIR/client.toml "$BASE_URL/client.toml"
+            if [ ! -f $CONFIG_DIR/client.toml ]; then
+              echo "Failed to download client.toml"
+              exit 1
+            fi
+            
+            # Download config.toml
+            echo "Downloading config.toml from $BASE_URL/config.toml"
+            curl -s -o $CONFIG_DIR/config.toml "$BASE_URL/config.toml"
+            if [ ! -f $CONFIG_DIR/config.toml ]; then
+              echo "Failed to download config.toml"
+              exit 1
+            fi
+            
+            # Download seeds file and update config.toml with seeds
+            echo "Downloading seeds from $BASE_URL/seeds"
+            SEEDS=$(curl -s "$BASE_URL/seeds")
+            if [ -n "$SEEDS" ]; then
+              echo "Updating config.toml with seeds: $SEEDS"
+              sed -i -e "s|^seeds *=.*|seeds = \"$SEEDS\"|" $CONFIG_DIR/config.toml
+            else
+              echo "No seeds found, using default or specified values"
+            fi
+            
+            # Extract chain_id from genesis.json
+            CHAIN_ID=$(jq -r '.chain_id' < $CONFIG_DIR/genesis.json)
+            if [ -z "$CHAIN_ID" ]; then
+              echo "Failed to extract chain_id from genesis file."
+              exit 1
+            fi
+            echo "Using chain_id: $CHAIN_ID from genesis file"
+            
+            # Set ownership if needed
+            {{- if .Values.chownDataDirTo }}
+            chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} $CONFIG_DIR
+            {{- end }}
+            
+            echo "Configuration files downloaded successfully"
+        securityContext:
+          runAsUser: 0  # Run as root to install packages
+          runAsGroup: 0
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
       {{- if .Values.cosmovisor.enabled }}
       - name: init-cosmovisor
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -126,11 +316,17 @@ spec:
         - --p2p.persistent_peers={{ .Values.config.p2p.persistentPeers }}
         - --log_level={{ .Values.logs.level }}
         - --log_format={{ .Values.logs.format }}
+        - --minimum-gas-prices=0.0001upokt
+        - --metrics.prometheus=true
+        - --chain-id={{ .Values.config.chainID | default "" }}
         {{- if .Values.config.p2p.externalAddress }}
         - --p2p.external-address={{ .Values.config.p2p.externalAddress }}
         {{- end }}
         {{- if .Values.config.unsafeSkipUpgrades }}
         - --unsafe-skip-upgrades={{ join "," .Values.config.unsafeSkipUpgrades }}
+        {{- end }}
+        {{- range .Values.config.additionalArgs }}
+        - {{ . }}
         {{- end }}
         volumeMounts:
         - name: pocket-volume
@@ -141,9 +337,10 @@ spec:
         - name: node-keys
           mountPath: "{{ .Values.homeDirectory }}/config/priv_validator_key.json"
           subPath: "priv_validator_key.json"
+        {{- if not .Values.genesisRepo.downloadConfigs }}
         - name: genesis-volume
           mountPath: "{{ .Values.homeDirectory }}/config/genesis.json"
-          subPath: {{ .Values.genesis.configMapKey | quote }}
+          subPath: {{ .Values.externalConfigs.genesis.configMapKey | quote }}
         - name: config-volume
           mountPath: "{{ .Values.homeDirectory }}/config/app.toml"
           subPath: "app.toml"
@@ -153,6 +350,7 @@ spec:
         - name: config-volume
           mountPath: "{{ .Values.homeDirectory }}/config/client.toml"
           subPath: "client.toml"
+        {{- end }}
       volumes:
       - name: pocket-volume
         {{- if .Values.persistence.enabled }}
@@ -167,15 +365,16 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
+      {{- if not .Values.genesisRepo.downloadConfigs }}
       - name: genesis-volume
         configMap:
-          name: {{ .Values.genesis.configMapName | quote }}
+          name: {{ .Values.externalConfigs.genesis.configMapName | quote }}
       - name: config-volume
         configMap:
-{{- if not .Values.customConfigsConfigMap.enabled }}
+{{- if not .Values.externalConfigs.customConfigsConfigMap.enabled }}
           name: {{ include "poktrolld.fullname" . }}-configs
 {{- else }}
-          name: {{ .Values.customConfigsConfigMap.name | quote }}
+          name: {{ .Values.externalConfigs.customConfigsConfigMap.name | quote }}
 {{- end }}
           items:
           - key: app.toml
@@ -184,6 +383,7 @@ spec:
             path: client.toml
           - key: config.toml
             path: config.toml
+      {{- end }}
       - name: node-keys
         secret:
           secretName: {{ .Values.nodeKeysSecretName }}

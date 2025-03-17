@@ -9,6 +9,66 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
+# Node Configuration
+config:
+  # Network configuration (REQUIRED - user must specify)
+  network: "" # Options: testnet-alpha, testnet-beta, mainnet
+
+  # P2P configuration
+  p2p:
+    externalAddress: ""
+    seedMode: false
+    seeds: ""
+    persistentPeers: ""
+    unconditionalPeerIds: ""
+
+  # Chain configuration
+  chainID: "" # If empty, will be extracted from genesis.json
+  unsafeSkipUpgrades: [] # Array of block heights to skip upgrades
+
+  # Additional command-line arguments for poktrolld
+  additionalArgs: []
+
+# Snapshot configuration for fast sync
+# If enabled, node will download latest snapshot instead of syncing from genesis
+snapshot:
+  enabled: false
+  baseUrl: "https://snapshots.us-nj.poktroll.com"
+  # Optional overrides
+  latestHeight: "" # If empty, will fetch from baseUrl
+  version: "" # If empty, will fetch from baseUrl
+  url: "" # If empty, will construct from baseUrl and network
+
+# Genesis repository configuration (preferred method for acquiring configuration files)
+genesisRepo:
+  downloadConfigs: true
+  branch: "master"
+  baseUrl: "https://raw.githubusercontent.com/pokt-network/pocket-network-genesis"
+
+# Use existing configs (only if genesisRepo.downloadConfigs is false)
+# This is only for advanced use cases where you need custom configurations
+externalConfigs:
+  # Genesis configuration (required if downloadConfigs is false)
+  genesis:
+    configMapName: ""
+    configMapKey: "genesis.json"
+
+  # Custom config files (optional, will use default if not provided)
+  customConfigsConfigMap:
+    enabled: false
+    name: ""
+
+# Cosmovisor configuration for automatic upgrades
+cosmovisor:
+  enabled: false
+  restartAfterUpgrade: true
+  allowDownloadBinaries: true
+  unsafeSkipBackup: false
+
+# Node keys for validation
+nodeKeysSecretName: ""
+
+# Resource configuration
 resources:
   {}
   # requests:
@@ -18,6 +78,7 @@ resources:
   #   cpu: 2000m
   #   memory: 2048Mi
 
+# Container security
 containerSecurityContext:
   {}
   # readOnlyRootFilesystem: true
@@ -26,27 +87,21 @@ containerSecurityContext:
   #   drop:
   #     - ALL
 
+# Logging configuration
 logs:
   level: info
   format: plain
 
+# Storage configuration
 persistence:
   enabled: true
   className: ""
   size: 1Gi
   existingClaim: ""
-  useCustomName: false # Enable custom naming
-  customName: "" # The custom name to be used if useCustomName is true
+  useCustomName: false
+  customName: ""
 
-config:
-  unsafeSkipUpgrades: [] # Array of block heights to skip upgrades
-  p2p:
-    externalAddress: ""
-    seedMode: false
-    seeds: ""
-    persistentPeers: ""
-    unconditionalPeerIds: ""
-
+# Service configurations
 serviceP2P:
   type: ClusterIP
   port: 26656
@@ -62,63 +117,31 @@ service:
     api: 1317
     cometBFTMetrics: 26660
 
+# Monitoring configuration
 serviceMonitor:
   enabled: false
   interval: 30s
 
+# Ingress configurations
 ingress:
   rpc:
     enabled: false
-    annotations:
-      {}
-      # kubernetes.io/ingress.class: nginx
-    hosts:
-      []
-      # - name: rpc-endpoint.example.com
+    annotations: {}
+    hosts: []
     tls:
       secretName: ""
   grpc:
     enabled: false
-    annotations:
-      {}
-      # kubernetes.io/ingress.class: nginx
-    hosts:
-      []
-      # - name: grpc-endpoint.example.com
+    annotations: {}
+    hosts: []
     tls:
       secretName: ""
   api:
     enabled: false
-    annotations:
-      {}
-      # kubernetes.io/ingress.class: nginx
-    hosts:
-      []
-      # - name: api-endpoint.example.com
+    annotations: {}
+    hosts: []
     tls:
       secretName: ""
 
-# Name of the secret that contains `node_key.json` and `priv_validator_key.json`.
-nodeKeysSecretName: ""
-
-# TODO: Add pre-generated config maps when we have a stable public network.
-genesis:
-  # Name of the Config Map that containts the genesis.json of the network
-  configMapName: ""
-  configMapKey: genesis.json
-
-# Allows to provide custom `app.toml`, `client.toml` and `config.toml`. Default files are supplied in `files/config` directory.
-customConfigsConfigMap:
-  enabled: false
-  name: ""
-
 # Custom labels to add to pods
-podLabels:
-  {}
-  # example-label: example-value
-
-cosmovisor:
-  enabled: false
-  restartAfterUpgrade: true
-  allowDownloadBinaries: true
-  unsafeSkipBackup: false
+podLabels: {}
