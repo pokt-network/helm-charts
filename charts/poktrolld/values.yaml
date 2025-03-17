@@ -1,3 +1,11 @@
+# TODO: Remove legacy compatibility in future release
+# The following legacy settings should be removed when no longer needed:
+# 1. genesis.configMapName - replaced by externalConfigs.genesis.configMapName
+# 2. customConfigsConfigMap.enabled - replaced by externalConfigs.customConfigsConfigMap.enabled
+# 3. customConfigsConfigMap.name - replaced by externalConfigs.customConfigsConfigMap.name
+# 4. Support for deriving network name from namespace
+# 5. Any compatibility code in StatefulSet.yaml (if checks for both old and new paths)
+
 purpose: full-node
 
 # Should be /home/pocket/.poktroll after we fully adopt production images
@@ -12,7 +20,12 @@ image:
 # Node Configuration
 config:
   # Network configuration (REQUIRED - user must specify)
-  network: "" # Options: testnet-alpha, testnet-beta, mainnet
+  network:
+    {
+      {
+        .Values.config.network | default (regexFind "testnet-\\w+" .Release.Namespace) | default "",
+      },
+    }
 
   # P2P configuration
   p2p:
@@ -50,13 +63,13 @@ genesisRepo:
 externalConfigs:
   # Genesis configuration (required if downloadConfigs is false)
   genesis:
-    configMapName: ""
+    configMapName: { { .Values.genesis.configMapName | default "" } }
     configMapKey: "genesis.json"
 
   # Custom config files (optional, will use default if not provided)
   customConfigsConfigMap:
-    enabled: false
-    name: ""
+    enabled: { { .Values.customConfigsConfigMap.enabled | default false } }
+    name: { { .Values.customConfigsConfigMap.name | default "" } }
 
 # Cosmovisor configuration for automatic upgrades
 cosmovisor:
