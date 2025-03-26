@@ -2,25 +2,25 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: { { include "pocketd.fullname" . } }
-  labels: { { - include "pocketd.labels" . | nindent 4 } }
+  name: {{ include "pocketd.fullname" . }}
+  labels: {{ - include "pocketd.labels" . | nindent 4 }}
 spec:
-  type: { { .Values.service.type } }
+  type: {{ .Values.service.type }}
   ports:
-    - port: { { .Values.service.ports.grpc } }
+    - port: {{ .Values.service.ports.grpc }}
       targetPort: grpc
       protocol: TCP
       name: grpc
-    - port: { { .Values.service.ports.rpc } }
+    - port: {{ .Values.service.ports.rpc }}
       targetPort: rpc
       protocol: TCP
       name: rpc
-    - port: { { .Values.service.ports.api } }
+    - port: {{ .Values.service.ports.api }}
       targetPort: api
       protocol: TCP
       name: api
-    - port: { { .Values.service.ports.cometBFTMetrics } }
+    - port: {{ .Values.service.ports.cometBFTMetrics }}
       targetPort: comet-metrics
       protocol: TCP
       name: comet-metrics
-  selector: { { - include "pocketd.selectorLabels" . | nindent 4 } }
+  selector: {{ - include "pocketd.selectorLabels" . | nindent 4 }}
