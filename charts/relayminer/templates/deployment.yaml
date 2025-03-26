@@ -39,7 +39,7 @@ spec:
               chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }} && \
               chmod -R 755 {{ .Values.homeDirectory }}
           volumeMounts:
-            - name: poktroll-home
+            - name: pocket-home
               mountPath: {{ .Values.homeDirectory }}
       {{- end }}
       {{- with .Values.imagePullSecrets }}
@@ -106,7 +106,7 @@ spec:
             - name: relayminer-config
               mountPath: "{{ .Values.homeDirectory }}/config/client.toml"
               subPath: "client.toml"
-            - name: poktroll-home
+            - name: pocket-home
               mountPath: {{ .Values.homeDirectory }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
@@ -118,7 +118,7 @@ spec:
         - name: relayminer-config
           configMap:
             name: {{ include "relayminer.fullname" . }}
-        - name: poktroll-home
+        - name: pocket-home
           emptyDir: {}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
