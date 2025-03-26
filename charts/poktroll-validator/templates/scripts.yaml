@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "poktroll.fullname" . }}-scripts
+  name: {{ include "pocket.fullname" . }}-scripts
 data:
   dev.sh: |-
     #!/bin/sh

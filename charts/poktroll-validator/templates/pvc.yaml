@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "poktroll.fullname" . }}-data
+  name: {{ include "pocket.fullname" . }}-data
 spec:
   accessModes:
     - ReadWriteOnce

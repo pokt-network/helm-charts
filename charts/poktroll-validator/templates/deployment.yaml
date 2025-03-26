@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "poktroll.fullname" . }}
+  name: {{ include "pocket.fullname" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: {{ include "poktroll.fullname" . }}
+      app: {{ include "pocket.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ include "poktroll.fullname" . }}
+        app: {{ include "pocket.fullname" . }}
         pokt.network/purpose: validator
     spec:
       initContainers:
@@ -108,7 +108,7 @@ spec:
       volumes:
         - name: scripts-volume
           configMap:
-            name: {{ include "poktroll.fullname" . }}-scripts
+            name: {{ include "pocket.fullname" . }}-scripts
         - name: keys-source-volume
           configMap:
             name: {{ .Values.keysConfigMapName }}
@@ -118,7 +118,7 @@ spec:
         - name: data-volume
         {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktroll.fullname" .)) }}
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "pocket.fullname" .)) }}
         {{- else }}
           emptyDir: {}
         {{- end }}

@@ -1,5 +1,5 @@
 apiVersion: v2
-name: poktroll-validator
+name: pocket-validator
 description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
