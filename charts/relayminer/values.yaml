@@ -20,7 +20,8 @@ keysSecretName: ""
 # --grpc-insecure
 grpcInsecure: false
 
-chainId: "poktroll"
+appName: "pocket"
+chainId: "pocket"
 
 gasAdjustment: 1.5
 gasPrices: 0.0001upokt
