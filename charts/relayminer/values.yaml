@@ -20,7 +20,6 @@ keysSecretName: ""
 # --grpc-insecure
 grpcInsecure: false
 
-appName: "pocket"
 chainId: "pocket"
 
 gasAdjustment: 1.5
