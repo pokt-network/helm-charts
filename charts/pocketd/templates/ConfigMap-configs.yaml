@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "poktrolld.fullname" . }}-configs
+  name: {{ include "pocketd.fullname" . }}-configs
 data:
   {{- $files := .Files.Glob "files/config/*" }}
   {{- range $path, $_ := $files }}

@@ -2,16 +2,16 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "poktrolld.fullname" . }}
+  name: {{ include "pocket.fullname" . }}
   labels:
-    {{- include "poktrolld.labels" . | nindent 4 }}
+      app: {{ include "pocket.fullname" . }}
 spec:
   selector:
     matchLabels:
-      {{- include "poktrolld.selectorLabels" . | nindent 6 }}
+      app: {{ include "pocket.fullname" . }}
   endpoints:
     - port: api
-      interval: {{ .Values.serviceMonitor.interval }}
+      interval: 30s
       path: /metrics
       params:
         format: [prometheus]

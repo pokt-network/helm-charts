@@ -10,7 +10,7 @@ logs:
   level: info
 
 image:
-  repository: ghcr.io/pokt-network/poktrolld
+  repository: ghcr.io/pokt-network/pocketd
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -20,7 +20,7 @@ keysSecretName: ""
 # --grpc-insecure
 grpcInsecure: false
 
-chainId: "poktroll"
+chainId: "pocket"
 
 gasAdjustment: 1.5
 gasPrices: 0.0001upokt
@@ -95,7 +95,7 @@ securityContext: {}
 # runAsNonRoot: true
 # runAsUser: 1000
 
-homeDirectory: /root/.poktroll
+homeDirectory: /root/.pocket
 
 service:
   type: ClusterIP

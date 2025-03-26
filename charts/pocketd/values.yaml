@@ -1,11 +1,11 @@
 purpose: full-node
 
-# Should be /home/pocket/.poktroll after we fully adopt production images
-homeDirectory: /root/.poktroll
+# Should be /home/pocket/.pocket after we fully adopt production images
+homeDirectory: /root/.pocket
 chownDataDirTo: "" # forces `chown` of the data directory to the following UID/GUID
 
 image:
-  repository: ghcr.io/pokt-network/poktrolld
+  repository: ghcr.io/pokt-network/pocketd
   tag: latest
   pullPolicy: IfNotPresent
 

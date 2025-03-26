@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "poktroll.fullname" . }}
+  name: {{ include "pocket.fullname" . }}
   labels:
-    app: {{ include "poktroll.fullname" . }}
+    app: {{ include "pocket.fullname" . }}
 spec:
   selector:
-    app: {{ include "poktroll.fullname" . }}
+    app: {{ include "pocket.fullname" . }}
   ports:
     - protocol: TCP
       name: rpc

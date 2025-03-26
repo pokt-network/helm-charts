@@ -2,9 +2,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "poktrolld.fullname" . }}
-  labels:
-    {{- include "poktrolld.labels" . | nindent 4 }}
+  name: {{ include "pocketd.fullname" . }}
+  labels: {{ - include "pocketd.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -24,5 +23,4 @@ spec:
       targetPort: comet-metrics
       protocol: TCP
       name: comet-metrics
-  selector:
-    {{- include "poktrolld.selectorLabels" . | nindent 4 }}
+  selector: {{ - include "pocketd.selectorLabels" . | nindent 4 }}

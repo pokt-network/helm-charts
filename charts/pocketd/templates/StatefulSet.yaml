@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "poktrolld.fullname" . | quote }}
+  name: {{ include "pocketd.fullname" . | quote }}
 spec:
-  serviceName: {{ include "poktrolld.fullname" . | quote }}
+  serviceName: {{ include "pocketd.fullname" . | quote }}
   replicas: 1 # With how the helm chart is built, this should always be 1.
   selector:
     matchLabels:
-      {{- include "poktrolld.selectorLabels" . | nindent 6 }}
+      {{- include "pocketd.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "poktrolld.selectorLabels" . | nindent 8 }}
+        {{- include "pocketd.selectorLabels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -50,7 +50,7 @@ spec:
           runAsGroup: {{ .Values.chownDataDirTo | default 0 }}
         env:
         - name: DAEMON_NAME
-          value: "poktrolld"
+          value: "pocketd"
         - name: DAEMON_HOME
           value: {{ .Values.homeDirectory | quote }}
         - name: DAEMON_RESTART_AFTER_UPGRADE
@@ -63,22 +63,22 @@ spec:
           - sh
           - -c
           - |
-            if [ ! -f {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/poktrolld ]; then
-              cosmovisor init /bin/poktrolld
+            if [ ! -f {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/pocketd ]; then
+              cosmovisor init /bin/pocketd
             fi
         volumeMounts:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}
       {{- end }}
       containers:
-      - name: poktrolld
+      - name: pocketd
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         {{- if .Values.cosmovisor.enabled }}
         command: ["/bin/cosmovisor"]
         env:
         - name: DAEMON_NAME
-          value: "poktrolld"
+          value: "pocketd"
         - name: DAEMON_HOME
           value: {{ .Values.homeDirectory | quote }}
         - name: DAEMON_RESTART_AFTER_UPGRADE
@@ -162,7 +162,7 @@ spec:
           {{- else if .Values.persistence.useCustomName }}
             {{- .Values.persistence.customName | quote }}
           {{- else }}
-            {{- printf "%s-data" (include "poktrolld.fullname" .) | quote }}
+            {{- printf "%s-data" (include "pocketd.fullname" .) | quote }}
           {{- end }}
         {{- else }}
           emptyDir: {}
@@ -173,7 +173,7 @@ spec:
       - name: config-volume
         configMap:
 {{- if not .Values.customConfigsConfigMap.enabled }}
-          name: {{ include "poktrolld.fullname" . }}-configs
+          name: {{ include "pocketd.fullname" . }}-configs
 {{- else }}
           name: {{ .Values.customConfigsConfigMap.name | quote }}
 {{- end }}

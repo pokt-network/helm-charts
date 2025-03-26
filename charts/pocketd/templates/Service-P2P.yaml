@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "poktrolld.fullname" . }}-p2p
+  name: {{ include "pocketd.fullname" . }}-p2p
   labels:
-    {{- include "poktrolld.labels" . | nindent 4 }}
+    {{- include "pocketd.labels" . | nindent 4 }}
   annotations:
     {{- with .Values.serviceP2P.annotations }}
     {{- toYaml . | nindent 4 }}
@@ -21,4 +21,4 @@ spec:
       protocol: TCP
       name: p2p
   selector:
-    {{- include "poktrolld.selectorLabels" . | nindent 4 }}
+    {{- include "pocketd.selectorLabels" . | nindent 4 }}

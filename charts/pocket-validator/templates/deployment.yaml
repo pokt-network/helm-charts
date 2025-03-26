@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "poktroll.fullname" . }}
+  name: {{ include "pocket.fullname" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: {{ include "poktroll.fullname" . }}
+      app: {{ include "pocket.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ include "poktroll.fullname" . }}
+        app: {{ include "pocket.fullname" . }}
         pokt.network/purpose: validator
     spec:
       initContainers:
@@ -24,10 +24,10 @@ spec:
         command: ["/bin/sh"]
         args:
          - -c
-         - rm -rf /root/.poktroll/data/*
+         - rm -rf /root/.pocket/data/*
         volumeMounts:
           - name: data-volume
-            mountPath: /root/.poktroll/data/
+            mountPath: /root/.pocket/data/
 {{ end }}
       - name: "prepare-node"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -42,15 +42,15 @@ spec:
           - name: scripts-volume
             mountPath: /scripts
           - name: keys-source-volume
-            mountPath: /root/.poktroll/keyring-test/
+            mountPath: /root/.pocket/keyring-test/
           - name: configs-source-volume
-            mountPath: /root/.poktroll/config-src/
+            mountPath: /root/.pocket/config-src/
           - name: data-volume
-            mountPath: /root/.poktroll/data/
+            mountPath: /root/.pocket/data/
           - name: pocket-volume
-            mountPath: /root/.poktroll/
+            mountPath: /root/.pocket/
       containers:
-        - name: poktrolld-validator
+        - name: pocketd-validator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
           resources:
@@ -74,7 +74,7 @@ spec:
             - --headless=true
             - --api-version=2
             - --accept-multiclient
-            - /usr/local/bin/poktrolld
+            - /usr/local/bin/pocketd
             - --
 {{ else }}
           livenessProbe:
@@ -98,17 +98,17 @@ spec:
             - name: scripts-volume
               mountPath: /scripts
             - name: keys-source-volume
-              mountPath: /root/.poktroll/keyring-test/
+              mountPath: /root/.pocket/keyring-test/
             - name: configs-source-volume
-              mountPath: /root/.poktroll/config-src/
+              mountPath: /root/.pocket/config-src/
             - name: data-volume
-              mountPath: /root/.poktroll/data/
+              mountPath: /root/.pocket/data/
             - name: pocket-volume
-              mountPath: /root/.poktroll/
+              mountPath: /root/.pocket/
       volumes:
         - name: scripts-volume
           configMap:
-            name: {{ include "poktroll.fullname" . }}-scripts
+            name: {{ include "pocket.fullname" . }}-scripts
         - name: keys-source-volume
           configMap:
             name: {{ .Values.keysConfigMapName }}
@@ -118,7 +118,7 @@ spec:
         - name: data-volume
         {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "poktroll.fullname" .)) }}
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "pocket.fullname" .)) }}
         {{- else }}
           emptyDir: {}
         {{- end }}
