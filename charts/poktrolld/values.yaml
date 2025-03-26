@@ -5,7 +5,7 @@ homeDirectory: /root/.pocket
 chownDataDirTo: "" # forces `chown` of the data directory to the following UID/GUID
 
 image:
-  repository: ghcr.io/pokt-network/poktrolld
+  repository: ghcr.io/pokt-network/pocketd
   tag: latest
   pullPolicy: IfNotPresent
 

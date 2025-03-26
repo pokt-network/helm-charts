@@ -10,7 +10,7 @@ logs:
   level: info
 
 image:
-  repository: ghcr.io/pokt-network/poktrolld
+  repository: ghcr.io/pokt-network/pocketd
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"

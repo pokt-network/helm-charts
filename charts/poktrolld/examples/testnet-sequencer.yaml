@@ -8,7 +8,7 @@ genesis:
 replicaCount: 1
 
 image:
-  repository: okdas/poktrolld-new-sdk
+  repository: okdas/pocketd-new-sdk
   tag: v0.50.1-fix-sequencer-check-4
   pullPolicy: IfNotPresent
 

@@ -1,7 +1,7 @@
 replicaCount: 1 # This number should probably always be 1, since validators can't share keys.
 
-configsConfigMapName: poktrolld-configs # TODO(@okdas): provision in the chart
-keysConfigMapName: poktrolld-keys # TODO(@okdas): provision in the chart
+configsConfigMapName: pocketd-configs # TODO(@okdas): provision in the chart
+keysConfigMapName: pocketd-keys # TODO(@okdas): provision in the chart
 
 serviceMonitor:
   enabled: false
@@ -16,7 +16,7 @@ development:
     laddr: :40004
 
 image:
-  repository: ghcr.io/pokt-network/poktrolld
+  repository: ghcr.io/pokt-network/pocketd
   tag: latest
   pullPolicy: IfNotPresent
 service:

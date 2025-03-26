@@ -62,7 +62,7 @@ spec:
             - --headless=true
             - --api-version=2
             - --accept-multiclient
-            - /usr/local/bin/poktrolld
+            - /usr/local/bin/pocketd
             - --
 {{ else }}
           # TODO(@okdas): enable health checks

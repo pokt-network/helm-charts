@@ -50,7 +50,7 @@ spec:
           - name: pocket-volume
             mountPath: /root/.pocket/
       containers:
-        - name: poktrolld-validator
+        - name: pocketd-validator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
           resources:
@@ -74,7 +74,7 @@ spec:
             - --headless=true
             - --api-version=2
             - --accept-multiclient
-            - /usr/local/bin/poktrolld
+            - /usr/local/bin/pocketd
             - --
 {{ else }}
           livenessProbe:

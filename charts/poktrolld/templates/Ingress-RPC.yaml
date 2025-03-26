@@ -2,13 +2,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "poktrolld.fullname" . }}-rpc
+  name: {{ include "pocketd.fullname" . }}-rpc
   annotations:
     {{- with .Values.ingress.rpc.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
   labels:
-    {{- include "poktrolld.labels" . | nindent 4 }}
+    {{- include "pocketd.labels" . | nindent 4 }}
 spec:
   rules:
   {{- range .Values.ingress.rpc.hosts }}
@@ -17,7 +17,7 @@ spec:
       paths:
       - backend:
           service:
-            name: {{ include "poktrolld.fullname" $ }}
+            name: {{ include "pocketd.fullname" $ }}
             port:
               number: {{ $.Values.service.ports.rpc }}
         path: /
