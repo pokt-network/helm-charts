@@ -131,6 +131,28 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/celestia-node-0.12.0/celestia-node-0.12.0.tgz
     version: 0.12.0
+  pocket-validator:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-03-26T20:03:19.763295481Z"
+    description: A Helm chart for Kubernetes
+    digest: 77c79c1fdc56f872f0289dd7234f349bc320f0f1a6d5e04b2f45c531ff70e303
+    name: pocket-validator
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/pocket-validator-0.1.5/pocket-validator-0.1.5.tgz
+    version: 0.1.5
+  pocketd:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-03-26T20:03:19.888965526Z"
+    description: A Helm chart for Kubernetes
+    digest: f2e452d620014e2350a133bb8248c45aa725363f4fbd055e24bcf3109eec26c3
+    name: pocketd
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/pocketd-0.0.3/pocketd-0.0.3.tgz
+    version: 0.0.3
   poktroll:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -456,4 +478,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2024-06-21T16:42:22.436691723Z"
+generated: "2025-03-26T20:03:20.019702457Z"
