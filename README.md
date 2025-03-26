@@ -5,7 +5,7 @@
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/pokt-network/helm-charts)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-closed/pokt-network/helm-charts)
 
-# Table of Contents <!-- omit in toc -->
+## Table of Contents <!-- omit in toc -->
 
 - [Introduction](#introduction)
   - [Getting started](#getting-started)
@@ -19,11 +19,11 @@
 
 ## Introduction
 
-Welcome to Grove's helm repo. Here you'll find the charts to get Path up and running.
+Welcome to Pocket Network's helm repo. Here you'll find the charts to get Path up and running.
 
 ### Getting started
 
-To add Grove's helm repository to your local machine, run the following command:
+To add Pocket Network's helm repository to your local machine, run the following command:
 
 ```sh
 helm repo add grove https://pokt-network.github.io/helm-charts
