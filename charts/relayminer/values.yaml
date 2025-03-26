@@ -95,7 +95,7 @@ securityContext: {}
 # runAsNonRoot: true
 # runAsUser: 1000
 
-homeDirectory: /root/.poktroll
+homeDirectory: /root/.pocket
 
 service:
   type: ClusterIP

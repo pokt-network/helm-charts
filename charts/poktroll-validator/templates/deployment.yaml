@@ -24,10 +24,10 @@ spec:
         command: ["/bin/sh"]
         args:
          - -c
-         - rm -rf /root/.poktroll/data/*
+         - rm -rf /root/.pocket/data/*
         volumeMounts:
           - name: data-volume
-            mountPath: /root/.poktroll/data/
+            mountPath: /root/.pocket/data/
 {{ end }}
       - name: "prepare-node"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -42,13 +42,13 @@ spec:
           - name: scripts-volume
             mountPath: /scripts
           - name: keys-source-volume
-            mountPath: /root/.poktroll/keyring-test/
+            mountPath: /root/.pocket/keyring-test/
           - name: configs-source-volume
-            mountPath: /root/.poktroll/config-src/
+            mountPath: /root/.pocket/config-src/
           - name: data-volume
-            mountPath: /root/.poktroll/data/
+            mountPath: /root/.pocket/data/
           - name: pocket-volume
-            mountPath: /root/.poktroll/
+            mountPath: /root/.pocket/
       containers:
         - name: poktrolld-validator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -98,13 +98,13 @@ spec:
             - name: scripts-volume
               mountPath: /scripts
             - name: keys-source-volume
-              mountPath: /root/.poktroll/keyring-test/
+              mountPath: /root/.pocket/keyring-test/
             - name: configs-source-volume
-              mountPath: /root/.poktroll/config-src/
+              mountPath: /root/.pocket/config-src/
             - name: data-volume
-              mountPath: /root/.poktroll/data/
+              mountPath: /root/.pocket/data/
             - name: pocket-volume
-              mountPath: /root/.poktroll/
+              mountPath: /root/.pocket/
       volumes:
         - name: scripts-volume
           configMap:
