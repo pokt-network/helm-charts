@@ -26,7 +26,7 @@ Welcome to Pocket Network's helm repo. Here you'll find the charts to get Path u
 To add Pocket Network's helm repository to your local machine, run the following command:
 
 ```sh
-helm repo add grove https://pokt-network.github.io/helm-charts
+helm repo add pocket https://pokt-network.github.io/helm-charts
 ```
 
 Once you have the repository added, refresh the repositories added running:

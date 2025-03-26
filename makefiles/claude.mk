@@ -14,8 +14,8 @@ claudesync_check:
 claudesync_init: claudesync_check ## Initializes a new ClaudeSync project
 	@echo "###############################################"
 	@echo "Initializing a new ClaudeSync project"
-	@echo "When prompted, enter the following name: grove-helm-charts"
-	@echo "When prompted, enter the following description: Claude Project for Grove's Helm Charts"
+	@echo "When prompted, enter the following name: pocket-helm-charts"
+	@echo "When prompted, enter the following description: Claude Project for Pocket Network's Helm Charts"
 	@echo "When prompted for an absolute path, press enter"
 	@echo "Follow the Remote URL outputted and copy-paste the recommended system prompt from the README"
 	@echo "###############################################"
