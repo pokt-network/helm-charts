@@ -26,7 +26,7 @@ Welcome to Grove's helm repo. Here you'll find the charts to get Path up and run
 To add Grove's helm repository to your local machine, run the following command:
 
 ```sh
-helm repo add grove https://buildwithgrove.github.io/helm-charts
+helm repo add grove https://pokt-network.github.io/helm-charts
 ```
 
 Once you have the repository added, refresh the repositories added running:
