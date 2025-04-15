@@ -42,6 +42,54 @@ spec:
             - name: pocket-home
               mountPath: {{ .Values.homeDirectory }}
       {{- end }}
+      {{- if .Values.remoteConfig.enabled }}
+      initContainers:
+        {{- if .Values.chownDataDirTo }}
+        - name: init-permissions
+          image: busybox
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p {{ .Values.homeDirectory }}/config && \
+              chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }} && \
+              chmod -R 755 {{ .Values.homeDirectory }}
+          volumeMounts:
+            - name: pocket-home
+              mountPath: {{ .Values.homeDirectory }}
+        {{- end }}
+        - name: download-config
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p {{ .Values.homeDirectory }}/config
+              {{- if .Values.remoteConfig.auth.bearerToken }}
+              curl -H "Authorization: Bearer {{ .Values.remoteConfig.auth.bearerToken }}" -o {{ .Values.homeDirectory }}/config/config.yaml {{ .Values.remoteConfig.configUrl }}
+              {{- else if or .Values.remoteConfig.auth.username .Values.remoteConfig.auth.password }}
+              curl -u {{ .Values.remoteConfig.auth.username }}:{{ .Values.remoteConfig.auth.password }} -o {{ .Values.homeDirectory }}/config/config.yaml {{ .Values.remoteConfig.configUrl }}
+              {{- else }}
+              curl -o {{ .Values.homeDirectory }}/config/config.yaml {{ .Values.remoteConfig.configUrl }}
+              {{- end }}
+              # Set proper permissions
+              {{- if .Values.chownDataDirTo }}
+              chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }}/config
+              {{- else }}
+              # If no specific user is set, ensure the files are readable by the container user
+              chmod -R 644 {{ .Values.homeDirectory }}/config/*.yaml
+              {{- end }}
+          securityContext:
+            {{- if .Values.chownDataDirTo }}
+            runAsUser: 0  # Need root to chown
+            {{- end }}
+          volumeMounts:
+            - name: pocket-home
+              mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -98,14 +146,11 @@ spec:
             - name: keys-volume
               mountPath: {{ .Values.homeDirectory }}/keyring-test/{{ .Values.config.signing_key_name }}.info
               subPath: {{ .Values.config.signing_key_name }}.info
-            # - name: configs-volume
-            #   mountPath: {{ .Values.homeDirectory }}/config/
+            {{- if not .Values.remoteConfig.enabled }}
             - name: relayminer-config
               mountPath: "{{ .Values.homeDirectory }}/config/config.yaml"
               subPath: "config.yaml"
-            - name: relayminer-config
-              mountPath: "{{ .Values.homeDirectory }}/config/client.toml"
-              subPath: "client.toml"
+            {{- end }}
             - name: pocket-home
               mountPath: {{ .Values.homeDirectory }}
           {{- with .Values.volumeMounts }}
@@ -115,9 +160,11 @@ spec:
         - name: keys-volume
           secret:
             secretName: {{ .Values.keysSecretName }}
+        {{- if not .Values.remoteConfig.enabled }}
         - name: relayminer-config
           configMap:
             name: {{ include "relayminer.fullname" . }}
+        {{- end }}
         - name: pocket-home
           emptyDir: {}
       {{- with .Values.volumes }}

@@ -56,6 +56,17 @@ config:
     enabled: true
     addr: localhost:6060
 
+# Remote config file configuration
+remoteConfig:
+  enabled: false
+  configUrl: "" # URL to download config.yaml from
+  # Optional authentication for remote config
+  auth:
+    username: ""
+    password: ""
+    # For bearer token auth
+    bearerToken: ""
+
 development:
   delve:
     enabled: false
