@@ -142,17 +142,21 @@ spec:
             
             echo "Downloaded file: $DOWNLOADED_FILE"
             
-            # Extract the snapshot based on format
-            if [[ "$DOWNLOADED_FILE" == *.tar.zst ]]; then
-              echo "Extracting .tar.zst format snapshot..."
-              zstd -d "$DOWNLOADED_FILE" --stdout | tar -xf - -C {{ .Values.homeDirectory }}/data
-            elif [[ "$DOWNLOADED_FILE" == *.tar.gz ]]; then
-              echo "Extracting .tar.gz format snapshot..."
-              tar -zxf "$DOWNLOADED_FILE" -C {{ .Values.homeDirectory }}/data
-            else
-              echo "Unknown snapshot format. Expected .tar.zst or .tar.gz"
-              exit 1
-            fi
+            # Extract the snapshot based on format - using sh compatible syntax
+            case "$DOWNLOADED_FILE" in
+              *.tar.zst)
+                echo "Extracting .tar.zst format snapshot..."
+                zstd -d "$DOWNLOADED_FILE" --stdout | tar -xf - -C {{ .Values.homeDirectory }}/data
+                ;;
+              *.tar.gz)
+                echo "Extracting .tar.gz format snapshot..."
+                tar -zxf "$DOWNLOADED_FILE" -C {{ .Values.homeDirectory }}/data
+                ;;
+              *)
+                echo "Unknown snapshot format. Expected .tar.zst or .tar.gz"
+                exit 1
+                ;;
+            esac
             
             echo "Snapshot extracted successfully"
             
