@@ -163,6 +163,29 @@ spec:
             # Save snapshot version for cosmovisor to use
             echo "$SNAPSHOT_VERSION" > {{ .Values.homeDirectory }}/data/snapshot_version.txt
             
+            # Download proper binary for snapshot version to make it available for cosmovisor
+            echo "Downloading pocketd binary for snapshot version: $SNAPSHOT_VERSION"
+            OS_TYPE=$(uname -s | tr '[:upper:]' '[:lower:]')
+            ARCH=$(uname -m)
+            if [ "$ARCH" = "x86_64" ]; then
+              ARCH="amd64"
+            elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+              ARCH="arm64"
+            else
+              echo "Unsupported architecture: $ARCH"
+              exit 1
+            fi
+            
+            # Create the directory structure for cosmovisor
+            mkdir -p {{ .Values.homeDirectory }}/cosmovisor/genesis/bin
+            mkdir -p {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin
+            
+            # Download the binary for the snapshot version
+            BINARY_URL="https://github.com/pokt-network/poktroll/releases/download/v${SNAPSHOT_VERSION}/pocket_${OS_TYPE}_${ARCH}.tar.gz"
+            echo "Downloading binary from: $BINARY_URL"
+            curl -L "$BINARY_URL" | tar -zxf - -C {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin
+            chmod +x {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin/pocketd
+
             # Clean up
             rm -rf "$SNAPSHOT_DIR"
             
@@ -211,25 +234,12 @@ spec:
                 SNAPSHOT_VERSION=$(cat {{ .Values.homeDirectory }}/data/snapshot_version.txt)
                 echo "Using version from snapshot: $SNAPSHOT_VERSION"
                 
-                # Get correct binary for snapshot version
-                OS_TYPE=$(uname -s | tr '[:upper:]' '[:lower:]')
-                ARCH=$(uname -m)
-                if [ "$ARCH" = "x86_64" ]; then
-                  ARCH="amd64"
-                elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-                  ARCH="arm64"
+                # Check if binary is already downloaded by the init-snapshot container
+                if [ -f {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin/pocketd ]; then
+                  echo "Found pre-downloaded binary for snapshot version v$SNAPSHOT_VERSION"
                 else
-                  echo "Unsupported architecture: $ARCH"
+                  echo "ERROR: Expected binary was not pre-downloaded by init-snapshot container"
                   exit 1
-                fi
-                
-                # Download proper binary version for snapshot if needed
-                mkdir -p {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin
-                if [ ! -f {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin/pocketd ]; then
-                  BINARY_URL="https://github.com/pokt-network/poktroll/releases/download/v${SNAPSHOT_VERSION}/pocket_${OS_TYPE}_${ARCH}.tar.gz"
-                  echo "Downloading binary for snapshot version from: $BINARY_URL"
-                  curl -L "$BINARY_URL" | tar -zxf - -C {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin
-                  chmod +x {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin/pocketd
                 fi
               fi
               {{- end }}
