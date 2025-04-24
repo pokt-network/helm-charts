@@ -237,15 +237,24 @@ spec:
                 # Check if binary is already downloaded by the init-snapshot container
                 if [ -f {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin/pocketd ]; then
                   echo "Found pre-downloaded binary for snapshot version v$SNAPSHOT_VERSION"
+                  
+                  # Initialize cosmovisor with the SNAPSHOT version binary directly
+                  echo "Initializing cosmovisor with snapshot version binary v$SNAPSHOT_VERSION"
+                  cosmovisor init {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin/pocketd
+                  
+                  # Verify the version
+                  echo "Verifying the current pocketd version:"
+                  {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/pocketd version
                 else
                   echo "ERROR: Expected binary was not pre-downloaded by init-snapshot container"
                   exit 1
                 fi
               fi
-              {{- end }}
-              
+              {{- else }}
+              # Standard initialization with image binary when not using snapshot
               echo "Initializing cosmovisor with genesis binary"
               cosmovisor init /bin/pocketd
+              {{- end }}
             else
               echo "Cosmovisor already initialized, skipping setup"
             fi
