@@ -42,6 +42,165 @@ spec:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}
       {{- end }}
+      {{- if .Values.snapshot.enabled }}
+      - name: init-snapshot
+        image: "{{ .Values.snapshot.image.repository }}:{{ .Values.snapshot.image.tag }}"
+        imagePullPolicy: {{ .Values.snapshot.image.pullPolicy }}
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        env:
+        - name: NETWORK
+          value: {{ .Values.snapshot.network | quote }}
+        - name: SNAPSHOT_BASE_URL
+          value: {{ .Values.snapshot.baseUrl | quote }}
+        command:
+          - sh
+          - -c
+          - |
+            set -e
+            
+            # Check if data already exists
+            echo "Checking if node data already exists..."
+            if [ -d "{{ .Values.homeDirectory }}/data/application.db" ] || [ -d "{{ .Values.homeDirectory }}/data/blockstore.db" ]; then
+              echo "Existing blockchain data found. Skipping snapshot download."
+              exit 0
+            fi
+            
+            echo "No existing blockchain data found. Proceeding with snapshot setup..."
+            
+            echo "Installing required packages for snapshot download..."
+            apt-get update && \
+            apt-get install -y \
+              curl \
+              wget \
+              aria2 \
+              zstd \
+              tar \
+              jq \
+              ca-certificates \
+              findutils \
+              bash && \
+            apt-get clean && \
+            rm -rf /var/lib/apt/lists/*
+            
+            echo "Setting up node from snapshot for network: $NETWORK"
+            SNAPSHOT_DIR="{{ .Values.homeDirectory }}/snapshot_temp"
+            mkdir -p $SNAPSHOT_DIR
+            mkdir -p {{ .Values.homeDirectory }}/data
+            
+            # Get latest snapshot height and version
+            LATEST_SNAPSHOT_HEIGHT=$(curl -s "$SNAPSHOT_BASE_URL/$NETWORK-latest-archival.txt")
+            if [ -z "$LATEST_SNAPSHOT_HEIGHT" ]; then
+              echo "Failed to fetch latest snapshot height for $NETWORK. Exiting."
+              exit 1
+            fi
+            echo "Latest snapshot height for $NETWORK: $LATEST_SNAPSHOT_HEIGHT"
+            
+            # Get version from snapshot
+            SNAPSHOT_VERSION=$(curl -s "$SNAPSHOT_BASE_URL/$NETWORK-$LATEST_SNAPSHOT_HEIGHT-version.txt")
+            if [ -z "$SNAPSHOT_VERSION" ]; then
+              echo "Failed to fetch snapshot version. Exiting."
+              exit 1
+            fi
+            echo "Snapshot version: $SNAPSHOT_VERSION"
+            
+            # Set up torrent download
+            TORRENT_URL="$SNAPSHOT_BASE_URL/$NETWORK-latest-archival.torrent"
+            if ! curl --output /dev/null --silent --head --fail "$TORRENT_URL"; then
+              # Try specific height torrent
+              TORRENT_URL="$SNAPSHOT_BASE_URL/$NETWORK-$LATEST_SNAPSHOT_HEIGHT-archival.torrent"
+              if ! curl --output /dev/null --silent --head --fail "$TORRENT_URL"; then
+                echo "Could not find a valid torrent file. Exiting."
+                exit 1
+              fi
+            fi
+            
+            TORRENT_FILE="$SNAPSHOT_DIR/snapshot.torrent"
+            curl -L -o "$TORRENT_FILE" "$TORRENT_URL"
+            
+            # Download directory
+            DOWNLOAD_DIR="$SNAPSHOT_DIR/download"
+            mkdir -p "$DOWNLOAD_DIR"
+            
+            echo "Starting torrent download with aria2c..."
+            
+            # Download using aria2c with optimized settings
+            aria2c --seed-time=0 --dir="$DOWNLOAD_DIR" --file-allocation=none --continue=true \
+                   --max-connection-per-server=4 --max-concurrent-downloads=16 --split=16 \
+                   --bt-enable-lpd=true --bt-max-peers=100 --bt-prioritize-piece=head,tail \
+                   --bt-seed-unverified \
+                   "$TORRENT_FILE"
+            
+            # Find the downloaded file
+            DOWNLOADED_FILE=$(find "$DOWNLOAD_DIR" -type f | head -n 1)
+            
+            if [ -z "$DOWNLOADED_FILE" ]; then
+              echo "No files downloaded by aria2c"
+              exit 1
+            fi
+            
+            echo "Downloaded file: $DOWNLOADED_FILE"
+            
+            # Extract the snapshot based on format - using sh compatible syntax
+            case "$DOWNLOADED_FILE" in
+              *.tar.zst)
+                echo "Extracting .tar.zst format snapshot..."
+                zstd -d "$DOWNLOADED_FILE" --stdout | tar -xf - -C {{ .Values.homeDirectory }}/data
+                ;;
+              *.tar.gz)
+                echo "Extracting .tar.gz format snapshot..."
+                tar -zxf "$DOWNLOADED_FILE" -C {{ .Values.homeDirectory }}/data
+                ;;
+              *)
+                echo "Unknown snapshot format. Expected .tar.zst or .tar.gz"
+                exit 1
+                ;;
+            esac
+            
+            echo "Snapshot extracted successfully"
+            
+            # Save snapshot version for cosmovisor to use
+            echo "$SNAPSHOT_VERSION" > {{ .Values.homeDirectory }}/data/snapshot_version.txt
+            
+            # Download proper binary for snapshot version to make it available for cosmovisor
+            echo "Downloading pocketd binary for snapshot version: $SNAPSHOT_VERSION"
+            OS_TYPE=$(uname -s | tr '[:upper:]' '[:lower:]')
+            ARCH=$(uname -m)
+            if [ "$ARCH" = "x86_64" ]; then
+              ARCH="amd64"
+            elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+              ARCH="arm64"
+            else
+              echo "Unsupported architecture: $ARCH"
+              exit 1
+            fi
+            
+            # Create the directory structure for cosmovisor
+            mkdir -p {{ .Values.homeDirectory }}/cosmovisor/genesis/bin
+            mkdir -p {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin
+            
+            # Download the binary for the snapshot version
+            BINARY_URL="https://github.com/pokt-network/poktroll/releases/download/v${SNAPSHOT_VERSION}/pocket_${OS_TYPE}_${ARCH}.tar.gz"
+            echo "Downloading binary from: $BINARY_URL"
+            curl -L "$BINARY_URL" | tar -zxf - -C {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin
+            chmod +x {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin/pocketd
+
+            # Clean up
+            rm -rf "$SNAPSHOT_DIR"
+            
+            # Set proper permissions if needed
+            {{- if .Values.chownDataDirTo }}
+            echo "Setting correct ownership for data directories..."
+            chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }}
+            chmod -R 755 {{ .Values.homeDirectory }}
+            {{- end }}
+            
+            echo "Snapshot setup completed"
+        volumeMounts:
+        - name: pocket-volume
+          mountPath: {{ .Values.homeDirectory }}
+      {{- end }}
       {{- if .Values.cosmovisor.enabled }}
       - name: init-cosmovisor
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -63,8 +222,41 @@ spec:
           - sh
           - -c
           - |
+            set -e
+            
+            # Only set up cosmovisor if not already initialized
             if [ ! -f {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/pocketd ]; then
+              echo "Cosmovisor not initialized, setting up..."
+            
+              {{- if .Values.snapshot.enabled }}
+              # When using a snapshot, check if we have a recorded snapshot version
+              if [ -f {{ .Values.homeDirectory }}/data/snapshot_version.txt ]; then
+                SNAPSHOT_VERSION=$(cat {{ .Values.homeDirectory }}/data/snapshot_version.txt)
+                echo "Using version from snapshot: $SNAPSHOT_VERSION"
+                
+                # Check if binary is already downloaded by the init-snapshot container
+                if [ -f {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin/pocketd ]; then
+                  echo "Found pre-downloaded binary for snapshot version v$SNAPSHOT_VERSION"
+                  
+                  # Initialize cosmovisor with the SNAPSHOT version binary directly
+                  echo "Initializing cosmovisor with snapshot version binary v$SNAPSHOT_VERSION"
+                  cosmovisor init {{ .Values.homeDirectory }}/cosmovisor/upgrades/v$SNAPSHOT_VERSION/bin/pocketd
+                  
+                  # Verify the version
+                  echo "Verifying the current pocketd version:"
+                  {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/pocketd version
+                else
+                  echo "ERROR: Expected binary was not pre-downloaded by init-snapshot container"
+                  exit 1
+                fi
+              fi
+              {{- else }}
+              # Standard initialization with image binary when not using snapshot
+              echo "Initializing cosmovisor with genesis binary"
               cosmovisor init /bin/pocketd
+              {{- end }}
+            else
+              echo "Cosmovisor already initialized, skipping setup"
             fi
         volumeMounts:
         - name: pocket-volume

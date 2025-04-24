@@ -9,6 +9,15 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
+snapshot:
+  enabled: false # Set to true to use snapshot syncing
+  network: "testnet-beta" # Options: "testnet-alpha", "testnet-beta", "mainnet"
+  baseUrl: "https://snapshots.us-nj.poktroll.com"
+  image:
+    repository: "ubuntu" # Base image with required tools
+    tag: "22.04"
+    pullPolicy: "IfNotPresent"
+
 resources:
   {}
   # requests:
@@ -121,4 +130,4 @@ cosmovisor:
   enabled: false
   restartAfterUpgrade: true
   allowDownloadBinaries: true
-  unsafeSkipBackup: false
+  unsafeSkipBackup: true
