@@ -40,7 +40,7 @@ When snapshot syncing is enabled:
 2. The snapshot init process:
    - Installs necessary packages (aria2c, zstd, etc.) at runtime
    - Fetches information about the latest snapshot for the selected network
-   - Downloads the snapshot torrent using aria2c
+   - Downloads the snapshot torrent using aria2c with optimized settings
    - Extracts the snapshot to the data directory
    - Records the version from the snapshot for cosmovisor to use
 
