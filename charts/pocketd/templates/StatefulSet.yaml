@@ -47,8 +47,8 @@ spec:
         image: "{{ .Values.snapshot.image.repository }}:{{ .Values.snapshot.image.tag }}"
         imagePullPolicy: {{ .Values.snapshot.image.pullPolicy }}
         securityContext:
-          runAsUser: {{ .Values.chownDataDirTo | default 0 }}
-          runAsGroup: {{ .Values.chownDataDirTo | default 0 }}
+          runAsUser: 0
+          runAsGroup: 0
         env:
         - name: NETWORK
           value: {{ .Values.snapshot.network | quote }}
@@ -161,6 +161,14 @@ spec:
             
             # Clean up
             rm -rf "$SNAPSHOT_DIR"
+            
+            # Set proper permissions if needed
+            {{- if .Values.chownDataDirTo }}
+            echo "Setting correct ownership for data directories..."
+            chown -R {{ .Values.chownDataDirTo }}:{{ .Values.chownDataDirTo }} {{ .Values.homeDirectory }}
+            chmod -R 755 {{ .Values.homeDirectory }}
+            {{- end }}
+            
             echo "Snapshot setup completed"
         volumeMounts:
         - name: pocket-volume
