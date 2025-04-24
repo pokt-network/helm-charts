@@ -59,6 +59,16 @@ spec:
           - -c
           - |
             set -e
+            
+            # Check if data already exists
+            echo "Checking if node data already exists..."
+            if [ -d "{{ .Values.homeDirectory }}/data/application.db" ] || [ -d "{{ .Values.homeDirectory }}/data/blockstore.db" ]; then
+              echo "Existing blockchain data found. Skipping snapshot download."
+              exit 0
+            fi
+            
+            echo "No existing blockchain data found. Proceeding with snapshot setup..."
+            
             echo "Installing required packages for snapshot download..."
             apt-get update && \
             apt-get install -y \
@@ -179,7 +189,8 @@ spec:
           - |
             {{- if .Values.snapshot.enabled }}
             # When using a snapshot, check if we have a recorded snapshot version
-            if [ -f {{ .Values.homeDirectory }}/data/snapshot_version.txt ]; then
+            # and if we don't already have an initialized cosmovisor setup
+            if [ ! -f {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/pocketd ] && [ -f {{ .Values.homeDirectory }}/data/snapshot_version.txt ]; then
               SNAPSHOT_VERSION=$(cat {{ .Values.homeDirectory }}/data/snapshot_version.txt)
               echo "Using version from snapshot: $SNAPSHOT_VERSION"
               
@@ -204,7 +215,10 @@ spec:
             {{- end }}
             
             if [ ! -f {{ .Values.homeDirectory }}/cosmovisor/genesis/bin/pocketd ]; then
+              echo "Initializing cosmovisor with genesis binary"
               cosmovisor init /bin/pocketd
+            else
+              echo "Cosmovisor already initialized, skipping setup"
             fi
         volumeMounts:
         - name: pocket-volume

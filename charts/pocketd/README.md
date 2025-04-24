@@ -33,19 +33,24 @@ helm upgrade --install pocketd ./charts/pocketd -f values.yaml
 
 When snapshot syncing is enabled:
 
-1. An init container is added that:
+1. An init container checks if blockchain data already exists:
+   - If data is found, the snapshot download is skipped (happens only once)
+   - If no data exists, it installs necessary packages and downloads the snapshot
+
+2. The snapshot init process:
    - Installs necessary packages (aria2c, zstd, etc.) at runtime
    - Fetches information about the latest snapshot for the selected network
    - Downloads the snapshot torrent using aria2c
    - Extracts the snapshot to the data directory
    - Records the version from the snapshot for cosmovisor to use
 
-2. The cosmovisor init container will:
-   - Check for the recorded snapshot version
-   - Download the binary matching that version
+3. The cosmovisor init container will:
+   - Check if cosmovisor is already initialized, and skip setup if it is
+   - Check for the recorded snapshot version if needed
+   - Download the binary matching that version if not present
    - Configure cosmovisor to use the correct binary version
 
-3. When the node starts, it will continue syncing from the snapshot height instead of starting from genesis.
+4. When the node starts, it will continue syncing from the snapshot height instead of starting from genesis.
 
 ### Alternative: Using a Pre-built Image
 
