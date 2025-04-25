@@ -27,12 +27,10 @@ A Helm chart for Kubernetes
 | config.smt_store_path | string | `"smt_stores"` |  |
 | config.suppliers[0].listen_url | string | `"http://0.0.0.0:8545"` |  |
 | config.suppliers[0].service_config.backend_url | string | `"http://anvil:8547/"` |  |
-| config.suppliers[0].service_config.publicly_exposed_endpoints[0] | string | `"relayminers"` |  |
 | config.suppliers[0].service_id | string | `"anvil"` |  |
 | config.suppliers[0].type | string | `"http"` |  |
 | config.suppliers[1].listen_url | string | `"ws://0.0.0.0:8545"` |  |
 | config.suppliers[1].service_config.backend_url | string | `"ws://anvil:8547/"` |  |
-| config.suppliers[1].service_config.publicly_exposed_endpoints[0] | string | `"relayminers"` |  |
 | config.suppliers[1].service_id | string | `"anvilws"` |  |
 | config.suppliers[1].type | string | `"http"` |  |
 | development.delve.enabled | bool | `false` |  |
