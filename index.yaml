@@ -155,6 +155,16 @@ entries:
   pocketd:
   - apiVersion: v2
     appVersion: 0.1.6
+    created: "2025-05-02T23:05:28.734631581Z"
+    description: A Helm chart for Kubernetes
+    digest: c9bee7345d1071ed5544df343d36215c85a855f8a9f6c245ef456a47907d22a7
+    name: pocketd
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/pocketd-0.1.3/pocketd-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 0.1.6
     created: "2025-04-24T18:35:20.163807225Z"
     description: A Helm chart for Kubernetes
     digest: 76ac90d1715cc09b90f6cb0eff56c15a2461b353cb2d85cc3a79a3055b8bce95
@@ -528,4 +538,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2025-04-24T18:35:20.345004262Z"
+generated: "2025-05-02T23:05:28.889000147Z"
