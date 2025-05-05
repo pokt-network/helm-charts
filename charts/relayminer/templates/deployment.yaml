@@ -132,6 +132,7 @@ spec:
             - "--chain-id={{ .Values.chainId }}"
             - "--gas-adjustment={{ .Values.gasAdjustment }}"
             - "--gas-prices={{ .Values.gasPrices }}"
+            - "--home={{ .Values.homeDirectory }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
