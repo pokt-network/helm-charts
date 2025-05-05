@@ -23,7 +23,7 @@ grpcInsecure: false
 chainId: "pocket"
 
 gasAdjustment: 1.5
-gasPrices: 0.0001upokt
+gasPrices: 0.001upokt
 
 config:
   signing_key_name: supplier1 # Keeping it here for now for backwards-compatibility
@@ -51,6 +51,17 @@ config:
   pprof:
     enabled: true
     addr: localhost:6060
+
+# Remote config file configuration
+remoteConfig:
+  enabled: false
+  configUrl: "" # URL to download config.yaml from
+  # Optional authentication for remote config
+  auth:
+    username: ""
+    password: ""
+    # For bearer token auth
+    bearerToken: ""
 
 development:
   delve:
