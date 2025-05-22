@@ -17,10 +17,10 @@ spec:
         {{- end }}
     spec:
       initContainers:
-      # Initializes `priv_validator_state` if it doesn't exist.
+      # Initializes `priv_validator_state` if it doesn't exist and optionally removes upgrade-info.json
       - name: init-priv-validator-state
         image: busybox
-        command: ['sh', '-c', 'if [ ! -f {{ .Values.homeDirectory }}/data/priv_validator_state.json ]; then echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > {{ .Values.homeDirectory }}/data/priv_validator_state.json; fi']
+        command: ['sh', '-c', 'if [ ! -f {{ .Values.homeDirectory }}/data/priv_validator_state.json ]; then echo "{\"height\": \"0\", \"round\": 0, \"step\": 0}" > {{ .Values.homeDirectory }}/data/priv_validator_state.json; fi; {{- if .Values.removeUpgradeInfoOnStart }} rm -f {{ .Values.homeDirectory }}/data/upgrade-info.json{{- end }}']
         volumeMounts:
         - name: pocket-volume
           mountPath: {{ .Values.homeDirectory }}/data
