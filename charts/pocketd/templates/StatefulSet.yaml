@@ -323,7 +323,7 @@ spec:
         {{- end }}
         {{- if .Values.config.unsafeSkipUpgrades }}
         - --unsafe-skip-upgrades
-        - {{ join "," .Values.config.unsafeSkipUpgrades | quote }}
+        - {{ join "," .Values.config.unsafeSkipUpgrades }}
         {{- end }}
         {{- if .Values.extraArgs }}
         {{- range .Values.extraArgs }}
