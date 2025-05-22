@@ -325,11 +325,6 @@ spec:
         - --unsafe-skip-upgrades
         - {{ join "," .Values.config.unsafeSkipUpgrades }}
         {{- end }}
-        # {{- if .Values.config.unsafeSkipUpgrades }}
-        # - --unsafe-skip-upgrades
-        # {{- range .Values.config.unsafeSkipUpgrades }}
-        # - {{ . }}
-        # {{- end }}
         {{- if .Values.extraArgs }}
         {{- range .Values.extraArgs }}
         - {{ . | quote }}
