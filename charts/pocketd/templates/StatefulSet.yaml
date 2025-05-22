@@ -322,7 +322,8 @@ spec:
         - --p2p.external-address={{ .Values.config.p2p.externalAddress }}
         {{- end }}
         {{- if .Values.config.unsafeSkipUpgrades }}
-        - --unsafe-skip-upgrades {{ join "," .Values.config.unsafeSkipUpgrades }}
+        - --unsafe-skip-upgrades
+        - {{ join "," .Values.config.unsafeSkipUpgrades }}
         {{- end }}
         {{- if .Values.extraArgs }}
         {{- range .Values.extraArgs }}
