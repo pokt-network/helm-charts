@@ -3,6 +3,7 @@ purpose: full-node
 # Should be /home/pocket/.pocket after we fully adopt production images
 homeDirectory: /root/.pocket
 chownDataDirTo: "" # forces `chown` of the data directory to the following UID/GUID
+removeUpgradeInfoOnStart: true # when true, removes upgrade-info.json on startup. It should not interfere with `x/upgrade`.
 
 image:
   repository: ghcr.io/pokt-network/pocketd
