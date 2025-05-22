@@ -1,6 +1,6 @@
 # pocketd
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.6](https://img.shields.io/badge/AppVersion-0.1.6-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.6](https://img.shields.io/badge/AppVersion-0.1.6-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -97,7 +97,7 @@ When snapshot syncing is enabled:
 | persistence.useCustomName | bool | `false` |  |
 | podLabels | object | `{}` |  |
 | purpose | string | `"full-node"` |  |
-| removeUpgradeInfoOnStart | bool | `true` |  |
+| removeUpgradeInfoOnStart | bool | `false` |  |
 | resources | object | `{}` |  |
 | service.ports.api | int | `1317` |  |
 | service.ports.cometBFTMetrics | int | `26660` |  |
