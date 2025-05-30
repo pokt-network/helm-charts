@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pocketd-faucet.fullname" . }}
+  labels:
+    {{- include "pocketd-faucet.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "pocketd-faucet.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "pocketd-faucet.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      #serviceAccountName: {{ include "pocketd-faucet.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      #initContainers:
+      #  - name: init-keyring
+      #    image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+      #    imagePullPolicy: {{ .Values.image.pullPolicy }}
+      #    command:
+      #      - sh
+      #      - -c
+      #      - |
+      #        echo -n "{{ .Values.env.SIGNING_KEY_MNEMONIC }}" > /mnemonic.txt
+      #        pocketd keys add \
+      #        {{ .Values.env.FAUCET_SIGNING_KEY_NAME }} \
+      #        --recover --source=/mnemonic.txt \
+      #        --keyring-backend={{ .Values.env.KEYRING_BACKEND }}
+      #      #--home={{/* .Values.homeDirectory */}}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              echo -n "{{ .Values.env.SIGNING_KEY_MNEMONIC }}" > /mnemonic.txt
+              pocketd keys add \
+              {{ .Values.env.FAUCET_SIGNING_KEY_NAME }} \
+              --recover --source=/mnemonic.txt \
+              --keyring-backend={{ .Values.flags.keyring_backend }};
+
+              pocketd faucet serve \
+              --log-level={{ .Values.flags.log_level }} \
+              {{- if ne .Values.flags.node ""}}
+              --node={{ .Values.flags.node }} \
+              {{- end }}
+              --network={{ .Values.flags.network }} \
+              --keyring-backend={{ .Values.flags.keyring_backend }}
+
+          # command:
+          #  - pocketd
+          #  - faucet
+          #  - serve
+          #  - --keyring-backend={{ .Values.env.KEYRING_BACKEND }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
