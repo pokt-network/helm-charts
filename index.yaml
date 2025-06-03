@@ -223,6 +223,17 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/pocketd-0.0.3/pocketd-0.0.3.tgz
     version: 0.0.3
+  pocketd-faucet:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-06-03T12:59:22.792375716Z"
+    description: Pocketd faucet server chart
+    digest: 6fe3a512d78d1d631ddc7389cdc9ceb73c752b5f76383c970f6854b6f4d5e76d
+    name: pocketd-faucet
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/pocketd-faucet-0.1.0/pocketd-faucet-0.1.0.tgz
+    version: 0.1.0
   poktroll:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -568,4 +579,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2025-05-22T22:14:41.392888593Z"
+generated: "2025-06-03T12:59:22.792509416Z"
