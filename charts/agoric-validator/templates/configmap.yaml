@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-scripts
+  namespace: {{ .Release.Namespace }}
+data:
+  fund_foreigner.sh: |
+    #!/usr/bin/env bash
+    set -e
+
+    . /usr/src/upgrade-test-scripts/env_setup.sh
+
+    echo "💵 Funding foreigner account - Waiting for Agoric chain to start..."
+
+    # Wait for 2 new blocks to be created
+    waitForBlock 2
+
+    echo "💸 Agoric chain is up - funding!"
+
+    # Fund the foreigner account with 100000000ubld
+    agd tx bank send \
+      validator \
+      $(agd keys show -a foreigner --keyring-backend=test) \
+      100000000ubld \
+      --keyring-backend=test \
+      --chain-id=agoriclocal \
+      --yes
+
+    # Wait for the next block
+    waitForBlock 1
+    # TODO_TECHDEBT(@bryanchriswhite): Handle the error case.
+    echo "💰 Foreigner account funded!"
+
+  entrypoint.sh: |
+    #!/bin/bash
+    set -e
+
+    # Import the "foreigner" key from the mnemonic
+    echo "{{ .Values.mnemonic }}" | agd keys add foreigner --keyring-backend=test --recover
+
+    . /usr/src/upgrade-test-scripts/env_setup.sh
+
+    # If fund_on_start is set to true, run the fund script.
+    # It MUST be run in the background so that it can run concurrently with the chain.
+    # It will waif for the chain to be up before it attempts to fund the foreigner account.
+    {{- if .Values.fund_on_start }}
+    /usr/src/upgrade-test-scripts/fund_foreigner.sh&
+    {{- end }}
+
+    if [ -n "$DELVE_PORT" ]; then
+      # TODO_IMPROVE: figure out how to get delve/gdb to not lose the source hook.
+      #echo "Starting delve debug agd in foreground"
+      #/usr/src/upgrade-test-scripts/start_agd_delve.sh
+      echo "🚨 Remote debugging not yet supported 🚨\n🚧Use: 'make agd_shell', then './start_agd_debug.sh' to debug locally!🚧"
+      sleep infinity
+    else
+      echo "Starting agd in foreground"
+      /usr/src/upgrade-test-scripts/start_agd.sh
+    fi
+
+  # DEV_NOTE: This is not currently used, as it does not yet work. 😅
+  # TODO_IMPROVE: figure out how to get delve/gdb to not lose the source hook.
+  # See:
+  # - https://discord.com/channels/585576150827532298/1366728719141441598/1366789646230622289
+  # - https://github.com/Agoric/agoric-sdk/pull/8002
+  start_agd_debug.sh: |
+    #!/bin/bash
+    set -e
+
+    # Import the "foreigner" key from the mnemonic
+    cat /usr/src/upgrade-test-scripts/foreigner.mnemonic | agd keys add foreigner --keyring-backend=test --hd-path="m/44'/118'/0'/0/0" --recover
+
+    #. /usr/src/upgrade-test-scripts/env_setup.sh
+    . /root/.bashrc
+
+    # start_agd never builds an image so it's safe to include this multigigabyte logfile
+    export SLOGFILE=slog.slog
+
+    echo "Starting agd debugger in foreground"
+
+    # Remote delve
+    #dlv exec --headless --accept-multiclient --api-version=2 --listen=:$DELVE_PORT $(which agd) -- start --log_level warn "$@"
+
+    # Local delve (use make `agd_shell`, then `./entrypoint.sh`)
+    #dlv exec $(which agd) -- start --log_level warn "$@"
+
+    # Remote gdb
+    #gdbserver agd start --log_level warn "$@"
+
+    # Local gdb
+    #gdb --args agd start --log_level warn "$@"
