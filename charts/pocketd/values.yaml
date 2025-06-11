@@ -1,11 +1,12 @@
 purpose: full-node
 
-# Should be /home/pocket/.pocket after we fully adopt production images
-homeDirectory: /root/.pocket
-chownDataDirTo: "" # forces `chown` of the data directory to the following UID/GUID
+homeDirectory: /home/pocket/.pocket
+chownDataDirTo: 1025 # forces `chown` of the data directory to the following UID/GUID
 # when true, removes upgrade-info.json on startup. It should not interfere with `x/upgrade`.
 # It is helpful when we need to skip an upgrade (unsafe-skip-upgrades), and cosmovisor picks up the upgrade-info.json
 removeUpgradeInfoOnStart: false
+
+runStatefulSetPocketd: true # Allows us to scale to 0 replicas, essentially turning off the full node
 
 image:
   repository: ghcr.io/pokt-network/pocketd
@@ -31,9 +32,8 @@ resources:
   #   memory: 2048Mi
 
 containerSecurityContext:
-  {}
-  # readOnlyRootFilesystem: true
-  # allowPrivilegeEscalation: false
+  runAsUser: 1025
+  runAsGroup: 1025
   # capabilities:
   #   drop:
   #     - ALL
@@ -128,6 +128,131 @@ customConfigsConfigMap:
 podLabels:
   {}
   # example-label: example-value
+
+# Pod scheduling
+nodeSelector:
+  {}
+  # kubernetes.io/arch: amd64
+  # node-role.kubernetes.io/worker: "true"
+
+tolerations:
+  []
+  # - key: "dedicated"
+  #   operator: "Equal"
+  #   value: "blockchain"
+  #   effect: "NoSchedule"
+
+affinity:
+  {}
+  # podAntiAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #   - labelSelector:
+  #       matchExpressions:
+  #       - key: app.kubernetes.io/name
+  #         operator: In
+  #         values:
+  #         - pocketd
+  #     topologyKey: kubernetes.io/hostname
+
+topologySpreadConstraints:
+  []
+  # - maxSkew: 1
+  #   topologyKey: topology.kubernetes.io/zone
+  #   whenUnsatisfiable: DoNotSchedule
+  #   labelSelector:
+  #     matchLabels:
+  #       app.kubernetes.io/name: pocketd
+
+# Pod configuration
+podAnnotations:
+  {}
+  # prometheus.io/scrape: "true"
+  # prometheus.io/port: "26660"
+
+podSecurityContext: {}
+
+priorityClassName: ""
+
+terminationGracePeriodSeconds: 30
+
+# Service account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Update strategy
+updateStrategy:
+  type: RollingUpdate
+
+# Health checks
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /
+    port: 26657
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /
+    port: 26657
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+startupProbe:
+  enabled: true
+  httpGet:
+    path: /
+    port: 26657
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
+
+# Additional configurations
+imagePullSecrets:
+  []
+  # - name: myregistrykey
+
+extraArgs:
+  []
+  # - "--some-extra-flag=value"
+
+extraEnvVars:
+  []
+  # - name: EXTRA_VAR
+  #   value: "value"
+
+extraVolumes:
+  []
+  # - name: extra-volume
+  #   configMap:
+  #     name: extra-config
+
+extraVolumeMounts:
+  []
+  # - name: extra-volume
+  #   mountPath: /extra-config
+
+# Network configuration
+hostNetwork: false
+dnsPolicy: ClusterFirst
+dnsConfig:
+  {}
+  # nameservers:
+  #   - 1.1.1.1
+  # searches:
+  #   - ns1.svc.cluster.local
+
+# StatefulSet specific
+podManagementPolicy: OrderedReady
 
 cosmovisor:
   enabled: false
