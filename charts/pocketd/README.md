@@ -128,6 +128,7 @@ When snapshot syncing is enabled:
 | readinessProbe.timeoutSeconds | int | `5` |  |
 | removeUpgradeInfoOnStart | bool | `false` |  |
 | resources | object | `{}` |  |
+| runStatefulSetPocketd | bool | `true` |  |
 | service.ports.api | int | `1317` |  |
 | service.ports.cometBFTMetrics | int | `26660` |  |
 | service.ports.grpc | int | `9090` |  |
