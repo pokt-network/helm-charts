@@ -4,7 +4,7 @@ metadata:
   name: {{ include "pocketd.fullname" . | quote }}
 spec:
   serviceName: {{ include "pocketd.fullname" . | quote }}
-  replicas: 1 # With how the helm chart is built, this should always be 1.
+  replicas: {{ if .Values.runStatefulSetPocketd }}1{{ else }}0{{ end }}
   selector:
     matchLabels:
       {{- include "pocketd.selectorLabels" . | nindent 6 }}

@@ -6,6 +6,8 @@ chownDataDirTo: 1025 # forces `chown` of the data directory to the following UID
 # It is helpful when we need to skip an upgrade (unsafe-skip-upgrades), and cosmovisor picks up the upgrade-info.json
 removeUpgradeInfoOnStart: false
 
+runStatefulSetPocketd: true # Allows us to scale to 0 replicas, essentially turning off the full node
+
 image:
   repository: ghcr.io/pokt-network/pocketd
   tag: latest
