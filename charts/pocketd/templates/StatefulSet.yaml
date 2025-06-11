@@ -15,7 +15,54 @@ spec:
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "pocketd.serviceAccountName" . }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      {{- if .Values.hostNetwork }}
+      hostNetwork: {{ .Values.hostNetwork }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      {{- end }}
+      {{- with .Values.dnsConfig }}
+      dnsConfig:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
       # Initializes `priv_validator_state` if it doesn't exist and optionally removes upgrade-info.json
       - name: init-priv-validator-state
@@ -268,7 +315,10 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         {{- if .Values.cosmovisor.enabled }}
         command: ["/bin/cosmovisor"]
+        {{- end }}
+        {{- if or .Values.cosmovisor.enabled .Values.extraEnvVars }}
         env:
+        {{- if .Values.cosmovisor.enabled }}
         - name: DAEMON_NAME
           value: "pocketd"
         - name: DAEMON_HOME
@@ -279,6 +329,10 @@ spec:
           value: {{ .Values.cosmovisor.allowDownloadBinaries | quote }}
         - name: UNSAFE_SKIP_BACKUP
           value: {{ .Values.cosmovisor.unsafeSkipBackup | quote }}
+        {{- end }}
+        {{- with .Values.extraEnvVars }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         {{- end }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
@@ -295,14 +349,18 @@ spec:
           name: comet-metrics
         - containerPort: {{ .Values.serviceP2P.port }}
           name: p2p
-        # livenessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: {{ .Values.service.ports.rpc }}
-        # readinessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: {{ .Values.service.ports.rpc }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          {{- toYaml (omit .Values.livenessProbe "enabled") | nindent 10 }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          {{- toYaml (omit .Values.readinessProbe "enabled") | nindent 10 }}
+        {{- end }}
+        {{- if .Values.startupProbe.enabled }}
+        startupProbe:
+          {{- toYaml (omit .Values.startupProbe "enabled") | nindent 10 }}
+        {{- end }}
         args:
         {{- if .Values.cosmovisor.enabled }}
         - run
@@ -325,10 +383,8 @@ spec:
         - --unsafe-skip-upgrades
         - {{ join "," .Values.config.unsafeSkipUpgrades }}
         {{- end }}
-        {{- if .Values.extraArgs }}
-        {{- range .Values.extraArgs }}
-        - {{ . | quote }}
-        {{- end }}
+        {{- with .Values.extraArgs }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
         volumeMounts:
         - name: pocket-volume
@@ -351,6 +407,9 @@ spec:
         - name: config-volume
           mountPath: "{{ .Values.homeDirectory }}/config/client.toml"
           subPath: "client.toml"
+        {{- with .Values.extraVolumeMounts }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       volumes:
       - name: pocket-volume
         {{- if .Values.persistence.enabled }}
@@ -385,3 +444,13 @@ spec:
       - name: node-keys
         secret:
           secretName: {{ .Values.nodeKeysSecretName }}
+      {{- with .Values.extraVolumes }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+  {{- if .Values.updateStrategy }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- end }}
+  {{- if .Values.podManagementPolicy }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  {{- end }}
