@@ -45,7 +45,7 @@ spec:
               --keyring-backend={{ .Values.flags.keyring_backend }};
 
               pocketd faucet serve \
-              --log-level={{ .Values.flags.log_level }} \
+              --log_level={{ .Values.flags.log_level }} \
               {{- if ne .Values.flags.node ""}}
               --node={{ .Values.flags.node }} \
               {{- end }}
