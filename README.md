@@ -71,14 +71,6 @@ Adhere to [SemVer](https://semver.org/) guidelines for versioning.
 
 Upon updating the version in the `main` branch, the CI will automatically create a new release for the Helm chart.
 
-### Important Considerations on Multiple Updates
-
-Updating several Helm chart versions simultaneously may cause CI failures, likely due to an issue with the [helm/chart-releaser-action](https://github.com/helm/chart-releaser-action) GitHub action.
-
-If this occurs, please report the issue for prompt troubleshooting and resolution.
-
-Our suggestion, alternatively, is to only update one at a time.
-
 ## ClaudeSync Setup
 
 This repo is setup to use [ClaudeSync](https://github.com/jahwag/ClaudeSync) to help answer questions about the repo.
