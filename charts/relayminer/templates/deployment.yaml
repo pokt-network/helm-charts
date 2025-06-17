@@ -119,7 +119,12 @@ spec:
           configMap:
             name: {{ include "relayminer.fullname" . }}
         - name: pocket-home
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "relayminer.fullname" .)) }}
+        {{- else }}
           emptyDir: {}
+        {{- end }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

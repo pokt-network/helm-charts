@@ -57,6 +57,10 @@ A Helm chart for Kubernetes
 | metrics.serviceMonitor.enabled | bool | `false` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
+| persistence.className | string | `""` |  |
+| persistence.enabled | bool | `false` |  |
+| persistence.existingClaim | string | `""` |  |
+| persistence.size | string | `"1Gi"` |  |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |

@@ -92,6 +92,16 @@ securityContext: {}
 
 homeDirectory: /root/.pocket
 
+persistence:
+  # Enable persistent storage for the home directory
+  enabled: false
+  # Storage class name to use for the PersistentVolumeClaim
+  className: ""
+  # Size of the persistent volume
+  size: 1Gi
+  # Use an existing PersistentVolumeClaim (must be created manually beforehand)
+  existingClaim: ""
+
 service:
   type: ClusterIP
   port: 8545
