@@ -4,6 +4,13 @@
 
 replicaCount: 1
 
+# Deployment strategy configuration
+deploymentStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 25%
+    maxSurge: 25%
+
 chownDataDirTo: "" # forces `chown` of the data directory to the following UID/GUID
 
 logs:
