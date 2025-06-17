@@ -32,6 +32,9 @@ A Helm chart for Kubernetes
 | config.suppliers[1].service_config.backend_url | string | `"ws://anvil:8547/"` |  |
 | config.suppliers[1].service_id | string | `"anvilws"` |  |
 | config.suppliers[1].type | string | `"http"` |  |
+| deploymentStrategy.rollingUpdate.maxSurge | string | `"25%"` |  |
+| deploymentStrategy.rollingUpdate.maxUnavailable | string | `"25%"` |  |
+| deploymentStrategy.type | string | `"RollingUpdate"` |  |
 | development.delve.enabled | bool | `false` |  |
 | development.delve.laddr | string | `":40004"` |  |
 | fullnameOverride | string | `""` |  |
