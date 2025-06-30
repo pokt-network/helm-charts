@@ -1,0 +1,118 @@
+apiVersion: {{ if eq (.Values.kind | default "Deployment") "Job" }}batch/v1{{ else }}apps/v1{{ end }}
+kind: {{ .Values.kind | default "Deployment" }}
+metadata:
+  name: {{ include "ibc-relayer.fullname" . }}
+  labels:
+    {{- include "ibc-relayer.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  {{- if eq .Values.kind "Deployment" }}
+  selector:
+    matchLabels:
+      {{- include "ibc-relayer.selectorLabels" . | nindent 6 }}
+  {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ibc-relayer.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: {{ if eq .Values.kind "Job" }}Never{{ else }}Always{{ end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ibc-relayer.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: {{- toYaml (
+            ternary
+              (concat
+                .Values.command
+                (list
+                  (printf "--a-chain=%s" .Values.chain_a_id)
+                  (printf "--b-chain=%s" .Values.chain_b_id)
+                )
+                (default list .Values.extraArgs)
+              )
+              .Values.command
+              (eq .Values.kind "Job")
+          ) | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-configs
+              mountPath: /root/.hermes/entrypoint.sh
+              subPath: entrypoint.sh
+              readOnly: true
+            - name: {{ .Release.Name }}-configs
+              mountPath: /root/.hermes/config.toml
+              subPath: config.toml
+              readOnly: true
+            {{- $root := . }}
+            {{- if .Values.chain_a_key }}
+            - name: {{ $root.Release.Name }}-configs
+              mountPath: /root/.hermes/{{ .Values.chain_a_key.name }}.mnemonic
+              subPath: {{ .Values.chain_a_key.name }}.mnemonic
+              readOnly: true
+            {{- end }}
+            {{- if .Values.chain_b_key }}
+            - name: {{ $root.Release.Name }}-configs
+              mountPath: /root/.hermes/{{ .Values.chain_b_key.name }}.mnemonic
+              subPath: {{ .Values.chain_b_key.name }}.mnemonic
+              readOnly: true
+            {{- end }}
+            {{- if .Values.chain_c_key }}
+            - name: {{ $root.Release.Name }}-configs
+              mountPath: /root/.hermes/{{ .Values.chain_c_key.name }}.mnemonic
+              subPath: {{ .Values.chain_c_key.name }}.mnemonic
+              readOnly: true
+            {{- end }}
+            {{- if .Values.chain_d_key }}
+            - name: {{ $root.Release.Name }}-configs
+              mountPath: /root/.hermes/{{ .Values.chain_d_key.name }}.mnemonic
+              subPath: {{ .Values.chain_d_key.name }}.mnemonic
+              readOnly: true
+            {{- end }}
+          {{- if .Values.service }}
+          ports:
+            {{- range $_, $port := .Values.service.ports }}
+            - containerPort: {{ $port }}
+            {{- end }}
+          #livenessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
+          #readinessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: {{ .Release.Name }}-configs
+          configMap:
+            name: {{ .Release.Name }}-configs
+            defaultMode: 0755
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

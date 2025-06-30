@@ -1,0 +1,147 @@
+############################
+### Chain configurations ###
+############################
+chainA:
+  id: pocket
+  rpc_addr: "http://validator-pocket-validator.default.svc.cluster.local:26657/"
+  grpc_addr: "http://validator-pocket-validator.default.svc.cluster.local:9090/"
+  account_prefix: pokt
+  key_name: pocket
+  gas_denom: pokt
+  packet_channel: channel-0
+
+chainB:
+  id: agoriclocal
+  rpc_addr: http://agoric-validator.default.svc.cluster.local:26657/
+  grpc_addr: http://agoric-validator.default.svc.cluster.local:9090/
+  account_prefix: agoric
+  key_name: agoriclocal
+  gas_denom: ubld
+  packet_channel: channel-0
+
+keys:
+  - name: pocket
+    # LocalNet app1 mnemonic; SHOULD match config.yml.
+    mnemonic: "mention spy involve verb exercise fiction catalog order agent envelope mystery text defy sing royal fringe return face alpha knife wonder vocal virus drum"
+    coin_type: 118
+  - name: agoriclocal
+    mnemonic: "beach prize number regular tiger aware ring shiver path dizzy please bacon steel car crash youth rural history furnace possible property chicken entire system"
+    coin_type: 564
+
+###########################
+### Daemon usage values ###
+###########################
+
+prefix: "daemon"
+kind: "Deployment"
+command:
+  - /root/.hermes/entrypoint.sh
+  - start
+
+service:
+  type: ClusterIP
+  ports:
+    rest: 3000
+    telemetry: 3001
+
+########################
+### CLI usage values ###
+########################
+
+# prefix: "cli"
+# kind: "Job"
+# command:
+#   - /root/.hermes/entrypoint.sh
+#   - create
+#   - channel
+#   - --a-port=transfer
+#   - --b-port=transfer
+#   - --new-client-connection
+#   - --yes
+#     # Intentionally omitted, expected to be added by Tilt with helm(set=[chain_a="xxx",chain_b="yyy"])
+#     # - --a-chain=xxx
+#     # - --b-chain=yyy
+
+
+# Default values for ibc-relayer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ibc-relayer
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: latest
+  pullPolicy: Never
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+
+#service:
+#  type: ClusterIP
+#  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

@@ -1,0 +1,124 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configs
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- if .Values.chain_a_key }}
+  {{ .Values.chain_a_key.name }}.mnemonic: |
+    {{ .Values.chain_a_key.mnemonic }}
+  {{- end }}
+
+  {{- if .Values.chain_b_key }}
+  {{ .Values.chain_b_key.name }}.mnemonic: |
+    {{ .Values.chain_b_key.mnemonic }}
+  {{- end }}
+
+  {{- if .Values.chain_c_key }}
+  {{ .Values.chain_c_key.name }}.mnemonic: |
+    {{ .Values.chain_c_key.mnemonic }}
+  {{- end }}
+
+  {{- if .Values.chain_d_key }}
+  {{ .Values.chain_d_key.name }}.mnemonic: |
+    {{ .Values.chain_d_key.mnemonic }}
+  {{- end }}
+
+  entrypoint.sh: |
+    #!/usr/bin/env bash
+    set -e
+
+    export PATH=$PATH:/root/.hermes/bin
+
+    {{- if .Values.chain_a_key }}
+    # chain_a_key present
+    {{ template "ibc-relayer.hermesKeysAdd" .Values.chain_a_key }}
+    {{- end }}
+
+    {{- if .Values.chain_b_key }}
+    # chain_b_key present
+    {{ template "ibc-relayer.hermesKeysAdd" .Values.chain_b_key }}
+    {{- end }}
+
+    {{- if .Values.chain_c_key }}
+    # chain_c_key present
+    {{ template "ibc-relayer.hermesKeysAdd" .Values.chain_c_key }}
+    {{- end }}
+
+    {{- if .Values.chain_d_key }}
+    # chain_d_key present
+    {{ include "ibc-relayer.hermesKeysAdd" .Values.chain_d_key }}
+    {{- end }}
+
+    hermes --config /root/.hermes/config.toml $@
+
+  config.toml: |
+    [global]
+    log_level = "info"
+
+    [mode.clients]
+    enabled = true
+    refresh = true
+    misbehaviour = true
+
+    [mode.connections]
+    enabled = false
+
+    [mode.channels]
+    enabled = false
+
+    [mode.packets]
+    enabled = true
+    clear_interval = 100
+    clear_on_start = true
+    tx_confirmation = false
+    auto_register_counterparty_payee = false
+    clear_limit = 50
+
+    [mode.packets.ics20_max_memo_size]
+    enabled = true
+    size = 32768
+
+    [mode.packets.ics20_max_receiver_size]
+    enabled = true
+    size = 2048
+
+    [rest]
+    enabled = true
+    host = "0.0.0.0"
+    port = {{ .Values.service.ports.rest }}
+
+    [telemetry]
+    enabled = true
+    host = "0.0.0.0"
+    port = {{ .Values.service.ports.telemetry }}
+
+    [telemetry.buckets.latency_submitted]
+    start = 500
+    end = 20000
+    buckets = 10
+
+    [telemetry.buckets.latency_confirmed]
+    start = 1000
+    end = 30000
+    buckets = 10
+
+    [tracing_server]
+    enabled = false
+    port = 5555
+
+    {{- if .Values.chain_a_config}}
+    {{ .Values.chain_a_config | indent 4 }}
+    {{- end}}
+
+    {{- if .Values.chain_b_config}}
+    {{ .Values.chain_b_config | indent 4}}
+    {{- end}}
+
+    {{- if .Values.chain_c_config}}
+    {{ .Values.chain_c_config | indent 4 }}
+    {{- end}}
+
+    {{- if .Values.chain_d_config}}
+    {{ .Values.chain_d_config | indent 4 }}
+    {{- end}}
