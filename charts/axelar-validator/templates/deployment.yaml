@@ -36,10 +36,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            # TODO_IN_THIS_COMMIT: support debug entrypoint via helm value
             - /entrypoint.sh
-            #- sleep
-            #- infinity
           volumeMounts:
             # Overwrite the default entrypoint with the localnet entrypoint
             - name: axelar-validator-scripts-volume
