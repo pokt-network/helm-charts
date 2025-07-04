@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-scripts
+  namespace: {{ .Release.Namespace }}
+data:
+  entrypoint.sh: |
+    #!/bin/bash
+    set -eo pipefail
+
+    HOME_DIR="${HOME_DIR:=/osmosis/.osmosisd}"
+    GENESIS_PATH="${HOME_DIR}/config/genesis.json"
+    APP_CONFIG_PATH="${HOME_DIR}/config/app.toml"
+
+    osmosisd init validator --chain-id osmosis --home="$HOME_DIR"
+    echo "{{ .Values.validator_mnemonic }}" | osmosisd keys add validator --keyring-backend="test" --recover --home="$HOME_DIR"
+    osmosisd add-genesis-account $(osmosisd keys show -a validator --keyring-backend="test") --home="$HOME_DIR" {{ .Values.validator_balances }}
+    osmosisd gentx validator 10000000stake --chain-id osmosis --moniker osmosis --keyring-backend="test" --home="$HOME_DIR"
+    osmosisd collect-gentxs --home="$HOME_DIR"
+
+    # TODO_IN_THIS_COMMIT: debug validate-genesis nil pointer error...
+    #jq '.app_state.genutil.gen_txs[0].body.messages[0].delegator_address = "osmo1sz7nw80886tuenrhvg2tttlemgfxy734u7l3f2"' \
+    #"${HOME_DIR}/config/genesis.json" > genesis.patched.json && mv genesis.patched.json genesis.json
+
+    #osmosisd validate-genesis --home="$HOME_DIR"
+
+    # Set the grpc listen interface to 0.0.0.0 to allow external grpc access.
+    sed -i 's/address = "localhost:9090"/address = "0.0.0.0:9090"/' ${APP_CONFIG_PATH}
+
+    POOL_ID="1"
+    POOL_TYPE="/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool"
+    GENESIS_PATH="/osmosis/.osmosisd/config/genesis.json"
+
+    # Build new pool JSON
+    NEW_POOL=$(jq -n --arg id "$POOL_ID" '
+    {
+      "@type": "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool",
+      address: "",
+      id: $id,
+      pool_params: {
+        swap_fee: "0.001000000000000000",
+        exit_fee: "0.000000000000000000"
+      },
+      future_pool_governor: "24h",
+      total_shares: {
+        denom: ("gamm/pool/" + $id),
+        amount: "1000000000000000000"
+      },
+      pool_liquidity: [
+        { denom: "uosmo", amount: "1000000000" },
+        { denom: "upokt", amount: "1000000000" }
+      ],
+      scaling_factors: ["1", "1"],
+      scaling_factor_controller: ""
+    }
+    ')
+
+    # Confirm jq generated the pool
+    echo "$NEW_POOL" > /tmp/new_pool.json
+
+    if ! echo "$NEW_POOL" | jq empty; then
+      echo "❌ Failed to construct NEW_POOL JSON" >&2
+      exit 1
+    fi
+
+    # Inject the pool
+    if jq --argjson pool "$NEW_POOL" '
+      (.app_state.gamm.pools //= []) += [$pool]
+      | .app_state.gamm.next_pool_number = (
+      (.app_state.gamm.next_pool_number // "0" | tonumber + 1)
+      )
+      ' "$GENESIS_PATH" > "$GENESIS_PATH.tmp"; then
+      mv "$GENESIS_PATH.tmp" "$GENESIS_PATH"
+      echo "✅ Pool injected."
+    else
+      echo "❌ Failed to inject pool into genesis.json" >&2
+      rm -f "$GENESIS_PATH.tmp"
+    fi
+
+    # Always patch protorev state to ensure valid pool weights
+    echo "Patching protorev genesis state to disable module and set valid pool weights..."
+    echo "DEBUG: Genesis file exists: $(ls -la $GENESIS_PATH)"
+    
+    # Temporarily disable exit on error for this section
+    set +e
+    
+    # Create the jq command as a single line
+    echo "DEBUG: Running jq command..."
+    jq '.app_state.protorev.pool_weights = {"stable_weight": "2", "balancer_weight": "2", "concentrated_weight": "2", "cosmwasm_weight": "2"}' "$GENESIS_PATH" > "$GENESIS_PATH.tmp"
+    JQ_EXIT_CODE=$?
+    echo "DEBUG: jq exit code: $JQ_EXIT_CODE"
+    
+    if [ $JQ_EXIT_CODE -eq 0 ]; then
+      mv "$GENESIS_PATH.tmp" "$GENESIS_PATH"
+      echo "✅ Protorev patch applied successfully"
+    else
+      echo "❌ Failed to apply protorev patch (exit code: $JQ_EXIT_CODE)"
+      rm -f "$GENESIS_PATH.tmp"
+    fi
+    
+    # Re-enable exit on error
+    set -e
+    
+    echo "DEBUG: Checking protorev pool weights after patch:"
+    jq '.app_state.protorev.pool_weights' "$GENESIS_PATH" || echo "Failed to read pool weights"
+    
+    # Set the default fee token to uosmo and set base denomination
+    echo "DEBUG: Setting txfees..."
+    jq '.app_state.txfees.basedenom = "uosmo" | .app_state.txfees.feetokens = []' "$GENESIS_PATH" > "$GENESIS_PATH.tmp" && mv "$GENESIS_PATH.tmp" "$GENESIS_PATH"
+    
+    echo "DEBUG: Final check - protorev pool weights after txfees update:"
+    jq '.app_state.protorev.pool_weights' "$GENESIS_PATH"
+    
+    echo "DEBUG: Full protorev config before starting osmosis:"
+    jq '.app_state.protorev' "$GENESIS_PATH"
+    
+    echo "Starting osmosisd..."
+    osmosisd start --home="$HOME_DIR" --rpc.laddr="tcp://0.0.0.0:{{ .Values.service.ports.rpc }}"
