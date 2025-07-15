@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-connection"
+  labels:
+    {{- include "agoric-validator.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: wget
+      image: busybox:1.36
+      command: ['wget']
+      args: ['{{ .Release.Name }}:{{ .Values.service.ports.rpc }}/status']
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi

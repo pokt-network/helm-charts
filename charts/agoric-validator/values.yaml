@@ -1,11 +1,37 @@
 fund_on_start: true
 
+# Image configuration
 image:
   repository: agoric
   tag: latest
-  pullPolicy: Never
+  pullPolicy: IfNotPresent
 
+# WARNING: For production use, store mnemonic in Kubernetes secrets
+# This is a test mnemonic - never use in production
 mnemonic: "beach prize number regular tiger aware ring shiver path dizzy please bacon steel car crash youth rural history furnace possible property chicken entire system"
+
+# Resource limits to prevent resource exhaustion
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+
+# Security context for running containers with non-root user
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+  readOnlyRootFilesystem: false
+
+# Persistent storage for blockchain data
+persistence:
+  enabled: true
+  size: 20Gi
+  storageClass: ""
+  accessMode: ReadWriteOnce
 
 service:
   type: ClusterIP
@@ -18,7 +44,6 @@ service:
 env:
   DEST: "1"
   DEBUG: "SwingSet:ls,SwingSet:vat"
-
   # Uncomment to enable delve debugging
   # DELVE_PORT: "40009"
 

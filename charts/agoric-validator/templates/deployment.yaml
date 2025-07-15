@@ -26,6 +26,28 @@ spec:
               value: "{{ $value }}"
             {{- end }}
           command: {{- toYaml .Values.command | nindent 12 }}
+          {{- if .Values.resources }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          {{- if .Values.securityContext }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
+          # Health checks for better pod management
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 26657
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 26657
+            initialDelaySeconds: 30
+            periodSeconds: 10
           volumeMounts:
             - name: agoric-scripts-volume
               mountPath: /usr/src/upgrade-test-scripts/entrypoint.sh
@@ -40,12 +62,21 @@ spec:
               subPath: start_agd_delve.sh
               readOnly: true
             - name: agoric-scripts-volume
-              mountPath: /usr/src/upgrade-test-scripts/foreigner.mnemonic
-              subPath: foreigner.mnemonic
+              mountPath: /usr/src/upgrade-test-scripts/start_agd_debug.sh
+              subPath: start_agd_debug.sh
               readOnly: true
+            {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: /home/agoric/.agoric
+            {{- end }}
       volumes:
         - name: agoric-scripts-volume
           configMap:
             name: {{ .Release.Name }}-scripts
             defaultMode: 0755
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-data
+        {{- end }}
 
