@@ -8,6 +8,13 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+  strategy:
+    type: {{ .Values.deploymentStrategy.type }}
+    {{- if eq .Values.deploymentStrategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.deploymentStrategy.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.deploymentStrategy.rollingUpdate.maxSurge }}
+    {{- end }}
   selector:
     matchLabels:
       {{- include "relayminer.selectorLabels" . | nindent 6 }}
@@ -98,8 +105,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: keys-volume
-              mountPath: {{ .Values.homeDirectory }}/keyring-test/{{ .Values.config.signing_key_name }}.info
-              subPath: {{ .Values.config.signing_key_name }}.info
+              mountPath: {{ .Values.homeDirectory }}/keyring-test/
             # - name: configs-volume
             #   mountPath: {{ .Values.homeDirectory }}/config/
             - name: relayminer-config
@@ -121,7 +127,12 @@ spec:
           configMap:
             name: {{ include "relayminer.fullname" . }}
         - name: pocket-home
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "relayminer.fullname" .)) }}
+        {{- else }}
           emptyDir: {}
+        {{- end }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

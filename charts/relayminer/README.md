@@ -1,6 +1,6 @@
 # relayminer
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.0](https://img.shields.io/badge/AppVersion-1.17.0-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.0](https://img.shields.io/badge/AppVersion-1.17.0-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -23,7 +23,6 @@ A Helm chart for Kubernetes
 | config.pocket_node.tx_node_rpc_url | string | `"tcp://poktroll-validator:26657"` |  |
 | config.pprof.addr | string | `"localhost:6060"` |  |
 | config.pprof.enabled | bool | `true` |  |
-| config.signing_key_name | string | `"supplier1"` |  |
 | config.smt_store_path | string | `"smt_stores"` |  |
 | config.suppliers[0].listen_url | string | `"http://0.0.0.0:8545"` |  |
 | config.suppliers[0].service_config.backend_url | string | `"http://anvil:8547/"` |  |
@@ -33,6 +32,9 @@ A Helm chart for Kubernetes
 | config.suppliers[1].service_config.backend_url | string | `"ws://anvil:8547/"` |  |
 | config.suppliers[1].service_id | string | `"anvilws"` |  |
 | config.suppliers[1].type | string | `"http"` |  |
+| deploymentStrategy.rollingUpdate.maxSurge | string | `"25%"` |  |
+| deploymentStrategy.rollingUpdate.maxUnavailable | string | `"25%"` |  |
+| deploymentStrategy.type | string | `"RollingUpdate"` |  |
 | development.delve.enabled | bool | `false` |  |
 | development.delve.laddr | string | `":40004"` |  |
 | fullnameOverride | string | `""` |  |
@@ -58,6 +60,10 @@ A Helm chart for Kubernetes
 | metrics.serviceMonitor.enabled | bool | `false` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
+| persistence.className | string | `""` |  |
+| persistence.enabled | bool | `false` |  |
+| persistence.existingClaim | string | `""` |  |
+| persistence.size | string | `"1Gi"` |  |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
