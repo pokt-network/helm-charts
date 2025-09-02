@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-scripts
+  namespace: {{ .Release.Namespace }}
+data:
+  fund_foreigner.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # Source environment setup
+    . /usr/src/upgrade-test-scripts/env_setup.sh
+
+    echo "💵 Funding foreigner account - Waiting for Agoric chain to start..."
+
+    # Wait for 2 new blocks to be created
+    waitForBlock 2 || {
+      echo "❌ Failed to wait for blocks"
+      exit 1
+    }
+
+    echo "💸 Agoric chain is up - funding!"
+
+    # Get foreigner address
+    FOREIGNER_ADDR=$(agd keys show -a foreigner --keyring-backend=test 2>/dev/null) || {
+      echo "❌ Failed to get foreigner address"
+      exit 1
+    }
+
+    # Fund the foreigner account with 100_000_000 ubld
+    if agd tx bank send \
+      validator \
+      "${FOREIGNER_ADDR}" \
+      100_000_000ubld \
+      --keyring-backend=test \
+      --chain-id=agoriclocal \
+      --yes; then
+      # Wait for transaction to be included in block
+      waitForBlock 1
+      echo "💰 Foreigner account funded successfully!"
+    else
+      echo "❌ Failed to fund foreigner account"
+      exit 1
+    fi
+
+  entrypoint.sh: |
+    #!/bin/bash
+    set -euo pipefail
+
+    # Import the "foreigner" key from the mnemonic
+    echo "{{ .Values.mnemonic }}" | agd keys add foreigner --keyring-backend=test --recover 2>/dev/null || {
+      echo "⚠️  Key 'foreigner' already exists or failed to import"
+    }
+
+    . /usr/src/upgrade-test-scripts/env_setup.sh
+
+    # If fund_on_start is set to true, run the fund script
+    # Run in background to allow concurrent execution with chain startup
+    # Script will wait for chain to be ready before funding
+    {{- if .Values.fund_on_start }}
+    /usr/src/upgrade-test-scripts/fund_foreigner.sh&
+    {{- end }}
+
+
+    echo "Starting agd in foreground"
+    /usr/src/upgrade-test-scripts/start_agd.sh
