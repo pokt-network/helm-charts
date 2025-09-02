@@ -2,6 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   replicas: 1
   selector:
@@ -11,6 +16,8 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        release: {{ .Release.Name }}
     spec:
       containers:
         - name: agd
@@ -36,10 +43,6 @@ spec:
               subPath: fund_foreigner.sh
               readOnly: true
             - name: agoric-scripts-volume
-              mountPath: /usr/src/upgrade-test-scripts/start_agd_delve.sh
-              subPath: start_agd_delve.sh
-              readOnly: true
-            - name: agoric-scripts-volume
               mountPath: /usr/src/upgrade-test-scripts/foreigner.mnemonic
               subPath: foreigner.mnemonic
               readOnly: true
@@ -48,4 +51,3 @@ spec:
           configMap:
             name: {{ .Release.Name }}-scripts
             defaultMode: 0755
-
