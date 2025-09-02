@@ -164,6 +164,17 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/ibc-relayer-0.1.0/ibc-relayer-0.1.0.tgz
     version: 0.1.0
+  osmosis-validator:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-09-02T21:15:03.689653535Z"
+    description: A Helm chart for Kubernetes
+    digest: 8a7f6ab4038cfa8f835fb29f320bb438224dda463f3908dd99f30cc4e1b86d70
+    name: osmosis-validator
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/osmosis-validator-0.1.0/osmosis-validator-0.1.0.tgz
+    version: 0.1.0
   pocket-validator:
   - apiVersion: v2
     appVersion: 1.17.0
@@ -632,4 +643,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2025-09-02T21:09:50.948988269Z"
+generated: "2025-09-02T21:15:03.689765567Z"
