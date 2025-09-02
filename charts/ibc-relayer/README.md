@@ -1,40 +1,8 @@
-# ibc-relayer <!-- omit in toc -->
+# ibc-relayer
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
-Hermes IBC Relayer for cross-chain packet relaying between Cosmos SDK chains.
-
-## Table of Contents <!-- omit in toc -->
-
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Security Notes](#security-notes)
-- [Values](#values)
-
-## Installation
-
-```bash
-# Deploy as daemon
-helm install my-relayer ./charts/ibc-relayer
-
-# Deploy as one-time Job
-helm install my-relayer ./charts/ibc-relayer --set kind=Job --set prefix=cli
-```
-
-## Configuration
-
-- **Daemon mode**: Long-running relayer process
-- **Job mode**: One-time channel creation or maintenance tasks
-- **Multi-chain**: Supports up to 4 chains (chain_a through chain_d)
-
-## Security Notes
-
-⚠️ **WARNING**: Default keys are for LocalNet only. Never use in production.
-
-For production:
-- Store mnemonics in Kubernetes secrets
-- Use proper RBAC and network policies
-- Enable monitoring and alerting
+Hermes IBC Relayer
 
 ## Values
 
