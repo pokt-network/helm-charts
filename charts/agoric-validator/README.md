@@ -1,62 +1,26 @@
-# agoric-validator <!-- omit in toc -->
+# agoric-validator
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 Helm chart for deploying an Agoric validator node
 
-## Table of Contents <!-- omit in toc -->
-
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Values](#values)
-
-## Prerequisites
-
-- Kubernetes 1.19+
-- Helm 3.0+
-- Agoric Docker image built locally or available in registry
-
-## Installation
-
-```bash
-# Install the chart
-helm install agoric-validator ./charts/agoric-validator
-
-# Install with custom values
-helm install agoric-validator ./charts/agoric-validator -f custom-values.yaml
-
-# Upgrade existing deployment
-helm upgrade agoric-validator ./charts/agoric-validator
-```
-
-## Configuration
-
-Key configuration options:
-
-- **fund_on_start**: Automatically fund the foreigner account on startup
-- **mnemonic**: Seed phrase for the foreigner account (⚠️ Use secrets in production)
-- **service.ports**: Configure exposed ports for P2P, RPC, REST, and gRPC
-- **env**: Set environment variables for debugging and configuration
-
 ## Values
 
-| Key                | Type   | Default                                                                                                                                                            | Description |
-| ------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| command[0]         | string | `"/usr/src/upgrade-test-scripts/entrypoint.sh"`                                                                                                                    |             |
-| env.DEBUG          | string | `"SwingSet:ls,SwingSet:vat"`                                                                                                                                       |             |
-| env.DEST           | string | `"1"`                                                                                                                                                              |             |
-| fund_on_start      | bool   | `true`                                                                                                                                                             |             |
-| image.pullPolicy   | string | `"Never"`                                                                                                                                                          |             |
-| image.repository   | string | `"agoric"`                                                                                                                                                         |             |
-| image.tag          | string | `"latest"`                                                                                                                                                         |             |
-| mnemonic           | string | `"beach prize number regular tiger aware ring shiver path dizzy please bacon steel car crash youth rural history furnace possible property chicken entire system"` |             |
-| service.ports.grpc | int    | `9090`                                                                                                                                                             |             |
-| service.ports.p2p  | int    | `26656`                                                                                                                                                            |             |
-| service.ports.rest | int    | `1317`                                                                                                                                                             |             |
-| service.ports.rpc  | int    | `26657`                                                                                                                                                            |             |
-| service.type       | string | `"ClusterIP"`                                                                                                                                                      |             |
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| command[0] | string | `"/usr/src/upgrade-test-scripts/entrypoint.sh"` |  |
+| env.DEBUG | string | `"SwingSet:ls,SwingSet:vat"` |  |
+| env.DEST | string | `"1"` |  |
+| fund_on_start | bool | `true` |  |
+| image.pullPolicy | string | `"Never"` |  |
+| image.repository | string | `"agoric"` |  |
+| image.tag | string | `"latest"` |  |
+| mnemonic | string | `"beach prize number regular tiger aware ring shiver path dizzy please bacon steel car crash youth rural history furnace possible property chicken entire system"` |  |
+| service.ports.grpc | int | `9090` |  |
+| service.ports.p2p | int | `26656` |  |
+| service.ports.rest | int | `1317` |  |
+| service.ports.rpc | int | `26657` |  |
+| service.type | string | `"ClusterIP"` |  |
 
----
-
+----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
