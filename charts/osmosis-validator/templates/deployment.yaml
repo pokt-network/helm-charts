@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "osmosis-validator.fullname" . }}
+  labels:
+    {{- include "osmosis-validator.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      {{- include "osmosis-validator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ .Release.Name }}
+        {{- include "osmosis-validator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "osmosis-validator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /entrypoint.sh
+          volumeMounts:
+            # Overwrite the default entrypoint with the localnet entrypoint
+            - name: osmosis-validator-scripts-volume
+              mountPath: /entrypoint.sh
+              subPath: entrypoint.sh
+              readOnly: true
+          ports:
+            {{- range $_, $port := .Values.service.ports }}
+            - containerPort: {{ $port }}
+            {{- end }}
+          #livenessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
+          #readinessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: osmosis-validator-scripts-volume
+          configMap:
+            name: {{ .Release.Name }}-scripts
+            defaultMode: 0755
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
