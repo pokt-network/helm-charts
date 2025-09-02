@@ -19,12 +19,15 @@ chainB:
   gas_denom: ubld
   packet_channel: channel-0
 
+# WARNING: These are LocalNet development keys only. Never use in production.
+# TODO_SECURITY: Move to Kubernetes secrets for production deployments
 keys:
   - name: pocket
-    # LocalNet app1 mnemonic; SHOULD match config.yml.
+    # LocalNet app1 mnemonic; SHOULD match config.yml
     mnemonic: "mention spy involve verb exercise fiction catalog order agent envelope mystery text defy sing royal fringe return face alpha knife wonder vocal virus drum"
     coin_type: 118
   - name: agoriclocal
+    # LocalNet test key for Agoric chain integration
     mnemonic: "beach prize number regular tiger aware ring shiver path dizzy please bacon steel car crash youth rural history furnace possible property chicken entire system"
     coin_type: 564
 
@@ -32,6 +35,7 @@ keys:
 ### Daemon usage values ###
 ###########################
 
+# Deploy as long-running relayer daemon
 prefix: "daemon"
 kind: "Deployment"
 command:
@@ -48,6 +52,7 @@ service:
 ### CLI usage values ###
 ########################
 
+# Alternative: Deploy as one-time Job for channel creation
 # prefix: "cli"
 # kind: "Job"
 # command:
@@ -58,9 +63,7 @@ service:
 #   - --b-port=transfer
 #   - --new-client-connection
 #   - --yes
-#     # Intentionally omitted, expected to be added by Tilt with helm(set=[chain_a="xxx",chain_b="yyy"])
-#     # - --a-chain=xxx
-#     # - --b-chain=yyy
+#     # Chain IDs added dynamically by Tilt: --a-chain=xxx --b-chain=yyy
 
 
 # Default values for ibc-relayer.
@@ -101,6 +104,7 @@ securityContext: {}
 # runAsNonRoot: true
 # runAsUser: 1000
 
+# TODO_CLEANUP: Remove duplicate service config - active config is at lines 41-45
 #service:
 #  type: ClusterIP
 #  port: 80
