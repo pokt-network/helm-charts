@@ -1,6 +1,6 @@
 apiVersion: v2
-name: agoric-chain
-description: Agoric chain node
+name: agoric-validator
+description: Helm chart for deploying an Agoric validator node
 
 # A chart can be either an 'application' or a 'library' chart.
 #
