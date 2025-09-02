@@ -29,7 +29,8 @@ A Helm chart for Kubernetes
 | config.suppliers[0].service_id | string | `"anvil"` |  |
 | config.suppliers[0].type | string | `"http"` |  |
 | config.suppliers[1].listen_url | string | `"ws://0.0.0.0:8545"` |  |
-| config.suppliers[1].service_config.backend_url | string | `"ws://anvil:8547/"` |  |
+| config.suppliers[1].rpc_type_service_configs.websocket.backend_url | string | `"ws://anvil:8547/"` |  |
+| config.suppliers[1].service_config.backend_url | string | `"http://anvil:8547/"` |  |
 | config.suppliers[1].service_id | string | `"anvilws"` |  |
 | config.suppliers[1].type | string | `"http"` |  |
 | deploymentStrategy.rollingUpdate.maxSurge | string | `"25%"` |  |
@@ -67,6 +68,7 @@ A Helm chart for Kubernetes
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
+| queryCaching | bool | `false` |  |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | securityContext | object | `{}` |  |
