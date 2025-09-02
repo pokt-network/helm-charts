@@ -4,6 +4,13 @@
 
 replicaCount: 1
 
+# Deployment strategy configuration
+deploymentStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 25%
+    maxSurge: 25%
+
 chownDataDirTo: "" # forces `chown` of the data directory to the following UID/GUID
 
 logs:
@@ -24,10 +31,10 @@ chainId: "pocket"
 
 gasAdjustment: 1.5
 gasPrices: 0.0001upokt
+queryCaching: false
 
 config:
-  signing_key_name: supplier1 # Keeping it here for now for backwards-compatibility
-  default_signing_key_names: [supplier1]
+  default_signing_key_names: [supplier1] # Must be present in the keysSecretName
   smt_store_path: smt_stores
   pocket_node:
     query_node_rpc_url: tcp://poktroll-validator:26657
@@ -42,7 +49,10 @@ config:
     - service_id: anvilws
       type: http
       service_config:
-        backend_url: ws://anvil:8547/
+        backend_url: http://anvil:8547/
+      rpc_type_service_configs:
+        websocket:
+          backend_url: ws://anvil:8547/
       listen_url: ws://0.0.0.0:8545
   metrics:
     enabled: true
@@ -92,6 +102,16 @@ securityContext: {}
 # runAsUser: 1000
 
 homeDirectory: /root/.pocket
+
+persistence:
+  # Enable persistent storage for the home directory
+  enabled: false
+  # Storage class name to use for the PersistentVolumeClaim
+  className: ""
+  # Size of the persistent volume
+  size: 1Gi
+  # Use an existing PersistentVolumeClaim (must be created manually beforehand)
+  existingClaim: ""
 
 service:
   type: ClusterIP
