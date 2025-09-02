@@ -142,6 +142,17 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/celestia-node-0.12.0/celestia-node-0.12.0.tgz
     version: 0.12.0
+  ibc-relayer:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-09-02T21:07:01.119583723Z"
+    description: Hermes IBC Relayer
+    digest: d85ed86bd3b1341385f1cb2c0cab63974ab7b60085cd4525639f615a13aec6d6
+    name: ibc-relayer
+    type: application
+    urls:
+    - https://github.com/pokt-network/helm-charts/releases/download/ibc-relayer-0.1.0/ibc-relayer-0.1.0.tgz
+    version: 0.1.0
   pocket-validator:
   - apiVersion: v2
     appVersion: 1.17.0
@@ -610,4 +621,4 @@ entries:
     urls:
     - https://github.com/pokt-network/helm-charts/releases/download/relayminer-0.1.1/relayminer-0.1.1.tgz
     version: 0.1.1
-generated: "2025-09-02T20:47:30.035525755Z"
+generated: "2025-09-02T21:07:01.119691654Z"
